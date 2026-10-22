@@ -1,4 +1,4 @@
-# FelidLens 🐾
+# FelidLens 
 ### AI-Powered Feline Identification & Wildlife Discovery Platform
 
 [![Status: Alpha](https://img.shields.io/badge/Status-Alpha%20(v0.1.0)-f472b6.svg)](https://github.com/Horrid-12/felidlens)
@@ -21,7 +21,7 @@
 
 ---
 
-## 🌟 Key Features
+##  Key Features
 
 1. **AI Feline Paw Scanner**:
    - Drag-and-drop, file picker, and mobile camera capture.
@@ -53,7 +53,7 @@
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
 ```mermaid
 flowchart TD
@@ -105,7 +105,7 @@ flowchart TD
 
 ---
 
-## 🚀 Quick Start Guide
+##  Quick Start Guide
 
 ### Prerequisites
 - **Node.js** >= v18.0.0
@@ -170,7 +170,7 @@ Vite is preconfigured to reverse-proxy `/api` requests directly to `http://127.0
 
 ---
 
-## 📡 Backend API Endpoints
+##  Backend API Endpoints
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
@@ -184,7 +184,7 @@ Vite is preconfigured to reverse-proxy `/api` requests directly to `http://127.0
 
 ---
 
-## 🧠 AI Identification & Uncertainty Handling
+##  AI Identification & Uncertainty Handling
 
 ### Provider Interface
 The identification service implements an abstract `BaseClassifier` protocol:
@@ -208,7 +208,7 @@ $$H(P) = -\sum_{i=1}^{N} p_i \ln(p_i)$$
 
 ---
 
-## 🛡️ Responsible Wildlife Data Protocol
+##  Responsible Wildlife Data Protocol
 
 FelidLens strictly adheres to biodiversity conservation ethics:
 - **No Precise GPS Coordinates**: Observations retrieved from the iNaturalist API have their latitude and longitude generalized to broad regional boundaries.
@@ -217,7 +217,7 @@ FelidLens strictly adheres to biodiversity conservation ethics:
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ### Backend Test Suite
 Run all unit and integration tests covering image validation, identification status handling, taxonomy filters, and API contracts:
@@ -232,7 +232,7 @@ npm run build --prefix frontend
 
 ---
 
-## 📄 License & Attribution
+##  License & Attribution
 
 - **Software**: MIT License
 - **Original Inspiration**: [BirdLens](https://github.com/sdprojects12/birdlens) by [sdprojects12](https://github.com/sdprojects12)
