@@ -1,10 +1,21 @@
 # FelidLens 🐾
 ### AI-Powered Feline Identification & Wildlife Discovery Platform
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Status: Alpha](https://img.shields.io/badge/Status-Alpha%20(v0.1.0)-f472b6.svg)](https://github.com/Horrid-12/felidlens)
+[![License: MIT](https://img.shields.io/badge/License-MIT-pink.svg)](https://opensource.org/licenses/MIT)
 [![Backend: FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
 [![Frontend: React-18](https://img.shields.io/badge/Frontend-React%2018%20+%20Vite-61DAFB.svg)](https://vitejs.dev/)
-[![Taxonomy: Felidae](https://img.shields.io/badge/Taxonomy-Felidae%20(41%20Species)-d97706.svg)](https://www.iucnredlist.org/)
+[![Taxonomy: Felidae](https://img.shields.io/badge/Taxonomy-Felidae%20(41%20Species)-f472b6.svg)](https://www.iucnredlist.org/)
+
+> [!IMPORTANT]
+> **Alpha Release Notice:**
+> FelidLens is currently in **Alpha** (v0.1.0-alpha). Features, neural inference models, and taxonomic mappings are in active development. AI classifications are probabilistic estimations based on morphological visual markers and should be independently verified.
+
+> [!NOTE]
+> **Original Concept & Attribution:**
+> FelidLens was inspired by the original idea and architecture of **[BirdLens](https://github.com/sdprojects12/birdlens)** by [sdprojects12](https://github.com/sdprojects12). Reimagined and built from the ground up for the entire cat family (**Felidae**), FelidLens introduces a pinky-gray velvet feline aesthetic, responsible wildlife coordinate obscuration, Shannon entropy uncertainty gatekeeping, and a curated multi-lineage cat taxonomy.
+
+---
 
 **FelidLens** is an immersive wildlife discovery platform and AI field guide dedicated to the entire cat family (**Felidae**). Spanning all 41 recognized wild and domestic species across both subfamilies (*Pantherinae* and *Felinae*) and all 8 evolutionary lineages, the application pairs computer vision identification with transparent uncertainty indicators, ethical wildlife conservation protocols, and a gamified naturalist expedition journal.
 
@@ -12,10 +23,10 @@
 
 ## 🌟 Key Features
 
-1. **AI Feline Identification**:
+1. **AI Feline Paw Scanner**:
    - Drag-and-drop, file picker, and mobile camera capture.
    - Pillow-based MIME, file size (up to 15MB), format, and EXIF sanitization.
-   - Cinematic scanning HUD with real-time diagnostic progress.
+   - Cinematic scanning HUD with real-time diagnostic feline progress.
    - Ranked candidate predictions with percentage match and morphology rationales.
    - **Transparent Uncertainty**: Uses Shannon entropy to distinguish confident predictions from ambiguous sister taxa.
    - **Out-of-Domain Detection**: Explicitly identifies non-felid images (canines, landscapes, vehicles) without returning deceptive predictions.
@@ -30,8 +41,8 @@
 
 4. **Expedition Journal & Gamification**:
    - LocalStorage persistent progress for anonymous users.
-   - Discovery XP, ranks (*Novice Observer* up to *Legendary Warden*), and milestone badges (*Roar of the Ancients*, *Shadows of the North*, *Guardian of the Wild*).
-   - Visual catalog tracking logged vs. undiscovered felid silhouettes.
+   - Discovery XP, ranks (*Kitten Scout* up to *Supreme Felid Sovereign*), and milestone badges (*Roar of the Ancients*, *Shadows of the North*, *Guardian of the Wild*).
+   - Visual catalog tracking logged vs. undiscovered felid silhouettes with celebratory confetti.
 
 5. **Responsible Wildlife Observations**:
    - Research-grade feline sightings integrated from the iNaturalist Network API.
@@ -47,7 +58,7 @@
 ```mermaid
 flowchart TD
     subgraph Client ["Frontend (React 18 + TypeScript + Vite + Tailwind CSS)"]
-        UI[Immersive Forest UI]
+        UI[Pinky-Gray Feline UI]
         Store[LocalStorage Collection Store]
         ClientAPI[Typed API Client]
         UI --> Store
@@ -224,6 +235,7 @@ npm run build --prefix frontend
 ## 📄 License & Attribution
 
 - **Software**: MIT License
+- **Original Inspiration**: [BirdLens](https://github.com/sdprojects12/birdlens) by [sdprojects12](https://github.com/sdprojects12)
 - **Taxonomic Classification**: Kitchener et al. (2017) IUCN SSC Cat Specialist Group
 - **Observational Data**: [iNaturalist Network](https://www.inaturalist.org) (CC BY-NC 4.0)
 - **Taxonomic Backbone**: [GBIF](https://www.gbif.org)
