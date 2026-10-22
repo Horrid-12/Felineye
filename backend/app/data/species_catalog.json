@@ -1,0 +1,1398 @@
+[
+  {
+    "id": "panthera-leo",
+    "common_name": "Lion",
+    "scientific_name": "Panthera leo",
+    "subfamily": "Pantherinae",
+    "lineage": "Panthera",
+    "genus": "Panthera",
+    "conservation_status": "VU",
+    "conservation_title": "Vulnerable (IUCN Red List)",
+    "is_wild": true,
+    "description": "The lion is a large felid native to Africa and India. Muscular and broad-chested with a tufted tail, adult males possess a magnificent dark mane. It is the only truly social wild cat, living in structured family prides.",
+    "distinguishing_characteristics": [
+      "Prominent mane in adult males",
+      "Tawny yellow-gold unspotted coat in adults",
+      "Black brush tuft at tail tip",
+      "Social pride structure of related females and a coalition of males"
+    ],
+    "size_and_weight": "Head-body: 184-208 cm; Weight: 150-250 kg (males), 110-182 kg (females)",
+    "geographic_range": "Sub-Saharan Africa; Gir National Park in Gujarat, Western India",
+    "habitats": [
+      "Savanna",
+      "Grassland",
+      "Open Woodland",
+      "Scrubland"
+    ],
+    "diet": "Apex obligate carnivore; primarily large ungulates (wildebeest, zebras, buffalo)",
+    "behavior": "Social pride living; mostly nocturnal and crepuscular hunting; roaring audible up to 8 km.",
+    "discovery_rarity": "Legendary",
+    "xp_reward": 300,
+    "image_url": "https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Dimas Ardian on Unsplash",
+    "inaturalist_taxon_id": 41965,
+    "gbif_taxon_key": 5219404,
+    "similar_species": [
+      {
+        "slug": "puma-concolor",
+        "common_name": "Cougar / Mountain Lion",
+        "differentiator": "Cougars have a smaller, sleeker head, no mane, white muzzle ring, and purr rather than roar."
+      }
+    ]
+  },
+  {
+    "id": "panthera-tigris",
+    "common_name": "Tiger",
+    "scientific_name": "Panthera tigris",
+    "subfamily": "Pantherinae",
+    "lineage": "Panthera",
+    "genus": "Panthera",
+    "conservation_status": "EN",
+    "conservation_title": "Endangered (IUCN Red List)",
+    "is_wild": true,
+    "description": "The tiger is the largest living cat species. Recognizable for its dark vertical stripes on reddish-orange fur with white underbellies. Solitary apex predators with an affinity for water and swimming.",
+    "distinguishing_characteristics": [
+      "Distinctive vertical black stripes unique to every individual",
+      "Reddish-orange coat with white ventral coloration",
+      "Prominent white spot ('ocellus') on the back of each ear",
+      "Superior swimming and aquatic ambush capabilities"
+    ],
+    "size_and_weight": "Total length: up to 310 cm; Weight: 90-300 kg depending on subspecies",
+    "geographic_range": "South Asia, Southeast Asia, and the Russian Far East",
+    "habitats": [
+      "Tropical Rainforest",
+      "Mangrove Swamps",
+      "Boreal Taiga",
+      "Dry Deciduous Forest"
+    ],
+    "diet": "Large ungulates including deer (sambar, chital), wild boar, and wild cattle",
+    "behavior": "Solitary and territorial; patrol large home ranges; frequently bathes in rivers.",
+    "discovery_rarity": "Legendary",
+    "xp_reward": 350,
+    "image_url": "https://images.unsplash.com/photo-1561731216-c3a4d99437d5?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1561731216-c3a4d99437d5?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Frida Lannerström on Unsplash",
+    "inaturalist_taxon_id": 41968,
+    "gbif_taxon_key": 5219416,
+    "similar_species": []
+  },
+  {
+    "id": "panthera-onca",
+    "common_name": "Jaguar",
+    "scientific_name": "Panthera onca",
+    "subfamily": "Pantherinae",
+    "lineage": "Panthera",
+    "genus": "Panthera",
+    "conservation_status": "NT",
+    "conservation_title": "Near Threatened (IUCN Red List)",
+    "is_wild": true,
+    "description": "The jaguar is the only extant Panthera species native to the Americas. Muscular and stocky, it possesses the most crushing bite force relative to body size of all cats, puncturing turtle carapaces with ease.",
+    "distinguishing_characteristics": [
+      "Large rosette patterns containing central black spots",
+      "Exceptionally compact, muscular build with broad head and thick jaw",
+      "Direct cranial bite strategy piercing temporal skull bones",
+      "Strong affinity for swimming in rivers and swamps"
+    ],
+    "size_and_weight": "Head-body: 112-185 cm; Weight: 56-96 kg (exceptional males exceed 140 kg)",
+    "geographic_range": "Southwestern US borderlands through Central America to the Pantanal and Amazon",
+    "habitats": [
+      "Tropical Rainforest",
+      "Pantanal Wetlands",
+      "Riverine Corridors"
+    ],
+    "diet": "Broad generalist: caiman, capybaras, tapirs, turtles, and peccaries",
+    "behavior": "Solitary apex predator; stalk-and-ambush hunter; adept swimmer.",
+    "discovery_rarity": "Epic",
+    "xp_reward": 275,
+    "image_url": "https://images.unsplash.com/photo-1575550959106-5a7defe28b56?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1575550959106-5a7defe28b56?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Lucas van Oort on Unsplash",
+    "inaturalist_taxon_id": 41970,
+    "gbif_taxon_key": 5219426,
+    "similar_species": [
+      {
+        "slug": "panthera-pardus",
+        "common_name": "Leopard",
+        "differentiator": "Leopard rosettes lack interior black spots and leopards have longer, leaner frames."
+      }
+    ]
+  },
+  {
+    "id": "panthera-pardus",
+    "common_name": "Leopard",
+    "scientific_name": "Panthera pardus",
+    "subfamily": "Pantherinae",
+    "lineage": "Panthera",
+    "genus": "Panthera",
+    "conservation_status": "VU",
+    "conservation_title": "Vulnerable (IUCN Red List)",
+    "is_wild": true,
+    "description": "The leopard is famous for its supreme agility, stealth, and arboreal strength. It hoists carcasses heavier than its own body high into tree branches to protect them from hyenas and lions.",
+    "distinguishing_characteristics": [
+      "Dense rosettes with hollow, spot-free centers",
+      "Slender athletic build with long balancing tail (60-100 cm)",
+      "Master of climbing; rests and caches food aloft",
+      "Frequent melanistic ('black panther') morphs in humid tropical zones"
+    ],
+    "size_and_weight": "Head-body: 90-196 cm; Weight: 37-90 kg (males), 28-60 kg (females)",
+    "geographic_range": "Sub-Saharan Africa, Middle East, Central Asia, India, and China",
+    "habitats": [
+      "Savanna",
+      "Woodland",
+      "Temperate Forest",
+      "Mountain Scrub"
+    ],
+    "diet": "Opportunistic: antelopes, deer, baboons, and wild pigs",
+    "behavior": "Nocturnal and solitary; caches prey in tree forks.",
+    "discovery_rarity": "Epic",
+    "xp_reward": 250,
+    "image_url": "https://images.unsplash.com/photo-1456926631375-92c8ce872def?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1456926631375-92c8ce872def?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Matthew Spiteri on Unsplash",
+    "inaturalist_taxon_id": 41966,
+    "gbif_taxon_key": 5219436,
+    "similar_species": [
+      {
+        "slug": "acinonyx-jubatus",
+        "common_name": "Cheetah",
+        "differentiator": "Cheetahs have solid round spots, facial tear marks, and tall slender builds."
+      }
+    ]
+  },
+  {
+    "id": "panthera-uncia",
+    "common_name": "Snow Leopard",
+    "scientific_name": "Panthera uncia",
+    "subfamily": "Pantherinae",
+    "lineage": "Panthera",
+    "genus": "Panthera",
+    "conservation_status": "VU",
+    "conservation_title": "Vulnerable (IUCN Red List)",
+    "is_wild": true,
+    "description": "The 'Ghost of the Mountains' roams the high peaks of Central Asia. Perfectly adapted to alpine conditions with thick smoky fur, broad snowshoe paws, and an enormous tail wrapped around its face for warmth.",
+    "distinguishing_characteristics": [
+      "Thick smoky-grey fur with muted black rosettes",
+      "Exceptionally long, plush tail (80-105 cm) used as balance and muffler",
+      "Fur-covered footpads providing snow traction",
+      "Large nasal cavity warming frigid thin air before lung entry"
+    ],
+    "size_and_weight": "Head-body: 90-135 cm; Weight: 25-55 kg",
+    "geographic_range": "High mountains of Central and South Asia (Himalayas, Tien Shan, Altai)",
+    "habitats": [
+      "Alpine Steppe",
+      "Rocky Scree",
+      "Glacial Moraines"
+    ],
+    "diet": "Mountain ungulates (blue sheep/bharal, ibex, markhor) and marmots",
+    "behavior": "Solitary cliff stalker; leaps up to 15 meters; non-roaring vocal anatomy.",
+    "discovery_rarity": "Legendary",
+    "xp_reward": 400,
+    "image_url": "https://images.unsplash.com/photo-1547721064-da6cfb341d50?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1547721064-da6cfb341d50?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Eric Ward on Unsplash",
+    "inaturalist_taxon_id": 41964,
+    "gbif_taxon_key": 5219412,
+    "similar_species": []
+  },
+  {
+    "id": "neofelis-nebulosa",
+    "common_name": "Clouded Leopard",
+    "scientific_name": "Neofelis nebulosa",
+    "subfamily": "Pantherinae",
+    "lineage": "Panthera",
+    "genus": "Neofelis",
+    "conservation_status": "VU",
+    "conservation_title": "Vulnerable (IUCN Red List)",
+    "is_wild": true,
+    "description": "A canopy specialist of Southeast Asian rainforests. It has the longest canines in proportion to skull size of any living carnivore and can climb down tree trunks headfirst like a squirrel.",
+    "distinguishing_characteristics": [
+      "Enormous canine teeth relative to head size (up to 4 cm)",
+      "Large cloud-shaped irregular dark blotches",
+      "Reversible ankle joints allowing head-first vertical descent",
+      "Extremely long balancing tail and wide stabilizing paws"
+    ],
+    "size_and_weight": "Head-body: 68-108 cm; Weight: 11-23 kg",
+    "geographic_range": "Southeast Asia, southern China, eastern Himalayas",
+    "habitats": [
+      "Primary Tropical Rainforest",
+      "Montane Evergreen Forest"
+    ],
+    "diet": "Primates (gibbons, macaques), deer, and wild pigs",
+    "behavior": "Arboreal hunter; drops from branches onto terrestrial prey; nocturnal.",
+    "discovery_rarity": "Legendary",
+    "xp_reward": 360,
+    "image_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 41961,
+    "gbif_taxon_key": 2435088,
+    "similar_species": []
+  },
+  {
+    "id": "neofelis-diardi",
+    "common_name": "Sunda Clouded Leopard",
+    "scientific_name": "Neofelis diardi",
+    "subfamily": "Pantherinae",
+    "lineage": "Panthera",
+    "genus": "Neofelis",
+    "conservation_status": "VU",
+    "conservation_title": "Vulnerable (IUCN Red List)",
+    "is_wild": true,
+    "description": "Native to Borneo and Sumatra, genetically distinct from the mainland clouded leopard. It features smaller, darker cloud markings with distinctive central spots inside the clouds.",
+    "distinguishing_characteristics": [
+      "Darker overall pelage with smaller cloud blotches containing inner spots",
+      "Proportionately huge canines and muscular arboreal limbs",
+      "Heavy double dorsal stripe running along back",
+      "Strictly restricted to the Sunda islands of Borneo and Sumatra"
+    ],
+    "size_and_weight": "Head-body: 70-105 cm; Weight: 12-26 kg",
+    "geographic_range": "Islands of Borneo and Sumatra (Indonesia, Malaysia, Brunei)",
+    "habitats": [
+      "Lowland Dipterocarp Rainforest",
+      "Peat Swamp Forest"
+    ],
+    "diet": "Sambar deer, mouse deer, bearded pigs, proboscis monkeys",
+    "behavior": "Canopy predator; highly elusive; threatened by palm oil deforestation.",
+    "discovery_rarity": "Legendary",
+    "xp_reward": 380,
+    "image_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 74744,
+    "gbif_taxon_key": 5707172,
+    "similar_species": [
+      {
+        "slug": "neofelis-nebulosa",
+        "common_name": "Clouded Leopard",
+        "differentiator": "Mainland clouded leopards are lighter yellow-tawny with larger, cleaner cloud markings."
+      }
+    ]
+  },
+  {
+    "id": "catopuma-temminckii",
+    "common_name": "Asian Golden Cat",
+    "scientific_name": "Catopuma temminckii",
+    "subfamily": "Felinae",
+    "lineage": "Bay Cat",
+    "genus": "Catopuma",
+    "conservation_status": "NT",
+    "conservation_title": "Near Threatened (IUCN Red List)",
+    "is_wild": true,
+    "description": "A medium-sized forest cat of Southeast Asia exhibiting polymorphic coloration ranging from golden-red and dark brown to spotted and melanistic phases. Known for conspicuous white facial lines.",
+    "distinguishing_characteristics": [
+      "Conspicuous white lines flanked by dark brown stripes extending from inner eye corners upward",
+      "Tail tip underside is conspicuously whitish and carried curled upward",
+      "Solid golden, chestnut, or grey coat phase ('golden cat')",
+      "Powerful stocky limbs adapted to mountain forests"
+    ],
+    "size_and_weight": "Head-body: 66-105 cm; Weight: 9-16 kg",
+    "geographic_range": "Northeast India, Bhutan, Southeast Asia, southern China, Sumatra",
+    "habitats": [
+      "Subtropical & Tropical Montane Forest",
+      "Dry Deciduous Forest"
+    ],
+    "diet": "Muntjacs (barking deer), wild pigs, mouse deer, and ground birds",
+    "behavior": "Both terrestrial and arboreal hunter; solitary; marks trails with urine and scent.",
+    "discovery_rarity": "Epic",
+    "xp_reward": 260,
+    "image_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 42006,
+    "gbif_taxon_key": 2435293,
+    "similar_species": []
+  },
+  {
+    "id": "catopuma-badia",
+    "common_name": "Bay Cat / Bornean Cat",
+    "scientific_name": "Catopuma badia",
+    "subfamily": "Felinae",
+    "lineage": "Bay Cat",
+    "genus": "Catopuma",
+    "conservation_status": "EN",
+    "conservation_title": "Endangered (One of the world's most elusive cats)",
+    "is_wild": true,
+    "description": "Endemic exclusively to the island of Borneo. Characterized by its chestnut-red or slate-grey coat, long tapering tail with a pale underside, and rounded head with short ears.",
+    "distinguishing_characteristics": [
+      "Endemic strictly to Borneo island",
+      "Long tail tapering toward tip with distinctive white ventral line",
+      "Small rounded ears set low on the skull",
+      "Extremely low camera-trap detection rates; fewer than 2,500 remain"
+    ],
+    "size_and_weight": "Head-body: 53-67 cm; Tail: 32-39 cm; Weight: 3-4 kg",
+    "geographic_range": "Endemic to the island of Borneo (Indonesia & Malaysia)",
+    "habitats": [
+      "Dense Lowland Rainforest",
+      "Highland Hill Forest"
+    ],
+    "diet": "Small forest rodents, birds, and lizards",
+    "behavior": "Extremely secretive forest specialist; primarily nocturnal; severely threatened by logging.",
+    "discovery_rarity": "Legendary",
+    "xp_reward": 450,
+    "image_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 42005,
+    "gbif_taxon_key": 2435294,
+    "similar_species": []
+  },
+  {
+    "id": "pardofelis-marmorata",
+    "common_name": "Marbled Cat",
+    "scientific_name": "Pardofelis marmorata",
+    "subfamily": "Felinae",
+    "lineage": "Bay Cat",
+    "genus": "Pardofelis",
+    "conservation_status": "NT",
+    "conservation_title": "Near Threatened (IUCN Red List)",
+    "is_wild": true,
+    "description": "The marbled cat looks like a miniature clouded leopard, with marbled blotches and an extraordinarily long, bushy tail longer than its head-body length used to balance aloft in canopy vines.",
+    "distinguishing_characteristics": [
+      "Bushy tail exceeding the length of its head and body (up to 55 cm)",
+      "Irregular clouded marbled patches with thick dark borders",
+      "Flexible limbs with broad paws designed for canopy locomotion",
+      "Miniature build weighing only 2-5 kg"
+    ],
+    "size_and_weight": "Head-body: 45-62 cm; Tail: 35-55 cm; Weight: 2-5 kg",
+    "geographic_range": "Eastern Himalayas through Southeast Asia, Sumatra, and Borneo",
+    "habitats": [
+      "Tropical Moist Evergreen Forest",
+      "Montane Rainforest"
+    ],
+    "diet": "Arboreal rodents, squirrels, tree birds, and bats",
+    "behavior": "Almost exclusively arboreal and crepuscular; acrobatic forest canopy dweller.",
+    "discovery_rarity": "Epic",
+    "xp_reward": 270,
+    "image_url": "https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 41963,
+    "gbif_taxon_key": 2435091,
+    "similar_species": [
+      {
+        "slug": "neofelis-nebulosa",
+        "common_name": "Clouded Leopard",
+        "differentiator": "Clouded leopards are four times heavier with massive canines and shorter relative tails."
+      }
+    ]
+  },
+  {
+    "id": "caracal-caracal",
+    "common_name": "Caracal",
+    "scientific_name": "Caracal caracal",
+    "subfamily": "Felinae",
+    "lineage": "Caracal",
+    "genus": "Caracal",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "Characterized by long black ear tufts and an unspotted tawny-red coat. Known for its acrobatic vertical jumps snatching birds out of mid-air up to 3 meters above the ground.",
+    "distinguishing_characteristics": [
+      "Extremely long black ear tufts exceeding 4.5 cm",
+      "Uniform reddish-tawny coat without torso spotting",
+      "20 individual ear muscles directing auditory radar",
+      "Astounding aerial leaping ability catching flying gamebirds"
+    ],
+    "size_and_weight": "Head-body: 65-108 cm; Weight: 8-18 kg",
+    "geographic_range": "Africa, Middle East, Central Asia, and northwestern India",
+    "habitats": [
+      "Semi-desert",
+      "Savanna",
+      "Scrubland",
+      "Dry Woodland"
+    ],
+    "diet": "Guineafowl, francolins, hares, rodents, and small antelopes",
+    "behavior": "Nocturnal and solitary; marks territory with scent and claw markings.",
+    "discovery_rarity": "Epic",
+    "xp_reward": 240,
+    "image_url": "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Stephanie LeBlanc on Unsplash",
+    "inaturalist_taxon_id": 42009,
+    "gbif_taxon_key": 2435284,
+    "similar_species": [
+      {
+        "slug": "leptailurus-serval",
+        "common_name": "Serval",
+        "differentiator": "Servals are heavily spotted with round dish-like ears; caracals are unspotted with tufted ears."
+      }
+    ]
+  },
+  {
+    "id": "caracal-aurata",
+    "common_name": "African Golden Cat",
+    "scientific_name": "Caracal aurata",
+    "subfamily": "Felinae",
+    "lineage": "Caracal",
+    "genus": "Caracal",
+    "conservation_status": "VU",
+    "conservation_title": "Vulnerable (IUCN Red List)",
+    "is_wild": true,
+    "description": "Endemic to the equatorial rainforests of Central and West Africa. Exhibiting rich golden-red to slate-grey coloration, it is twice the size of a domestic cat and closely related to the caracal.",
+    "distinguishing_characteristics": [
+      "Rounded head with small ears lacking long caracal-style tufts",
+      "Coat varies from bright reddish-gold to silver-grey or chocolate",
+      "Variable spotting, often prominent on belly and inner legs",
+      "Specialized inhabitant of the Congo Basin tropical forests"
+    ],
+    "size_and_weight": "Head-body: 61-101 cm; Weight: 5.5-16 kg",
+    "geographic_range": "Equatorial rainforest belt of Central and West Africa (Congo Basin)",
+    "habitats": [
+      "Dense Lowland Evergreen Rainforest",
+      "Cloud Forest"
+    ],
+    "diet": "Forest duikers, giant pouched rats, monkeys, and tree pangolins",
+    "behavior": "Secretive terrestrial stalker; rarely observed directly; threatened by bushmeat hunting.",
+    "discovery_rarity": "Legendary",
+    "xp_reward": 340,
+    "image_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 74742,
+    "gbif_taxon_key": 2435285,
+    "similar_species": []
+  },
+  {
+    "id": "leptailurus-serval",
+    "common_name": "Serval",
+    "scientific_name": "Leptailurus serval",
+    "subfamily": "Felinae",
+    "lineage": "Caracal",
+    "genus": "Leptailurus",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "Has the longest legs and biggest ears relative to body size of any cat. These acoustic radar adaptations allow it to pinpoint burrowing rodents beneath savanna reeds and pounce in high parabolic arcs.",
+    "distinguishing_characteristics": [
+      "Disproportionately long, slender stilting legs",
+      "Enormous upright oval ears set closely together",
+      "Golden coat with bold black spots merging into neck bars",
+      "High arching vertical pounce with >50% hunting success"
+    ],
+    "size_and_weight": "Head-body: 59-100 cm; Shoulder height: 54-62 cm; Weight: 7-18 kg",
+    "geographic_range": "Sub-Saharan Africa, centered on well-watered savanna wetlands",
+    "habitats": [
+      "Reed Beds",
+      "Wet Savanna",
+      "Riparian Marshes"
+    ],
+    "diet": "Small rodents (vlei rats), birds, frogs, and lizards",
+    "behavior": "Auditory hunter; stalks through tall grass; solitary.",
+    "discovery_rarity": "Epic",
+    "xp_reward": 230,
+    "image_url": "https://images.unsplash.com/photo-1551969014-7d2c4cddf0b6?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1551969014-7d2c4cddf0b6?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Geran de Klerk on Unsplash",
+    "inaturalist_taxon_id": 42004,
+    "gbif_taxon_key": 2435288,
+    "similar_species": [
+      {
+        "slug": "caracal-caracal",
+        "common_name": "Caracal",
+        "differentiator": "Caracals have pointed tufted ears and uniform unspotted red coats."
+      }
+    ]
+  },
+  {
+    "id": "leopardus-pardalis",
+    "common_name": "Ocelot",
+    "scientific_name": "Leopardus pardalis",
+    "subfamily": "Felinae",
+    "lineage": "Ocelot",
+    "genus": "Leopardus",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "Medium-sized neotropical spotted cat ranging from southern Texas to northern Argentina. Marked with longitudinal chains of elongated rosettes and parallel cheek stripes.",
+    "distinguishing_characteristics": [
+      "Chains of dark-bordered elongated spots running in lines down the body",
+      "Prominent white spot ('ocellus') on back of each ear",
+      "Muscular body weighing 8-16 kg",
+      "Reversible ankle joints for tree climbing"
+    ],
+    "size_and_weight": "Head-body: 68-100 cm; Weight: 8-16 kg",
+    "geographic_range": "Southern Texas through Central America to Northern Argentina",
+    "habitats": [
+      "Tropical Rainforest",
+      "Thorn Scrub",
+      "Mangroves"
+    ],
+    "diet": "Opossums, armadillos, rodents, birds, and iguanas",
+    "behavior": "Nocturnal and solitary; maintains scent-sprayed pathways.",
+    "discovery_rarity": "Rare",
+    "xp_reward": 160,
+    "image_url": "https://images.unsplash.com/photo-1564349683136-77e08dba1ef6?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1564349683136-77e08dba1ef6?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Unsplash",
+    "inaturalist_taxon_id": 41989,
+    "gbif_taxon_key": 2435165,
+    "similar_species": [
+      {
+        "slug": "leopardus-wiedii",
+        "common_name": "Margay",
+        "differentiator": "Margays are half the size with proportionally giant eyes and longer tails."
+      }
+    ]
+  },
+  {
+    "id": "leopardus-wiedii",
+    "common_name": "Margay",
+    "scientific_name": "Leopardus wiedii",
+    "subfamily": "Felinae",
+    "lineage": "Ocelot",
+    "genus": "Leopardus",
+    "conservation_status": "NT",
+    "conservation_title": "Near Threatened (IUCN Red List)",
+    "is_wild": true,
+    "description": "The supreme acrobat of the cat family. Its hind ankles can rotate 180 degrees, allowing it to run vertically down tree trunks headfirst and hang from branches by a single foot.",
+    "distinguishing_characteristics": [
+      "Enormous nocturnal eyes adapted for rainforest canopy depth perception",
+      "Hind ankles rotate 180° inward for acrobatic tree navigation",
+      "Extremely long tail (70% of head-body length) for balance",
+      "Vocal mimicry of prey species (e.g. pied tamarin infants)"
+    ],
+    "size_and_weight": "Head-body: 48-79 cm; Tail: 33-51 cm; Weight: 2.6-4 kg",
+    "geographic_range": "Mexico through Central America to northern Argentina and Uruguay",
+    "habitats": [
+      "Dense Tropical Rainforest",
+      "Montane Cloud Forest"
+    ],
+    "diet": "Canopy rodents, squirrels, tree frogs, fruit, and small birds",
+    "behavior": "Strictly arboreal and nocturnal; lives life in high canopy branches.",
+    "discovery_rarity": "Rare",
+    "xp_reward": 200,
+    "image_url": "https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 41990,
+    "gbif_taxon_key": 2435166,
+    "similar_species": [
+      {
+        "slug": "leopardus-pardalis",
+        "common_name": "Ocelot",
+        "differentiator": "Ocelots are much heavier with smaller relative eye diameters."
+      }
+    ]
+  },
+  {
+    "id": "leopardus-jacobita",
+    "common_name": "Andean Mountain Cat",
+    "scientific_name": "Leopardus jacobita",
+    "subfamily": "Felinae",
+    "lineage": "Ocelot",
+    "genus": "Leopardus",
+    "conservation_status": "EN",
+    "conservation_title": "Endangered (Fewer than 2,500 mature individuals)",
+    "is_wild": true,
+    "description": "One of the rarest, most endangered felids in existence. Surviving only on barren, freezing Andean slopes above 3,500 meters, it preys almost exclusively on mountain viscachas.",
+    "distinguishing_characteristics": [
+      "Thick cylindrical tail with 6-9 dark brown rings, almost as long as body",
+      "Ash-grey plush coat with orange-brown vertical flank bars",
+      "Strictly restricted to high rocky scree in the Andes (>3,500 m)",
+      "Specialized predator of chinchillas and mountain viscachas"
+    ],
+    "size_and_weight": "Head-body: 57-64 cm; Tail: 41-48 cm; Weight: 4-5 kg",
+    "geographic_range": "High Andes of Peru, Bolivia, northern Chile, and northwest Argentina",
+    "habitats": [
+      "High Andean Puna",
+      "Rocky Scree",
+      "Cold Arid Steppe"
+    ],
+    "diet": "Mountain viscachas (Lagidium viscacia) and high-elevation rodents",
+    "behavior": "Solitary scree climber; counterbalances rapid leaps with thick tail.",
+    "discovery_rarity": "Legendary",
+    "xp_reward": 450,
+    "image_url": "https://images.unsplash.com/photo-1547721064-da6cfb341d50?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1547721064-da6cfb341d50?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 41987,
+    "gbif_taxon_key": 2435171,
+    "similar_species": []
+  },
+  {
+    "id": "leopardus-guigna",
+    "common_name": "Kodkod / Guiña",
+    "scientific_name": "Leopardus guigna",
+    "subfamily": "Felinae",
+    "lineage": "Ocelot",
+    "genus": "Leopardus",
+    "conservation_status": "VU",
+    "conservation_title": "Vulnerable (Smallest cat in the Americas)",
+    "is_wild": true,
+    "description": "The smallest wild cat in the Americas, weighing only 1.5-3 kg. Native to the temperate Valdivian rainforests of Chile and adjacent Argentina, it has a tiny face, bushy ringed tail, and black spots.",
+    "distinguishing_characteristics": [
+      "Smallest felid in the Western Hemisphere (1.5-3 kg)",
+      "Brownish-yellow coat densely covered in small round black spots",
+      "Bushy tail with 10-12 dark rings",
+      "High rate of melanism (pure black morphs common)"
+    ],
+    "size_and_weight": "Head-body: 37-51 cm; Weight: 1.5-3 kg",
+    "geographic_range": "Central and southern Chile, western border of Argentina",
+    "habitats": [
+      "Valdivian Temperate Rainforest",
+      "Southern Beech Forests"
+    ],
+    "diet": "Small forest rodents, thrushes, chucao tapaculos, lizards",
+    "behavior": "Agile climber; nests in tree hollows; threatened by forest fragmentation.",
+    "discovery_rarity": "Rare",
+    "xp_reward": 210,
+    "image_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 41986,
+    "gbif_taxon_key": 2435170,
+    "similar_species": []
+  },
+  {
+    "id": "leopardus-geoffroyi",
+    "common_name": "Geoffroy's Cat",
+    "scientific_name": "Leopardus geoffroyi",
+    "subfamily": "Felinae",
+    "lineage": "Ocelot",
+    "genus": "Leopardus",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "Native to the southern half of South America. About the size of a domestic cat, covered in countless small black spots, and renowned for frequently standing upright on its hind legs to survey surroundings.",
+    "distinguishing_characteristics": [
+      "Regularly stands upright on hind legs ('tripod stance') to peer over tall grass",
+      "Numerous small, clearly separated black spots over silvery-ochre coat",
+      "Excellent swimmer that readily enters wetlands for fish and frogs",
+      "Dark cheek lines and prominent white ear patches"
+    ],
+    "size_and_weight": "Head-body: 45-75 cm; Weight: 2-6 kg",
+    "geographic_range": "Pampas and Gran Chaco of Argentina, Bolivia, Brazil, Paraguay, Uruguay",
+    "habitats": [
+      "Pampas Grassland",
+      "Chaco Scrub",
+      "Savanna",
+      "Wetlands"
+    ],
+    "diet": "Hares, rodents, marsh birds, fish, and frogs",
+    "behavior": "Solitary and nocturnal; uses tree crotches as latrines and resting sites.",
+    "discovery_rarity": "Uncommon",
+    "xp_reward": 140,
+    "image_url": "https://images.unsplash.com/photo-1574870111867-089730e5a72b?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1574870111867-089730e5a72b?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 41985,
+    "gbif_taxon_key": 2435169,
+    "similar_species": []
+  },
+  {
+    "id": "lynx-lynx",
+    "common_name": "Eurasian Lynx",
+    "scientific_name": "Lynx lynx",
+    "subfamily": "Felinae",
+    "lineage": "Lynx",
+    "genus": "Lynx",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "The largest of the four lynx species and third largest European predator. Characterized by long black ear tufts, flared facial ruff, powerful hindquarters, and huge snowshoe paws.",
+    "distinguishing_characteristics": [
+      "Prominent 4 cm black ear tufts acting as acoustic aids",
+      "Short bobbed tail ending in a completely black tip",
+      "Wide facial ruff framing the jaw",
+      "Furred, webbed paws distributing weight across deep winter snow"
+    ],
+    "size_and_weight": "Head-body: 80-130 cm; Weight: 18-30 kg (males), 14-21 kg (females)",
+    "geographic_range": "Northern and Eastern Europe, Siberia, and Central Asia",
+    "habitats": [
+      "Boreal Taiga",
+      "Temperate Broadleaf Forest",
+      "Montane Woodlands"
+    ],
+    "diet": "Medium-sized ungulates (roe deer, chamois) and mountain hares",
+    "behavior": "Solitary stalker; exceptional sight and hearing; patrols vast home ranges.",
+    "discovery_rarity": "Epic",
+    "xp_reward": 220,
+    "image_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Zdeněk Macháček on Unsplash",
+    "inaturalist_taxon_id": 41976,
+    "gbif_taxon_key": 2435272,
+    "similar_species": [
+      {
+        "slug": "lynx-canadensis",
+        "common_name": "Canada Lynx",
+        "differentiator": "Canada lynx are smaller (8-14 kg) with silver coats and even bigger snowshoe paws."
+      }
+    ]
+  },
+  {
+    "id": "lynx-rufus",
+    "common_name": "Bobcat",
+    "scientific_name": "Lynx rufus",
+    "subfamily": "Felinae",
+    "lineage": "Lynx",
+    "genus": "Lynx",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "Adaptable North American predator ranging from southern Canada to central Mexico. Named for its stubby bobbed tail, which uniquely features a bright white underside at the tip.",
+    "distinguishing_characteristics": [
+      "Tail tip is black on dorsal side but clear bright white underneath",
+      "Reddish-brown to grey-brown pelage with dark bar markings on forelimbs",
+      "Moderate black ear tufts shorter than Canadian lynx",
+      "White eye circles and white ear spots"
+    ],
+    "size_and_weight": "Head-body: 65-105 cm; Weight: 6-15 kg",
+    "geographic_range": "North America from southern Canada throughout the US to central Mexico",
+    "habitats": [
+      "Chaparral",
+      "Forests",
+      "Semi-desert",
+      "Swamps"
+    ],
+    "diet": "Cottontail rabbits, hares, rodents, birds, and young ungulates",
+    "behavior": "Crepuscular and territorial; agile climber and swimmer.",
+    "discovery_rarity": "Uncommon",
+    "xp_reward": 110,
+    "image_url": "https://images.unsplash.com/photo-1574870111867-089730e5a72b?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1574870111867-089730e5a72b?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Ray Hennessy on Unsplash",
+    "inaturalist_taxon_id": 41979,
+    "gbif_taxon_key": 2435261,
+    "similar_species": [
+      {
+        "slug": "lynx-canadensis",
+        "common_name": "Canada Lynx",
+        "differentiator": "Canada lynx tails are solid black all around the tip with no white underside."
+      }
+    ]
+  },
+  {
+    "id": "lynx-canadensis",
+    "common_name": "Canada Lynx",
+    "scientific_name": "Lynx canadensis",
+    "subfamily": "Felinae",
+    "lineage": "Lynx",
+    "genus": "Lynx",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "Specialized boreal hunter whose population numbers fluctuate in tandem with the 10-year abundance cycle of snowshoe hares. Has enormous snowshoe paws with low foot loading.",
+    "distinguishing_characteristics": [
+      "Tail tip is entirely black on all sides",
+      "Huge fur-padded paws creating low pressure on powder snow",
+      "Very long ear tufts (>3.5 cm) and flared beard ruff",
+      "Silvery-grey thick winter fur with faint markings"
+    ],
+    "size_and_weight": "Head-body: 75-100 cm; Weight: 8-16 kg",
+    "geographic_range": "Boreal forests of Canada and Alaska, northern tier of US states",
+    "habitats": [
+      "Boreal Taiga",
+      "Subalpine Conifer Forest"
+    ],
+    "diet": "Snowshoe hares (75-97% of diet), grouse, and red squirrels",
+    "behavior": "Crepuscular and nocturnal; travels silently through deep snow.",
+    "discovery_rarity": "Rare",
+    "xp_reward": 190,
+    "image_url": "https://images.unsplash.com/photo-1582845512747-e42001c95638?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1582845512747-e42001c95638?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Tim Zänkert on Unsplash",
+    "inaturalist_taxon_id": 41977,
+    "gbif_taxon_key": 2435270,
+    "similar_species": []
+  },
+  {
+    "id": "lynx-pardinus",
+    "common_name": "Iberian Lynx",
+    "scientific_name": "Lynx pardinus",
+    "subfamily": "Felinae",
+    "lineage": "Lynx",
+    "genus": "Lynx",
+    "conservation_status": "VU",
+    "conservation_title": "Vulnerable (Conservation Triumph from <100 individuals)",
+    "is_wild": true,
+    "description": "The world's most threatened felid in 2002, now recovering in Spain and Portugal thanks to historic reintroduction initiatives. Features heavy leopard-like spots and a rabbit-dependent diet.",
+    "distinguishing_characteristics": [
+      "Intensely spotted coat with crisp, dark, leopard-like markings",
+      "Long pointed ear tufts and pronounced dual-pointed facial beard",
+      "Strict dietary dependence on European wild rabbits (>80%)",
+      "Endemic to Mediterranean maquis scrub of Spain and Portugal"
+    ],
+    "size_and_weight": "Head-body: 68-82 cm; Weight: 9-15 kg",
+    "geographic_range": "Iberian Peninsula (Andalusia, Castilla-La Mancha, Extremadura, Alentejo)",
+    "habitats": [
+      "Mediterranean Scrubland (Maquis)",
+      "Holm Oak Dehesa"
+    ],
+    "diet": "European wild rabbits (Oryctolagus cunicuniculus)",
+    "behavior": "Solitary territorial predator; European rewilding flagship.",
+    "discovery_rarity": "Legendary",
+    "xp_reward": 380,
+    "image_url": "https://images.unsplash.com/photo-1564349683136-77e08dba1ef6?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1564349683136-77e08dba1ef6?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Zdeněk Macháček on Unsplash",
+    "inaturalist_taxon_id": 41978,
+    "gbif_taxon_key": 2435266,
+    "similar_species": []
+  },
+  {
+    "id": "acinonyx-jubatus",
+    "common_name": "Cheetah",
+    "scientific_name": "Acinonyx jubatus",
+    "subfamily": "Felinae",
+    "lineage": "Puma",
+    "genus": "Acinonyx",
+    "conservation_status": "VU",
+    "conservation_title": "Vulnerable (IUCN Red List)",
+    "is_wild": true,
+    "description": "The fastest terrestrial mammal, capable of bursts up to 112 km/h (70 mph). Evolutionarily specialized with semi-retractile claws for traction, deep chest, and dark facial tear lines.",
+    "distinguishing_characteristics": [
+      "Black tear stripes from eye corners to mouth to reduce solar glare",
+      "Solid small round black spots over golden fur",
+      "Semi-retractile claws functioning like track sprint spikes",
+      "Deep chest and flexible spine enabling massive sprinting strides"
+    ],
+    "size_and_weight": "Head-body: 110-150 cm; Weight: 21-72 kg",
+    "geographic_range": "Eastern and Southern Africa; relict Asiatic cheetah population in Iran",
+    "habitats": [
+      "Savanna",
+      "Open Grassland",
+      "Arid Scrub",
+      "Semi-desert"
+    ],
+    "diet": "Medium ungulates (Thomson's gazelle, impala, springbok) and hares",
+    "behavior": "Diurnal hunter avoiding larger nocturnal carnivores; high-speed sprint chase.",
+    "discovery_rarity": "Epic",
+    "xp_reward": 250,
+    "image_url": "https://images.unsplash.com/photo-1534177616072-ef7dc120449d?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1534177616072-ef7dc120449d?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by David Clode on Unsplash",
+    "inaturalist_taxon_id": 41951,
+    "gbif_taxon_key": 2435133,
+    "similar_species": [
+      {
+        "slug": "panthera-pardus",
+        "common_name": "Leopard",
+        "differentiator": "Leopards are stocky with rosettes; cheetahs have solid dots and tear stripes."
+      }
+    ]
+  },
+  {
+    "id": "puma-concolor",
+    "common_name": "Cougar / Mountain Lion",
+    "scientific_name": "Puma concolor",
+    "subfamily": "Felinae",
+    "lineage": "Puma",
+    "genus": "Puma",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "Holds the record for the broadest latitudinal range of any native terrestrial mammal in the Western Hemisphere, stretching from northern Yukon to Patagonia. A large, solitary purring cat.",
+    "distinguishing_characteristics": [
+      "Tawny-beige unspotted coat with white muzzle ring and black whisker spots",
+      "Cylindrical tail with prominent dark black tip",
+      "Massive hind legs powering vertical leaps of up to 5.5 meters",
+      "Purring felid; lacks hyoid elasticity required to roar"
+    ],
+    "size_and_weight": "Head-body: 100-155 cm; Weight: 53-100 kg (males), 29-64 kg (females)",
+    "geographic_range": "Western Canada and US through Central and South America to Tierra del Fuego",
+    "habitats": [
+      "Montane Forests",
+      "Chaparral",
+      "Canyonlands",
+      "Grasslands"
+    ],
+    "diet": "Deer (mule deer, white-tailed deer), elk, bighorn sheep, and smaller mammals",
+    "behavior": "Solitary ambush hunter; caches kills under brush and snow.",
+    "discovery_rarity": "Rare",
+    "xp_reward": 180,
+    "image_url": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Colin Lloyd on Unsplash",
+    "inaturalist_taxon_id": 42007,
+    "gbif_taxon_key": 2435099,
+    "similar_species": [
+      {
+        "slug": "panthera-leo",
+        "common_name": "Lion",
+        "differentiator": "Lions have much larger skulls, male manes, pride lifestyle, and roar."
+      }
+    ]
+  },
+  {
+    "id": "herpailurus-yagouaroundi",
+    "common_name": "Jaguarundi",
+    "scientific_name": "Herpailurus yagouaroundi",
+    "subfamily": "Felinae",
+    "lineage": "Puma",
+    "genus": "Herpailurus",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "An unusual neotropical cat with an otter-like body, short limbs, small flattened head, and unspotted coat occurring in grey and red color morphs. Predominantly active by day.",
+    "distinguishing_characteristics": [
+      "Otter-like low elongated silhouette with short legs and long tail",
+      "Unspotted coat in two morphs: dark charcoal-grey and bright red-chestnut",
+      "Strictly diurnal (daytime hunter)",
+      "Unusual vocal repertoire of 13 vocalizations including bird-like chirps"
+    ],
+    "size_and_weight": "Head-body: 53-77 cm; Weight: 3.5-7 kg",
+    "geographic_range": "Central America and South America to central Argentina",
+    "habitats": [
+      "Dense Lowland Scrub",
+      "Forest Margins",
+      "Cerrado Savanna"
+    ],
+    "diet": "Ground birds (chachalacas), rodents, snakes, and lizards",
+    "behavior": "Diurnal ground stalker; moves through dense brush; highly vocal.",
+    "discovery_rarity": "Rare",
+    "xp_reward": 190,
+    "image_url": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 42008,
+    "gbif_taxon_key": 8802951,
+    "similar_species": []
+  },
+  {
+    "id": "otocolobus-manul",
+    "common_name": "Pallas's Cat / Manul",
+    "scientific_name": "Otocolobus manul",
+    "subfamily": "Felinae",
+    "lineage": "Leopard Cat",
+    "genus": "Otocolobus",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "Adapted to the high-altitude, freezing steppes of Central Asia. Possesses the densest fur of any felid, low-set ears allowing it to peer over rock edges without being seen, and unique round pupils.",
+    "distinguishing_characteristics": [
+      "Low-set, widely spaced rounded ears on the sides of the flat head",
+      "Circular pupils that contract into round dots rather than vertical slits",
+      "Plush, frosted silvery coat protecting against subzero temperatures",
+      "Short, heavily furred black-tipped tail"
+    ],
+    "size_and_weight": "Head-body: 46-65 cm; Weight: 2.5-4.5 kg",
+    "geographic_range": "Central Asian steppes (Mongolia, Tibetan Plateau, Kazakhstan, Kyrgyzstan)",
+    "habitats": [
+      "High-altitude Steppe",
+      "Rocky Scree",
+      "Cold Arid Plateaus"
+    ],
+    "diet": "Pikas, voles, small ground birds, and insects",
+    "behavior": "Ambush hunter in rocky outcrops; low profile stalking; solitary.",
+    "discovery_rarity": "Epic",
+    "xp_reward": 280,
+    "image_url": "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Mikhail Vasilyev on Unsplash",
+    "inaturalist_taxon_id": 41981,
+    "gbif_taxon_key": 2435017,
+    "similar_species": []
+  },
+  {
+    "id": "prionailurus-bengalensis",
+    "common_name": "Leopard Cat",
+    "scientific_name": "Prionailurus bengalensis",
+    "subfamily": "Felinae",
+    "lineage": "Leopard Cat",
+    "genus": "Prionailurus",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "Small spotted wild cat widespread across South, Southeast, and East Asia. Wild progenitor of the modern domestic Bengal cat breed. An agile climber and capable swimmer.",
+    "distinguishing_characteristics": [
+      "Two conspicuous dark facial stripes running up from forehead to nape",
+      "Yellow-ochre coat patterned with black rosettes and spots",
+      "White muzzle, chin, and throat",
+      "Adept swimmer and agile climber"
+    ],
+    "size_and_weight": "Head-body: 45-68 cm; Weight: 1.6-4 kg",
+    "geographic_range": "Widespread across Asia from India to China, Korea, and Russian Far East",
+    "habitats": [
+      "Tropical Rainforest",
+      "Temperate Forest",
+      "Agricultural Scrub"
+    ],
+    "diet": "Murid rodents, bats, small birds, reptiles, and amphibians",
+    "behavior": "Nocturnal and solitary; often frequents oil palm and agricultural boundaries.",
+    "discovery_rarity": "Uncommon",
+    "xp_reward": 130,
+    "image_url": "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 41997,
+    "gbif_taxon_key": 2435181,
+    "similar_species": []
+  },
+  {
+    "id": "prionailurus-viverrinus",
+    "common_name": "Fishing Cat",
+    "scientific_name": "Prionailurus viverrinus",
+    "subfamily": "Felinae",
+    "lineage": "Leopard Cat",
+    "genus": "Prionailurus",
+    "conservation_status": "VU",
+    "conservation_title": "Vulnerable (IUCN Red List)",
+    "is_wild": true,
+    "description": "A semiaquatic wetland specialist in South and Southeast Asia. Features partially webbed front paws, water-resistant double coat, and a habit of diving underwater to catch fish.",
+    "distinguishing_characteristics": [
+      "Partially webbed front paws powering aquatic propulsion",
+      "Dense water-resistant undercoat preventing skin saturation",
+      "Strong rudder-like muscular tail",
+      "Taps water surfaces to mimic insects and draw fish within strike reach"
+    ],
+    "size_and_weight": "Head-body: 65-85 cm; Weight: 5-16 kg",
+    "geographic_range": "Disjunct wetlands of South and Southeast Asia (India, Sri Lanka, Thailand)",
+    "habitats": [
+      "Mangrove Swamps",
+      "Oxbow Lakes",
+      "Marshlands",
+      "Tidal Creeks"
+    ],
+    "diet": "Fish (>75% of diet), crabs, water snakes, mollusks, and frogs",
+    "behavior": "Semiaquatic hunter; swims long distances; predominantly nocturnal.",
+    "discovery_rarity": "Rare",
+    "xp_reward": 210,
+    "image_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 41998,
+    "gbif_taxon_key": 2435188,
+    "similar_species": []
+  },
+  {
+    "id": "prionailurus-planiceps",
+    "common_name": "Flat-headed Cat",
+    "scientific_name": "Prionailurus planiceps",
+    "subfamily": "Felinae",
+    "lineage": "Leopard Cat",
+    "genus": "Prionailurus",
+    "conservation_status": "EN",
+    "conservation_title": "Endangered (Severe wetland habitat loss)",
+    "is_wild": true,
+    "description": "An extreme semiaquatic specialist of Sundaland peat swamps. Has an elongated skull with flattened forehead, close-set eyes, backward-pointing teeth, and non-retractile claws for gripping slippery fish.",
+    "distinguishing_characteristics": [
+      "Flattened elongated skull with eyes placed unusually forward and high",
+      "Claws are non-retractile, remaining extended to grip slippery aquatic prey",
+      "Sharp backward-pointing premolars tailored for gripping fish",
+      "Reddish-brown crown with silver-frosted underside"
+    ],
+    "size_and_weight": "Head-body: 41-50 cm; Weight: 1.5-2.5 kg",
+    "geographic_range": "Malay Peninsula, Borneo, and Sumatra",
+    "habitats": [
+      "Lowland Peat Swamp Forests",
+      "Freshwater Oxbows"
+    ],
+    "diet": "Fish, frogs, freshwater crustaceans, and rodents",
+    "behavior": "Semiaquatic hunter; dives into river banks; critically threatened by drainage.",
+    "discovery_rarity": "Legendary",
+    "xp_reward": 420,
+    "image_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 41999,
+    "gbif_taxon_key": 2435187,
+    "similar_species": []
+  },
+  {
+    "id": "prionailurus-rubiginosus",
+    "common_name": "Rusty-spotted Cat",
+    "scientific_name": "Prionailurus rubiginosus",
+    "subfamily": "Felinae",
+    "lineage": "Leopard Cat",
+    "genus": "Prionailurus",
+    "conservation_status": "NT",
+    "conservation_title": "Near Threatened (Smallest wild cat alongside black-footed cat)",
+    "is_wild": true,
+    "description": "Rivals the black-footed cat for the title of the world's smallest feline, weighing a mere 0.9 to 1.6 kg. Native to India, Sri Lanka, and Nepal, it features reddish rust-colored spots across its coat.",
+    "distinguishing_characteristics": [
+      "World's smallest wild cat (0.9-1.6 kg)",
+      "Rust-colored reddish-brown oval spots over greyish-fawn coat",
+      "Huge, piercing rounded eyes relative to face size",
+      "Remarkable agility leaping between tree branches despite diminutive stature"
+    ],
+    "size_and_weight": "Head-body: 35-48 cm; Weight: 0.9-1.6 kg",
+    "geographic_range": "India, Sri Lanka, and terrestrial foothills of Nepal",
+    "habitats": [
+      "Dry Deciduous Forest",
+      "Rocky Scrub",
+      "Agricultural Mosaic"
+    ],
+    "diet": "Small rodents, tree frogs, geckos, and large crickets",
+    "behavior": "Nocturnal and arboreal; extremely agile; elusive predator.",
+    "discovery_rarity": "Epic",
+    "xp_reward": 300,
+    "image_url": "https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 41996,
+    "gbif_taxon_key": 2435182,
+    "similar_species": []
+  },
+  {
+    "id": "felis-catus",
+    "common_name": "Domestic Cat",
+    "scientific_name": "Felis catus",
+    "subfamily": "Felinae",
+    "lineage": "Domestic Cat",
+    "genus": "Felis",
+    "conservation_status": "DOMESTIC",
+    "conservation_title": "Domesticated Species",
+    "is_wild": false,
+    "description": "The world's most widespread felid, living in companionship with humanity for over 9,500 years. Descended from the African wildcat, it displays hundreds of coat variations, colors, and breeds.",
+    "distinguishing_characteristics": [
+      "Immense coat diversity (tabby, solid, calico, colorpoint, longhair)",
+      "Slit pupils providing high dynamic range vision in shifting light",
+      "Righting reflex enabled by flexible spine with 30 vertebrae",
+      "Expressive vocalizations adapted specifically for human communication"
+    ],
+    "size_and_weight": "Head-body: 46-51 cm; Weight: 3.5-5.5 kg (large breeds up to 11 kg)",
+    "geographic_range": "Global distribution across human settlements on every continent",
+    "habitats": [
+      "Human Settlements",
+      "Homes",
+      "Farms",
+      "Urban Landscapes"
+    ],
+    "diet": "Commercial feline diet or small rodents, birds, and insects",
+    "behavior": "Crepuscular; social flexibility; territorial scent marking.",
+    "discovery_rarity": "Common",
+    "xp_reward": 50,
+    "image_url": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Mikhail Vasilyev on Unsplash",
+    "inaturalist_taxon_id": 118552,
+    "gbif_taxon_key": 2435035,
+    "similar_species": [
+      {
+        "slug": "felis-silvestris",
+        "common_name": "European Wildcat",
+        "differentiator": "European wildcats have thicker club-ended blunt tails with crisp black rings and broader jaws."
+      },
+      {
+        "slug": "felis-lybica",
+        "common_name": "African Wildcat",
+        "differentiator": "African wildcats have reddish-orange backs to their ears and slightly longer legs with an upright stance."
+      }
+    ]
+  },
+  {
+    "id": "felis-silvestris",
+    "common_name": "European Wildcat",
+    "scientific_name": "Felis silvestris",
+    "subfamily": "Felinae",
+    "lineage": "Domestic Cat",
+    "genus": "Felis",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "Inhabits broadleaf and mixed forests across Europe. Characterized by its dense grey-brown coat, broad skull, and a bushy, club-shaped tail with crisp black rings and a blunt black tip.",
+    "distinguishing_characteristics": [
+      "Thick, blunt-ended cylindrical tail with 3-5 distinct black rings",
+      "Muted grey-brown coat without white mittens or patches",
+      "Significantly wider skull and brain volume than domestic cats",
+      "Secretive woodland habit avoiding human settlements"
+    ],
+    "size_and_weight": "Head-body: 45-80 cm; Weight: 3-8 kg",
+    "geographic_range": "Central, Western, and Southern Europe, Caucasus, and Scottish Highlands",
+    "habitats": [
+      "Deciduous & Mixed Forests",
+      "Mediterranean Maquis"
+    ],
+    "diet": "Small rodents (voles, mice) and European rabbits",
+    "behavior": "Nocturnal and solitary; threatened by hybridization with feral domestic cats.",
+    "discovery_rarity": "Rare",
+    "xp_reward": 175,
+    "image_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Ludemeula Fernandes on Unsplash",
+    "inaturalist_taxon_id": 41982,
+    "gbif_taxon_key": 2435041,
+    "similar_species": [
+      {
+        "slug": "felis-catus",
+        "common_name": "Domestic Cat",
+        "differentiator": "Domestic tabbies have pointed, tapering tails, thinner coats, and often white markings."
+      }
+    ]
+  },
+  {
+    "id": "felis-lybica",
+    "common_name": "African Wildcat",
+    "scientific_name": "Felis lybica",
+    "subfamily": "Felinae",
+    "lineage": "Domestic Cat",
+    "genus": "Felis",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "The biological direct ancestor of all domestic cats. Native to Africa, the Arabian Peninsula, and the Middle East, it is distinguished by rich reddish-ochre coloring on the back of its ears.",
+    "distinguishing_characteristics": [
+      "Conspicuous reddish-ochre color on the back of both ears",
+      "Tapering tail with 2-3 dark rings and a black tip",
+      "Longer legs giving an upright, dignified standing and sitting posture",
+      "Sandy-buff camouflage matching arid savannas"
+    ],
+    "size_and_weight": "Head-body: 45-75 cm; Weight: 3-6.5 kg",
+    "geographic_range": "Throughout Africa except central rainforests, Arabian Peninsula, Middle East",
+    "habitats": [
+      "Savanna",
+      "Semi-desert",
+      "Scrubland",
+      "Open Woodland"
+    ],
+    "diet": "Rodents, birds, small reptiles, and scorpions",
+    "behavior": "Nocturnal and solitary; acute hearing and sudden pounces.",
+    "discovery_rarity": "Uncommon",
+    "xp_reward": 120,
+    "image_url": "https://images.unsplash.com/photo-1561948955-570b270e7c36?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1561948955-570b270e7c36?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Photo by Paul Hanaoka on Unsplash",
+    "inaturalist_taxon_id": 1059954,
+    "gbif_taxon_key": 10839886,
+    "similar_species": []
+  },
+  {
+    "id": "felis-chaus",
+    "common_name": "Jungle Cat / Reed Cat",
+    "scientific_name": "Felis chaus",
+    "subfamily": "Felinae",
+    "lineage": "Domestic Cat",
+    "genus": "Felis",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "A large, long-legged member of the genus Felis inhabiting wetlands and reed beds from Egypt across South Asia to southern China. Has small black ear tufts and an unspotted sandy coat.",
+    "distinguishing_characteristics": [
+      "Small black hair tufts (~1.5 cm) on the tips of the ears",
+      "Long legs and relatively short tail (roughly one-third of body length)",
+      "Uniform sandy-grey to yellowish-brown unspotted coat in adults",
+      "High affinity for riverine reed beds and swamp edges"
+    ],
+    "size_and_weight": "Head-body: 59-76 cm; Weight: 4-16 kg",
+    "geographic_range": "Nile Delta, Middle East, Central Asia, Indian Subcontinent, Southeast Asia",
+    "habitats": [
+      "Reed Marshes",
+      "Riverine Scrub",
+      "Swamps",
+      "Agricultural Ditches"
+    ],
+    "diet": "Rodents, waterbirds, hares, frogs, and fish",
+    "behavior": "Diurnal and crepuscular; stalks along water channels; jumps to catch flushed birds.",
+    "discovery_rarity": "Uncommon",
+    "xp_reward": 130,
+    "image_url": "https://images.unsplash.com/photo-1561948955-570b270e7c36?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1561948955-570b270e7c36?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 41980,
+    "gbif_taxon_key": 2435040,
+    "similar_species": [
+      {
+        "slug": "caracal-caracal",
+        "common_name": "Caracal",
+        "differentiator": "Caracals are larger, deeper reddish in color, with much longer (up to 5 cm) ear tufts."
+      }
+    ]
+  },
+  {
+    "id": "felis-margarita",
+    "common_name": "Sand Cat",
+    "scientific_name": "Felis margarita",
+    "subfamily": "Felinae",
+    "lineage": "Domestic Cat",
+    "genus": "Felis",
+    "conservation_status": "LC",
+    "conservation_title": "Least Concern (IUCN Red List)",
+    "is_wild": true,
+    "description": "The only true desert-specialist felid, inhabiting hyper-arid dune expanses of the Sahara and Arabian deserts. Its paw pads are thickly carpeted with fur to prevent heat burns and leave zero tracks.",
+    "distinguishing_characteristics": [
+      "Paws densely covered in thick dark fur, leaving no discernible tracks in loose sand",
+      "Broad flat head with large, wide-set triangular ears detecting underground sound",
+      "Sandy-buff coloration providing total camouflage among desert dunes",
+      "Can survive indefinitely without open drinking water, deriving moisture from prey"
+    ],
+    "size_and_weight": "Head-body: 39-52 cm; Weight: 1.5-3.4 kg",
+    "geographic_range": "Sahara Desert of North Africa, Arabian Peninsula, Karakum and Kyzylkum deserts",
+    "habitats": [
+      "Sand Dunes",
+      "Rocky Desert Pavements",
+      "Dry Oases"
+    ],
+    "diet": "Desert rodents (gerbils, spiny mice), desert lizards, vipers, and insects",
+    "behavior": "Nocturnal desert specialist; rests in excavated burrows by day; crouched low gait.",
+    "discovery_rarity": "Rare",
+    "xp_reward": 200,
+    "image_url": "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Unsplash",
+    "inaturalist_taxon_id": 41983,
+    "gbif_taxon_key": 2435039,
+    "similar_species": []
+  },
+  {
+    "id": "felis-nigripes",
+    "common_name": "Black-footed Cat",
+    "scientific_name": "Felis nigripes",
+    "subfamily": "Felinae",
+    "lineage": "Domestic Cat",
+    "genus": "Felis",
+    "conservation_status": "VU",
+    "conservation_title": "Vulnerable (The most lethal feline hunter on Earth)",
+    "is_wild": true,
+    "description": "Africa's smallest wild cat and biologically the world's deadliest feline with an unprecedented 60% hunting success rate. Makes a kill every 50 minutes throughout the night to sustain its high metabolism.",
+    "distinguishing_characteristics": [
+      "Soles of paws and pads are entirely pitch black",
+      "Tawny coat densely patterned with bold black spots and distinct neck rings",
+      "World's highest feline hunting success rate (60%)",
+      "Consumes 250 g of meat every night (one-sixth of its total body mass)"
+    ],
+    "size_and_weight": "Head-body: 36-43 cm; Weight: 1.0-2.4 kg",
+    "geographic_range": "Arid zones of Southern Africa (South Africa, Namibia, Botswana)",
+    "habitats": [
+      "Short Grasslands",
+      "Karoo Scrubland",
+      "Kalahari Sandveld"
+    ],
+    "diet": "Small mammals (elephant shrews, mice), small ground birds, and insects",
+    "behavior": "Nocturnal sprinter and stalker; walks up to 20 km in a single night searching burrows.",
+    "discovery_rarity": "Epic",
+    "xp_reward": 260,
+    "image_url": "https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 41984,
+    "gbif_taxon_key": 2435043,
+    "similar_species": []
+  },
+  {
+    "id": "felis-bieti",
+    "common_name": "Chinese Mountain Cat",
+    "scientific_name": "Felis bieti",
+    "subfamily": "Felinae",
+    "lineage": "Domestic Cat",
+    "genus": "Felis",
+    "conservation_status": "VU",
+    "conservation_title": "Vulnerable (Endemic to the Tibetan Plateau)",
+    "is_wild": true,
+    "description": "The only cat species endemic entirely to China, restricted to the northeastern edge of the Tibetan Plateau. Has dense sandy-grey fur, small ear tufts, and a ringed tail with a dark tip.",
+    "distinguishing_characteristics": [
+      "Endemic strictly to the high-elevation Qinghai-Tibetan Plateau (2,800-4,100 m)",
+      "Thick sandy-grey winter coat with faint horizontal stripes",
+      "Small dark-red ear tufts (~2 cm)",
+      "Specialized predator of plateau zokors and pikas"
+    ],
+    "size_and_weight": "Head-body: 68-84 cm; Weight: 5.5-9 kg",
+    "geographic_range": "Northeastern Tibetan Plateau in Qinghai and Sichuan, China",
+    "habitats": [
+      "Alpine Meadows",
+      "High-altitude Shrubland",
+      "Plateau Steppe"
+    ],
+    "diet": "Plateau zokors (subterranean rodents), pikas, and birds",
+    "behavior": "Nocturnal and crepuscular; listens at zokor burrow mounds before excavating.",
+    "discovery_rarity": "Legendary",
+    "xp_reward": 400,
+    "image_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=1200&q=80",
+    "thumbnail_url": "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=400&q=80",
+    "image_attribution": "Creative Commons / Wikimedia",
+    "inaturalist_taxon_id": 41975,
+    "gbif_taxon_key": 2435038,
+    "similar_species": []
+  }
+]
