@@ -8,7 +8,9 @@ import {
   ExternalLink,
   Sparkles,
   Info,
-  CheckCircle2
+  CheckCircle2,
+  PawPrint,
+  Cat
 } from 'lucide-react';
 import { SpeciesDetail } from '../types';
 import { api } from '../services/api';
@@ -49,7 +51,7 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
     return (
       <div className="py-24 text-center text-felid-muted space-y-3">
         <div className="w-8 h-8 rounded-full border-2 border-felid-accent border-t-transparent animate-spin mx-auto" />
-        <p className="text-xs font-mono">Loading species profile from curated taxonomy...</p>
+        <p className="text-xs font-mono">Loading feline profile from curated taxonomy...</p>
       </div>
     );
   }
@@ -57,10 +59,10 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
   if (errorMsg || !species) {
     return (
       <div className="py-20 text-center space-y-4">
-        <p className="text-red-400 text-sm">{errorMsg || 'Species not found.'}</p>
+        <p className="text-pink-400 text-sm">{errorMsg || 'Species not found.'}</p>
         <button
           onClick={onBack}
-          className="px-4 py-2 rounded-lg bg-felid-surface hover:bg-felid-surface-hover text-felid-ivory text-xs border border-felid-border inline-flex items-center gap-2"
+          className="px-4 py-2 rounded-xl bg-felid-surface hover:bg-felid-surface-hover text-felid-ivory text-xs border border-felid-border inline-flex items-center gap-2"
         >
           <ArrowLeft className="w-4 h-4" /> Return to Atlas
         </button>
@@ -90,20 +92,20 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
             alt={species.common_name}
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-felid-surface via-black/40 to-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-felid-surface via-black/45 to-black/25" />
 
           {/* Top Attribution & Discovery Badge */}
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2">
-            <span className="px-2.5 py-1 rounded-md bg-black/70 backdrop-blur-sm text-[11px] text-felid-muted border border-white/10">
+            <span className="px-3 py-1 rounded-lg bg-black/75 backdrop-blur-sm text-[11px] text-felid-muted border border-white/10">
               {species.image_attribution}
             </span>
 
             {discovered ? (
-              <span className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-felid-accent text-black shadow-forest-glow inline-flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Discovered in Journal
+              <span className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-felid-accent text-black shadow-pink-glow inline-flex items-center gap-1.5">
+                <PawPrint className="w-3.5 h-3.5" /> Logged in Journal
               </span>
             ) : (
-              <span className="px-3 py-1 rounded-full text-xs bg-black/70 backdrop-blur-sm text-felid-accent border border-felid-accent/40 font-mono">
+              <span className="px-3 py-1 rounded-full text-xs bg-black/75 backdrop-blur-sm text-felid-accent border border-felid-accent/40 font-mono">
                 +{species.xp_reward} Discovery XP
               </span>
             )}
@@ -113,10 +115,10 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
           <div className="absolute bottom-6 left-6 right-6 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <ConservationBadge status={species.conservation_status} showTitle />
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-felid-pine/80 border border-felid-border text-felid-accent">
+              <span className="px-3 py-0.5 rounded-full text-xs font-mono bg-felid-pine/90 border border-felid-border text-felid-accent">
                 {species.subfamily} · {species.genus}
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-felid-pine/80 border border-felid-border text-felid-muted">
+              <span className="px-3 py-0.5 rounded-full text-xs font-mono bg-felid-pine/90 border border-felid-border text-felid-muted">
                 Lineage: {species.lineage}
               </span>
             </div>
@@ -134,7 +136,7 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
         <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-felid-border/60 bg-felid-pine/70 border-t border-felid-border p-4 text-xs">
           <div className="p-3">
             <span className="text-felid-muted block font-mono uppercase text-[10px] mb-1">
-              Rarity Rating
+              Rarity Tier
             </span>
             <span className="font-display font-semibold text-felid-accent text-sm">
               {species.discovery_rarity}
@@ -142,7 +144,7 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
           </div>
           <div className="p-3">
             <span className="text-felid-muted block font-mono uppercase text-[10px] mb-1">
-              Size & Mass
+              Body Mass & Length
             </span>
             <span className="font-medium text-felid-ivory leading-tight block">
               {species.size_and_weight || 'Not documented'}
@@ -150,10 +152,10 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
           </div>
           <div className="p-3">
             <span className="text-felid-muted block font-mono uppercase text-[10px] mb-1">
-              Ecology
+              Feline Ecology
             </span>
             <span className="font-medium text-felid-ivory block">
-              {species.is_wild ? 'Wild Felid Species' : 'Domestic Companion'}
+              {species.is_wild ? 'Wild Felid Species' : 'Domestic Cat Companion'}
             </span>
           </div>
         </div>
@@ -164,29 +166,29 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
         {/* Left Column (2 Cols): Overview, Characteristics, Behavior */}
         <div className="lg:col-span-2 space-y-8">
           {/* Natural History Overview */}
-          <section className="rounded-2xl border border-felid-border bg-felid-surface/60 p-6 space-y-3">
+          <section className="rounded-3xl border border-felid-border bg-felid-surface/60 p-6 space-y-3">
             <h2 className="font-display font-bold text-lg text-felid-ivory flex items-center gap-2">
-              <Info className="w-4 h-4 text-felid-accent" />
-              Natural History & Physical Description
+              <Cat className="w-4 h-4 text-felid-accent" />
+              Physical Characteristics & Description
             </h2>
             <p className="text-sm text-felid-ivory-dim leading-relaxed">
               {species.description}
             </p>
           </section>
 
-          {/* Diagnostic Field Identifiers */}
-          <section className="rounded-2xl border border-felid-border bg-felid-surface/60 p-6 space-y-4">
+          {/* Diagnostic Field Identifiers with Pink Bullets */}
+          <section className="rounded-3xl border border-felid-border bg-felid-surface/60 p-6 space-y-4">
             <h2 className="font-display font-bold text-lg text-felid-ivory flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-felid-accent" />
-              Distinguishing Diagnostic Characteristics
+              <PawPrint className="w-4 h-4 text-felid-accent" />
+              Diagnostic Visual Identifiers
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {species.distinguishing_characteristics.map((trait, idx) => (
                 <div
                   key={idx}
-                  className="p-3 rounded-xl bg-felid-pine/60 border border-felid-border/60 flex items-start gap-2.5 text-xs text-felid-ivory-dim"
+                  className="p-3 rounded-2xl bg-felid-pine/60 border border-felid-border/60 flex items-start gap-2.5 text-xs text-felid-ivory-dim"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-felid-accent shrink-0 mt-1.5" />
+                  <span className="w-2 h-2 rounded-full bg-felid-accent shrink-0 mt-1.5 shadow-pink-glow" />
                   <span className="leading-relaxed">{trait}</span>
                 </div>
               ))}
@@ -194,10 +196,10 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
           </section>
 
           {/* Diet and Hunting Behaviour */}
-          <section className="rounded-2xl border border-felid-border bg-felid-surface/60 p-6 space-y-4">
+          <section className="rounded-3xl border border-felid-border bg-felid-surface/60 p-6 space-y-4">
             <h2 className="font-display font-bold text-lg text-felid-ivory flex items-center gap-2">
               <Utensils className="w-4 h-4 text-felid-accent" />
-              Dietary Ecology & Hunting Strategy
+              Dietary Ecology & Hunting Behavior
             </h2>
             <div className="space-y-3 text-sm text-felid-ivory-dim leading-relaxed">
               <p>
@@ -213,16 +215,16 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
 
           {/* Similar Species Comparison */}
           {species.similar_species.length > 0 && (
-            <section className="rounded-2xl border border-felid-border bg-felid-surface/60 p-6 space-y-4">
+            <section className="rounded-3xl border border-felid-border bg-felid-surface/60 p-6 space-y-4">
               <h2 className="font-display font-bold text-lg text-felid-ivory flex items-center gap-2">
                 <Scale className="w-4 h-4 text-felid-accent" />
-                Sister Taxa & Visually Similar Species
+                Sister Taxa & Lookalike Cats
               </h2>
               <div className="space-y-3">
                 {species.similar_species.map((sim, i) => (
                   <div
                     key={i}
-                    className="p-4 rounded-xl bg-felid-pine/60 border border-felid-border/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                    className="p-4 rounded-2xl bg-felid-pine/60 border border-felid-border/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
                   >
                     <div>
                       <h4 className="font-display font-bold text-sm text-felid-ivory">
@@ -235,7 +237,7 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
                     </div>
                     <button
                       onClick={() => onSelectSpecies(sim.slug)}
-                      className="shrink-0 px-3 py-1.5 rounded-lg bg-felid-surface hover:bg-felid-border text-felid-ivory text-xs font-medium border border-felid-border transition-colors"
+                      className="shrink-0 px-3.5 py-1.5 rounded-xl bg-felid-surface hover:bg-felid-surface-hover text-felid-ivory text-xs font-medium border border-felid-border transition-colors hover:border-felid-accent"
                     >
                       Compare Profile
                     </button>
@@ -249,7 +251,7 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
         {/* Right Column (1 Col): Range, Habitat, External Taxonomy Links */}
         <div className="space-y-6">
           {/* Geographic Range */}
-          <div className="rounded-2xl border border-felid-border bg-felid-surface/60 p-6 space-y-3">
+          <div className="rounded-3xl border border-felid-border bg-felid-surface/60 p-6 space-y-3">
             <h3 className="font-display font-bold text-base text-felid-ivory flex items-center gap-2">
               <MapPin className="w-4 h-4 text-felid-accent" />
               Geographic Range
@@ -260,16 +262,16 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
           </div>
 
           {/* Habitat Biomes */}
-          <div className="rounded-2xl border border-felid-border bg-felid-surface/60 p-6 space-y-3">
+          <div className="rounded-3xl border border-felid-border bg-felid-surface/60 p-6 space-y-3">
             <h3 className="font-display font-bold text-base text-felid-ivory flex items-center gap-2">
               <Layers className="w-4 h-4 text-felid-accent" />
-              Native Biomes & Habitats
+              Natural Habitats & Biomes
             </h3>
             <div className="flex flex-wrap gap-2">
               {species.habitats.map((h, i) => (
                 <span
                   key={i}
-                  className="px-2.5 py-1 rounded-lg text-xs bg-felid-pine border border-felid-border text-felid-muted"
+                  className="px-2.5 py-1 rounded-xl text-xs bg-felid-pine border border-felid-border text-felid-muted"
                 >
                   {h}
                 </span>
@@ -278,7 +280,7 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
           </div>
 
           {/* External Taxonomic Authority Links */}
-          <div className="rounded-2xl border border-felid-border bg-felid-surface/60 p-6 space-y-3">
+          <div className="rounded-3xl border border-felid-border bg-felid-surface/60 p-6 space-y-3">
             <h3 className="font-display font-bold text-base text-felid-ivory flex items-center gap-2">
               <ExternalLink className="w-4 h-4 text-felid-accent" />
               Taxonomic Verification
@@ -290,7 +292,7 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
                     href={`https://www.inaturalist.org/taxa/${species.inaturalist_taxon_id}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center justify-between p-2 rounded-lg bg-felid-pine hover:bg-felid-border text-felid-ivory transition-colors border border-felid-border"
+                    className="flex items-center justify-between p-2.5 rounded-xl bg-felid-pine hover:bg-felid-surface-hover text-felid-ivory transition-colors border border-felid-border hover:border-felid-accent/50"
                   >
                     <span>iNaturalist Taxon #{species.inaturalist_taxon_id}</span>
                     <ExternalLink className="w-3 h-3 text-felid-accent" />
@@ -303,7 +305,7 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
                     href={`https://www.gbif.org/species/${species.gbif_taxon_key}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center justify-between p-2 rounded-lg bg-felid-pine hover:bg-felid-border text-felid-ivory transition-colors border border-felid-border"
+                    className="flex items-center justify-between p-2.5 rounded-xl bg-felid-pine hover:bg-felid-surface-hover text-felid-ivory transition-colors border border-felid-border hover:border-felid-accent/50"
                   >
                     <span>GBIF Key #{species.gbif_taxon_key}</span>
                     <ExternalLink className="w-3 h-3 text-felid-accent" />
@@ -315,7 +317,7 @@ export const SpeciesDetailPage: React.FC<Props> = ({ slug, onBack, onSelectSpeci
                   href={`https://www.iucnredlist.org/search?query=${encodeURIComponent(species.scientific_name)}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-between p-2 rounded-lg bg-felid-pine hover:bg-felid-border text-felid-ivory transition-colors border border-felid-border"
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-felid-pine hover:bg-felid-surface-hover text-felid-ivory transition-colors border border-felid-border hover:border-felid-accent/50"
                 >
                   <span>IUCN Red List Assessment</span>
                   <ExternalLink className="w-3 h-3 text-felid-accent" />

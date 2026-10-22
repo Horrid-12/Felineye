@@ -8,7 +8,7 @@ interface Props {
 
 export const ObservationCard: React.FC<Props> = ({ observation }) => {
   return (
-    <div className="rounded-2xl border border-felid-border bg-felid-surface/60 hover:bg-felid-surface hover:border-felid-border-light transition-all overflow-hidden flex flex-col shadow-sm">
+    <div className="rounded-3xl border border-felid-border bg-felid-surface/60 hover:bg-felid-surface hover:border-felid-accent/50 transition-all overflow-hidden flex flex-col shadow-sm hover:shadow-pink-glow">
       {/* Observation Photo */}
       <div className="relative h-48 w-full bg-felid-pine overflow-hidden">
         {observation.image_url ? (
@@ -27,14 +27,14 @@ export const ObservationCard: React.FC<Props> = ({ observation }) => {
 
         {/* Security badge: coordinates obscured */}
         {observation.coordinates_obscured && (
-          <div className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-sm border border-emerald-500/40 text-[10px] text-emerald-300 font-medium inline-flex items-center gap-1">
+          <div className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-black/80 backdrop-blur-sm border border-emerald-500/40 text-[10px] text-emerald-300 font-medium inline-flex items-center gap-1">
             <ShieldCheck className="w-3 h-3 text-emerald-400" />
             <span>Generalized Coordinates</span>
           </div>
         )}
 
-        {/* Quality Grade */}
-        <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-sm text-[10px] font-mono text-amber-300 border border-amber-500/30 uppercase">
+        {/* Quality Grade in Rose Pink */}
+        <div className="absolute top-3 right-3 px-2.5 py-0.5 rounded-full bg-black/80 backdrop-blur-sm text-[10px] font-mono text-felid-accent border border-felid-accent/30 uppercase">
           {observation.quality_grade}
         </div>
       </div>

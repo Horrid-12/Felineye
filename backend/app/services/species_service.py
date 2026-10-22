@@ -222,42 +222,42 @@ class SpeciesService:
         ranks = [
             RankTier(
                 rank=1,
-                title="Novice Observer",
+                title="Kitten Scout",
                 min_xp=0,
                 badge_icon="Eye",
-                description="Beginning your journey into the world of Felidae."
+                description="Beginning your journey into the world of cats."
             ),
             RankTier(
                 rank=2,
-                title="Field Tracker",
+                title="Curious Prowler",
                 min_xp=300,
                 badge_icon="Footprints",
                 description="Skilled at identifying common and domestic felids."
             ),
             RankTier(
                 rank=3,
-                title="Wildlife Scout",
+                title="Cat Whisperer",
                 min_xp=800,
                 badge_icon="Compass",
-                description="Recognizing wild lineages, specialized habitats, and hunting patterns."
+                description="Recognizing wild lineages and specialized feline habitats."
             ),
             RankTier(
                 rank=4,
-                title="Savanna Naturalist",
+                title="Velvet Stalker",
                 min_xp=1600,
                 badge_icon="Sunrise",
-                description="Mastering wild cats of the African and Asian open biomes."
+                description="Mastering wild cats of the open biomes and forests."
             ),
             RankTier(
                 rank=5,
-                title="Apex Biologist",
+                title="Panthera Master",
                 min_xp=2800,
                 badge_icon="Flame",
-                description="Experienced researcher tracking apex Panthera and elusive predators."
+                description="Tracking apex big cats and elusive predators."
             ),
             RankTier(
                 rank=6,
-                title="Legendary Warden",
+                title="Supreme Felid Sovereign",
                 min_xp=4500,
                 badge_icon="Crown",
                 description="Master of the Felidae kingdom, having documented the rarest cats on Earth."

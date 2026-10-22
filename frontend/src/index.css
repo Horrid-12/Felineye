@@ -4,8 +4,8 @@
 
 @layer base {
   body {
-    background-color: #070c09;
-    color: #f6f4ee;
+    background-color: #0c0a0e;
+    color: #fcf8fa;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }
 
@@ -15,34 +15,34 @@
   }
 }
 
-/* Custom delicate scrollbar */
+/* Custom delicate pink-gray scrollbar */
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a110c;
+  background: #0f0d13;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e3025;
+  background: #2b2533;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2f4939;
+  background: #3f364a;
 }
 
-/* AI Scanner line animation */
+/* AI Laser & Whiskers Scanner line animation */
 @keyframes scanline {
   0% {
     top: 0%;
-    opacity: 0.9;
+    opacity: 0.85;
   }
   50% {
     opacity: 1;
   }
   100% {
     top: 100%;
-    opacity: 0.9;
+    opacity: 0.85;
   }
 }
 
@@ -50,13 +50,13 @@
   animation: scanline 2.2s ease-in-out infinite alternate;
 }
 
-/* Shimmer pulse for scanning status */
+/* Pink glow pulse */
 @keyframes pulseGlow {
   0%, 100% {
-    box-shadow: 0 0 15px rgba(229, 169, 59, 0.2);
+    box-shadow: 0 0 15px rgba(244, 114, 182, 0.2);
   }
   50% {
-    box-shadow: 0 0 30px rgba(229, 169, 59, 0.5);
+    box-shadow: 0 0 32px rgba(244, 114, 182, 0.45);
   }
 }
 

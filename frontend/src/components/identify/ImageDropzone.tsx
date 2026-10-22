@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { UploadCloud, Camera, X, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import { Camera, X, Image as ImageIcon, AlertCircle, PawPrint, Cat } from 'lucide-react';
 
 interface Props {
   onImageSelected: (file: File) => void;
@@ -27,7 +27,7 @@ export const ImageDropzone: React.FC<Props> = ({
     setValidationError(null);
 
     if (!ALLOWED_TYPES.includes(file.type)) {
-      setValidationError('Please select a valid JPEG, PNG, or WebP image file.');
+      setValidationError('Please select a valid feline photograph in JPEG, PNG, or WebP format.');
       return;
     }
 
@@ -84,8 +84,8 @@ export const ImageDropzone: React.FC<Props> = ({
       />
 
       {validationError && (
-        <div className="mb-4 p-3 rounded-lg bg-red-950/60 border border-red-800 text-red-200 text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+        <div className="mb-4 p-3.5 rounded-xl bg-pink-950/40 border border-pink-700/60 text-pink-200 text-xs flex items-center gap-2.5">
+          <AlertCircle className="w-4 h-4 shrink-0 text-felid-accent" />
           <span>{validationError}</span>
         </div>
       )}
@@ -99,28 +99,30 @@ export const ImageDropzone: React.FC<Props> = ({
           onDragLeave={() => setIsDragOver(false)}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center transition-all cursor-pointer ${
+          className={`relative border-2 border-dashed rounded-3xl p-8 sm:p-12 text-center transition-all cursor-pointer ${
             isDragOver
-              ? 'border-felid-accent bg-felid-accent/5 scale-[0.99]'
-              : 'border-felid-border hover:border-felid-border-light bg-felid-surface/50 hover:bg-felid-surface/80'
+              ? 'border-felid-accent bg-felid-accent/10 shadow-pink-glow scale-[0.99]'
+              : 'border-felid-border hover:border-felid-accent/60 bg-felid-surface/50 hover:bg-felid-surface/80 shadow-sm'
           }`}
         >
-          <div className="w-16 h-16 rounded-2xl bg-felid-surface border border-felid-border-light mx-auto flex items-center justify-center text-felid-accent mb-4 shadow-sm group-hover:scale-105 transition-transform">
-            <UploadCloud className="w-8 h-8" />
+          {/* Feline Paw Container Icon */}
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-felid-surface to-felid-pine border border-felid-border-light mx-auto flex items-center justify-center text-felid-accent mb-4 shadow-sm group-hover:scale-105 transition-transform">
+            <PawPrint className="w-8 h-8" />
           </div>
 
-          <h3 className="font-display font-semibold text-lg text-felid-ivory mb-2">
-            Upload a Feline Photograph
+          <h3 className="font-display font-semibold text-lg text-felid-ivory mb-2 flex items-center justify-center gap-2">
+            <span>Drop Your Feline Photo Here</span>
+            <Cat className="w-4 h-4 text-felid-accent" />
           </h3>
-          <p className="text-sm text-felid-muted max-w-md mx-auto mb-6 leading-relaxed">
-            Drag and drop your wildlife photo here, or browse from your device. Supports domestic cats and wild felids.
+          <p className="text-xs sm:text-sm text-felid-muted max-w-md mx-auto mb-6 leading-relaxed">
+            Drag and drop a photo of your house cat, kitten, or any wild felid. The AI model will scan its facial contours, ears, and coat patterns.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="px-4 py-2 rounded-lg bg-felid-surface border border-felid-border hover:border-felid-accent text-felid-ivory text-xs font-medium inline-flex items-center gap-2 transition-colors"
+              className="px-4 py-2 rounded-xl bg-felid-surface border border-felid-border hover:border-felid-accent text-felid-ivory text-xs font-medium inline-flex items-center gap-2 transition-all hover:shadow-pink-glow"
             >
               <ImageIcon className="w-4 h-4 text-felid-accent" />
               Choose File
@@ -128,25 +130,25 @@ export const ImageDropzone: React.FC<Props> = ({
             <button
               type="button"
               onClick={() => cameraInputRef.current?.click()}
-              className="px-4 py-2 rounded-lg bg-felid-surface border border-felid-border hover:border-felid-accent text-felid-ivory text-xs font-medium inline-flex items-center gap-2 transition-colors sm:hidden"
+              className="px-4 py-2 rounded-xl bg-felid-surface border border-felid-border hover:border-felid-accent text-felid-ivory text-xs font-medium inline-flex items-center gap-2 transition-all sm:hidden"
             >
               <Camera className="w-4 h-4 text-felid-accent" />
-              Take Photo
+              Take Cat Photo
             </button>
           </div>
 
-          <div className="mt-6 text-[11px] text-felid-muted/80">
+          <div className="mt-6 text-[11px] text-felid-muted/70 font-mono">
             JPEG, PNG, WebP · Up to 15MB
           </div>
         </div>
       ) : (
-        <div className="relative rounded-2xl overflow-hidden border border-felid-border bg-felid-surface shadow-card">
-          <div className="relative max-h-[420px] flex items-center justify-center bg-black/60 overflow-hidden">
+        <div className="relative rounded-3xl overflow-hidden border border-felid-border bg-felid-surface shadow-card">
+          <div className="relative max-h-[440px] flex items-center justify-center bg-black/70 overflow-hidden">
             {previewUrl && (
               <img
                 src={previewUrl}
                 alt="Selected feline for identification"
-                className="max-h-[400px] w-auto object-contain mx-auto"
+                className="max-h-[420px] w-auto object-contain mx-auto"
               />
             )}
 
@@ -155,7 +157,7 @@ export const ImageDropzone: React.FC<Props> = ({
               <button
                 type="button"
                 onClick={handleClear}
-                className="absolute top-3 right-3 p-2 rounded-full bg-black/70 hover:bg-red-950 text-white hover:text-red-300 border border-white/20 transition-all shadow-md focus:outline-none"
+                className="absolute top-3 right-3 p-2 rounded-full bg-black/75 hover:bg-pink-950 text-white hover:text-felid-accent border border-white/20 transition-all shadow-md focus:outline-none"
                 aria-label="Remove image"
                 title="Remove image"
               >
@@ -164,10 +166,10 @@ export const ImageDropzone: React.FC<Props> = ({
             )}
 
             {/* File info pill */}
-            <div className="absolute bottom-3 left-3 px-3 py-1.5 rounded-md bg-black/70 backdrop-blur-sm border border-white/10 text-xs text-felid-ivory flex items-center gap-2">
-              <ImageIcon className="w-3.5 h-3.5 text-felid-accent" />
+            <div className="absolute bottom-3 left-3 px-3 py-1.5 rounded-lg bg-black/75 backdrop-blur-sm border border-white/10 text-xs text-felid-ivory flex items-center gap-2">
+              <PawPrint className="w-3.5 h-3.5 text-felid-accent" />
               <span className="truncate max-w-[200px]">{selectedImage.name}</span>
-              <span className="text-felid-muted text-[10px]">
+              <span className="text-felid-muted text-[10px] font-mono">
                 ({Math.round(selectedImage.size / 1024)} KB)
               </span>
             </div>

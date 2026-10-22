@@ -25,8 +25,9 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-felid-dark text-felid-ivory flex flex-col selection:bg-felid-accent selection:text-black">
-      {/* Ambient forest canopy radial background glow */}
-      <div className="fixed inset-0 pointer-events-none bg-topo-subtle z-0 opacity-40" />
+      {/* Ambient pink-gray radial glow & subtle texture */}
+      <div className="fixed inset-0 pointer-events-none bg-topo-subtle z-0 opacity-60" />
+      <div className="fixed inset-0 pointer-events-none bg-paw-glow z-0 opacity-40" />
 
       {/* Primary Navigation */}
       <Navbar activePage={activePage} setActivePage={setActivePage} />
@@ -71,7 +72,7 @@ export function App() {
         {activePage === 'methodology' && <MethodologyPage />}
       </main>
 
-      {/* Global Responsible Wildlife Footer */}
+      {/* Global Responsible Feline Welfare Footer */}
       <Footer setActivePage={setActivePage} />
     </div>
   );

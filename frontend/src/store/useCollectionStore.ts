@@ -9,12 +9,12 @@ export interface CollectionState {
 }
 
 const DEFAULT_RANKS: RankTier[] = [
-  { rank: 1, title: 'Novice Observer', min_xp: 0, badge_icon: 'Eye', description: 'Beginning your journey into Felidae.' },
-  { rank: 2, title: 'Field Tracker', min_xp: 300, badge_icon: 'Footprints', description: 'Skilled at identifying common felids.' },
-  { rank: 3, title: 'Wildlife Scout', min_xp: 800, badge_icon: 'Compass', description: 'Recognizing wild lineages and specialized habitats.' },
-  { rank: 4, title: 'Savanna Naturalist', min_xp: 1600, badge_icon: 'Sunrise', description: 'Mastering open biome felids.' },
-  { rank: 5, title: 'Apex Biologist', min_xp: 2800, badge_icon: 'Flame', description: 'Tracking apex Panthera predators.' },
-  { rank: 6, title: 'Legendary Warden', min_xp: 4500, badge_icon: 'Crown', description: 'Master of the Felidae kingdom.' },
+  { rank: 1, title: 'Kitten Scout', min_xp: 0, badge_icon: 'Eye', description: 'Beginning your journey into the world of cats.' },
+  { rank: 2, title: 'Curious Prowler', min_xp: 300, badge_icon: 'Footprints', description: 'Skilled at identifying common and domestic felids.' },
+  { rank: 3, title: 'Cat Whisperer', min_xp: 800, badge_icon: 'Compass', description: 'Recognizing wild lineages and specialized feline habitats.' },
+  { rank: 4, title: 'Velvet Stalker', min_xp: 1600, badge_icon: 'Sunrise', description: 'Mastering wild cats of the open biomes and forests.' },
+  { rank: 5, title: 'Panthera Master', min_xp: 2800, badge_icon: 'Flame', description: 'Tracking apex big cats and elusive predators.' },
+  { rank: 6, title: 'Supreme Felid Sovereign', min_xp: 4500, badge_icon: 'Crown', description: 'Master of the Felidae kingdom, having documented the rarest cats on Earth.' },
 ];
 
 export function useCollectionStore() {

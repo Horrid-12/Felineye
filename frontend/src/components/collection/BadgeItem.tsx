@@ -12,9 +12,9 @@ interface Props {
 export const BadgeItem: React.FC<Props> = ({ badge, unlocked, progressCount }) => {
   return (
     <div
-      className={`rounded-xl border p-4 flex items-start gap-4 transition-all ${
+      className={`rounded-2xl border p-4 flex items-start gap-4 transition-all ${
         unlocked
-          ? 'bg-felid-surface border-felid-accent/50 shadow-forest-glow'
+          ? 'bg-felid-surface border-felid-accent/50 shadow-pink-glow'
           : 'bg-felid-surface/40 border-felid-border opacity-70'
       }`}
     >
@@ -48,11 +48,11 @@ export const BadgeItem: React.FC<Props> = ({ badge, unlocked, progressCount }) =
           {badge.description}
         </p>
 
-        {/* Progress meter for locked badge */}
+        {/* Progress meter for locked badge in pink */}
         {!unlocked && (
           <div className="mt-2.5 w-full h-1.5 rounded-full bg-felid-pine overflow-hidden border border-felid-border/50">
             <div
-              className="h-full rounded-full bg-felid-accent/60"
+              className="h-full rounded-full bg-felid-accent"
               style={{
                 width: `${Math.min(100, Math.round((progressCount / badge.required_count) * 100))}%`,
               }}

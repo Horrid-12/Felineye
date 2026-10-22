@@ -29,12 +29,12 @@ describe('useCollectionStore hook', () => {
     vi.clearAllMocks();
   });
 
-  it('initializes with zero discoveries and Rank 1 Novice Observer', () => {
+  it('initializes with zero discoveries and Rank 1 Kitten Scout', () => {
     const { result } = renderHook(() => useCollectionStore());
     expect(result.current.discoveryCount).toBe(0);
     expect(result.current.totalXp).toBe(0);
     expect(result.current.currentRank.rank).toBe(1);
-    expect(result.current.currentRank.title).toBe('Novice Observer');
+    expect(result.current.currentRank.title).toBe('Kitten Scout');
   });
 
   it('awards XP on new discovery and prevents double-awarding on repeat identification', () => {
@@ -71,6 +71,6 @@ describe('useCollectionStore hook', () => {
 
     expect(result.current.totalXp).toBe(850);
     expect(result.current.currentRank.rank).toBe(3);
-    expect(result.current.currentRank.title).toBe('Wildlife Scout');
+    expect(result.current.currentRank.title).toBe('Cat Whisperer');
   });
 });

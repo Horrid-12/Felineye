@@ -45,7 +45,7 @@ describe('CandidateCard Component', () => {
       />
     );
 
-    const button = screen.getByText(/Species Profile/i);
+    const button = screen.getByText(/Cat Profile/i);
     fireEvent.click(button);
     expect(handleViewDetails).toHaveBeenCalledWith('panthera-uncia');
   });

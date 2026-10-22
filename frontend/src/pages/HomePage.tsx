@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Eye, BookOpen, Award, ArrowRight, Sparkles, Shield, Compass } from 'lucide-react';
+import { Eye, BookOpen, Award, ArrowRight, Sparkles, Shield, Compass, PawPrint, Cat, Heart } from 'lucide-react';
 import { ActivePage, SpeciesDetail } from '../types';
 import { api } from '../services/api';
 import { ConservationBadge } from '../components/species/ConservationBadge';
@@ -28,59 +28,60 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
 
   return (
     <div className="space-y-16 py-6">
-      {/* Hero Section */}
+      {/* Hero Section with Pinky-Gray Velvet Aesthetic */}
       <section className="relative rounded-3xl overflow-hidden border border-felid-border bg-felid-pine shadow-card">
-        {/* Background Image with Gradient Overlay */}
+        {/* Background Image with Rosy Charcoal Gradient Overlay */}
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=1800&q=80"
-            alt="Majestic Lion in African Savanna"
+            src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1800&q=80"
+            alt="Graceful Feline Companion"
             className="w-full h-full object-cover object-center opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-felid-dark via-felid-dark/90 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-felid-dark via-felid-dark/95 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-felid-dark via-transparent to-transparent" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-felid-accent/10 rounded-full blur-3xl pointer-events-none" />
         </div>
 
         <div className="relative z-10 max-w-3xl p-8 sm:p-12 lg:p-16 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-felid-surface border border-felid-accent/30 text-xs font-mono text-felid-accent">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>AI Field Guide to the Family Felidae</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-felid-surface border border-felid-accent/30 text-xs font-mono text-felid-accent shadow-pink-glow">
+            <PawPrint className="w-3.5 h-3.5" />
+            <span>AI Identification & Field Guide to the Family Felidae</span>
           </div>
 
           <h1 className="font-display font-extrabold text-3xl sm:text-5xl lg:text-6xl text-felid-ivory tracking-tight leading-[1.15]">
-            Discover the Kingdom of <span className="text-felid-accent">Felids</span>
+            Discover the World of <span className="text-felid-accent">Cats</span>
           </h1>
 
           <p className="text-base sm:text-lg text-felid-muted leading-relaxed max-w-2xl">
-            From the roar of Serengeti lions to the elusive snow leopards of the Himalayas and domestic companions in our homes. Upload a photograph to identify species with transparent AI confidence metrics.
+            From playful domestic companions curled on your couch to the solitary snow leopards of alpine peaks. Upload a photograph of any cat to identify its species with transparent AI confidence metrics.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <button
               onClick={() => setActivePage('identify')}
-              className="px-6 py-3.5 rounded-xl bg-felid-accent hover:bg-felid-accent-hover text-black font-semibold text-sm inline-flex items-center gap-2 shadow-forest-glow transition-all hover:scale-[1.02] focus:outline-none"
+              className="px-6 py-3.5 rounded-2xl bg-felid-accent hover:bg-felid-accent-hover text-black font-semibold text-sm inline-flex items-center gap-2 shadow-pink-glow transition-all hover:scale-[1.02] focus:outline-none"
             >
-              <Eye className="w-4 h-4" />
-              Identify a Photo
+              <PawPrint className="w-4 h-4" />
+              Scan a Cat Photo
             </button>
             <button
               onClick={() => setActivePage('species')}
-              className="px-6 py-3.5 rounded-xl bg-felid-surface hover:bg-felid-surface-hover text-felid-ivory font-medium text-sm border border-felid-border inline-flex items-center gap-2 transition-colors focus:outline-none"
+              className="px-6 py-3.5 rounded-2xl bg-felid-surface hover:bg-felid-surface-hover text-felid-ivory font-medium text-sm border border-felid-border inline-flex items-center gap-2 transition-colors focus:outline-none"
             >
-              <BookOpen className="w-4 h-4 text-felid-muted" />
-              Browse Species Atlas
+              <Cat className="w-4 h-4 text-felid-accent" />
+              Browse Cat Atlas
             </button>
           </div>
         </div>
 
         {/* Quick Platform Metrics */}
-        <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 border-t border-felid-border/60 bg-black/40 backdrop-blur-sm divide-x divide-felid-border/50 text-center py-4">
+        <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 border-t border-felid-border/60 bg-black/50 backdrop-blur-sm divide-x divide-felid-border/50 text-center py-4">
           <div className="p-3">
             <span className="block font-display font-bold text-xl sm:text-2xl text-felid-accent">
               37+
             </span>
             <span className="text-[11px] uppercase tracking-wider text-felid-muted font-mono">
-              Curated Species
+              Feline Species
             </span>
           </div>
           <div className="p-3">
@@ -88,7 +89,7 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
               8
             </span>
             <span className="text-[11px] uppercase tracking-wider text-felid-muted font-mono">
-              Feline Lineages
+              Evolutionary Lineages
             </span>
           </div>
           <div className="p-3">
@@ -104,7 +105,7 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
               {discoveryCount}
             </span>
             <span className="text-[11px] uppercase tracking-wider text-felid-muted font-mono">
-              Your Discoveries
+              Cats in Your Journal
             </span>
           </div>
         </div>
@@ -113,25 +114,25 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
       {/* Featured Feline of the Day & Quick Progress */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Featured Species Card (2 Columns) */}
-        <div className="lg:col-span-2 rounded-2xl border border-felid-border bg-felid-surface/80 p-6 sm:p-8 flex flex-col justify-between shadow-sm">
+        <div className="lg:col-span-2 rounded-3xl border border-felid-border bg-felid-surface/80 p-6 sm:p-8 flex flex-col justify-between shadow-card">
           {featured ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <span className="inline-flex items-center gap-1.5 text-xs font-mono text-felid-accent uppercase tracking-wider">
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Cat className="w-4 h-4" />
                   Featured Feline of the Day
                 </span>
                 <ConservationBadge status={featured.conservation_status} showTitle />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                <div className="h-60 rounded-xl overflow-hidden border border-felid-border bg-felid-pine relative group">
+                <div className="h-64 rounded-2xl overflow-hidden border border-felid-border bg-felid-pine relative group">
                   <img
                     src={featured.image_url}
                     alt={featured.common_name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute bottom-2 left-2 px-2 py-1 rounded bg-black/70 backdrop-blur-sm text-[10px] text-felid-muted">
+                  <div className="absolute bottom-2 left-2 px-2.5 py-1 rounded-lg bg-black/75 backdrop-blur-sm text-[10px] text-felid-muted">
                     {featured.image_attribution}
                   </div>
                 </div>
@@ -153,9 +154,9 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
                   <div className="pt-2">
                     <button
                       onClick={() => onSelectSpecies(featured.id)}
-                      className="px-4 py-2 rounded-lg bg-felid-pine hover:bg-felid-border text-felid-ivory text-xs font-medium border border-felid-border inline-flex items-center gap-2 transition-colors"
+                      className="px-4 py-2 rounded-xl bg-felid-pine hover:bg-felid-surface-hover text-felid-ivory text-xs font-medium border border-felid-border inline-flex items-center gap-2 transition-all hover:border-felid-accent"
                     >
-                      View Full Encyclopedia Entry
+                      <span>Explore Cat Profile</span>
                       <ArrowRight className="w-3.5 h-3.5 text-felid-accent" />
                     </button>
                   </div>
@@ -164,13 +165,13 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
             </div>
           ) : (
             <div className="py-16 text-center text-felid-muted">
-              Loading featured species...
+              Loading featured feline...
             </div>
           )}
         </div>
 
         {/* Discovery Expedition Widget (1 Column) */}
-        <div className="rounded-2xl border border-felid-border bg-felid-surface/80 p-6 flex flex-col justify-between shadow-sm">
+        <div className="rounded-3xl border border-felid-border bg-felid-surface/80 p-6 flex flex-col justify-between shadow-card">
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-felid-accent text-xs font-mono uppercase tracking-wider">
               <Compass className="w-4 h-4" />
@@ -187,10 +188,10 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-felid-pine/60 border border-felid-border/60 space-y-2">
+            <div className="p-4 rounded-2xl bg-felid-pine/60 border border-felid-border/60 space-y-2">
               <div className="flex justify-between text-xs">
-                <span className="text-felid-muted">Discoveries</span>
-                <span className="font-mono font-semibold text-felid-ivory">{discoveryCount} Species</span>
+                <span className="text-felid-muted">Species Cataloged</span>
+                <span className="font-mono font-semibold text-felid-ivory">{discoveryCount} Cats</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-felid-muted">Experience</span>
@@ -202,7 +203,7 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
           <div className="pt-6">
             <button
               onClick={() => setActivePage('collection')}
-              className="w-full py-2.5 rounded-xl bg-felid-pine hover:bg-felid-border text-felid-ivory text-xs font-medium border border-felid-border inline-flex items-center justify-center gap-2 transition-colors"
+              className="w-full py-2.5 rounded-xl bg-felid-pine hover:bg-felid-surface-hover text-felid-ivory text-xs font-medium border border-felid-border inline-flex items-center justify-center gap-2 transition-all hover:border-felid-accent"
             >
               <Award className="w-4 h-4 text-felid-accent" />
               Open Field Journal
@@ -212,19 +213,19 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
       </section>
 
       {/* Ethical Exploration Highlights */}
-      <section className="rounded-2xl border border-felid-border bg-felid-surface/50 p-8 space-y-6">
+      <section className="rounded-3xl border border-felid-border bg-felid-surface/50 p-8 space-y-6">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <h2 className="font-display font-bold text-2xl text-felid-ivory">
-            Scientific Accuracy & Responsible Wildlife Discovery
+            Scientific Accuracy & Feline Protection
           </h2>
           <p className="text-xs text-felid-muted leading-relaxed">
-            Built from peer-reviewed taxonomic checklists, verified iNaturalist occurrences, and transparent probabilistic AI.
+            Curated from peer-reviewed cat taxonomy, verified occurrences, and transparent AI models.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-          <div className="p-5 rounded-xl bg-felid-pine/50 border border-felid-border/50 space-y-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+          <div className="p-5 rounded-2xl bg-felid-pine/50 border border-felid-border/50 space-y-2.5">
+            <div className="w-8 h-8 rounded-xl bg-pink-500/10 text-felid-accent flex items-center justify-center">
               <Shield className="w-4 h-4" />
             </div>
             <h4 className="font-display font-bold text-sm text-felid-ivory">
@@ -235,9 +236,9 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
             </p>
           </div>
 
-          <div className="p-5 rounded-xl bg-felid-pine/50 border border-felid-border/50 space-y-2.5">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
-              <Eye className="w-4 h-4" />
+          <div className="p-5 rounded-2xl bg-felid-pine/50 border border-felid-border/50 space-y-2.5">
+            <div className="w-8 h-8 rounded-xl bg-pink-500/10 text-felid-accent flex items-center justify-center">
+              <PawPrint className="w-4 h-4" />
             </div>
             <h4 className="font-display font-bold text-sm text-felid-ivory">
               Transparent Uncertainty
@@ -247,12 +248,12 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
             </p>
           </div>
 
-          <div className="p-5 rounded-xl bg-felid-pine/50 border border-felid-border/50 space-y-2.5">
-            <div className="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
-              <BookOpen className="w-4 h-4" />
+          <div className="p-5 rounded-2xl bg-felid-pine/50 border border-felid-border/50 space-y-2.5">
+            <div className="w-8 h-8 rounded-xl bg-pink-500/10 text-felid-accent flex items-center justify-center">
+              <Cat className="w-4 h-4" />
             </div>
             <h4 className="font-display font-bold text-sm text-felid-ivory">
-              Curated Taxonomy
+              All 8 Cat Lineages
             </h4>
             <p className="text-xs text-felid-muted leading-relaxed">
               Includes comprehensive morphometrics, diet, behaviour, and IUCN Red List statuses for all 41 extant species across both Pantherinae and Felinae subfamilies.

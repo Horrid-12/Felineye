@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, MapPin } from 'lucide-react';
+import { PawPrint, MapPin } from 'lucide-react';
 import { SpeciesSummary } from '../../types';
 import { ConservationBadge } from './ConservationBadge';
 import { useCollectionStore } from '../../store/useCollectionStore';
@@ -16,7 +16,7 @@ export const SpeciesCard: React.FC<Props> = ({ species, onClick }) => {
   return (
     <div
       onClick={() => onClick(species.id)}
-      className="group relative rounded-2xl overflow-hidden border border-felid-border bg-felid-surface/70 hover:bg-felid-surface hover:border-felid-accent/50 transition-all duration-300 hover:shadow-card cursor-pointer flex flex-col"
+      className="group relative rounded-3xl overflow-hidden border border-felid-border bg-felid-surface/70 hover:bg-felid-surface hover:border-felid-accent/60 transition-all duration-300 hover:shadow-pink-glow cursor-pointer flex flex-col"
     >
       {/* Photo Container */}
       <div className="relative h-48 w-full overflow-hidden bg-felid-pine">
@@ -34,11 +34,11 @@ export const SpeciesCard: React.FC<Props> = ({ species, onClick }) => {
 
           {/* Discovery Stamp */}
           {discovered ? (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-felid-accent/90 text-black shadow-sm flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5" /> Logged
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-felid-accent text-black shadow-sm flex items-center gap-1">
+              <PawPrint className="w-2.5 h-2.5" /> Logged
             </span>
           ) : (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/60 text-felid-muted border border-white/10 backdrop-blur-sm">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-black/60 text-felid-muted border border-white/10 backdrop-blur-sm">
               +{species.xp_reward} XP
             </span>
           )}
@@ -46,7 +46,7 @@ export const SpeciesCard: React.FC<Props> = ({ species, onClick }) => {
 
         {/* Lineage Subtitle */}
         <div className="absolute bottom-2 left-3 right-3">
-          <span className="text-[10px] font-mono tracking-wider uppercase text-felid-accent/90">
+          <span className="text-[10px] font-mono tracking-wider uppercase text-felid-accent">
             {species.subfamily} · {species.genus}
           </span>
         </div>
@@ -76,7 +76,7 @@ export const SpeciesCard: React.FC<Props> = ({ species, onClick }) => {
           {species.habitats.slice(0, 3).map((h, i) => (
             <span
               key={i}
-              className="px-2 py-0.5 rounded text-[10px] bg-felid-pine text-felid-muted border border-felid-border/60"
+              className="px-2 py-0.5 rounded-md text-[10px] bg-felid-pine text-felid-muted border border-felid-border/60"
             >
               {h}
             </span>

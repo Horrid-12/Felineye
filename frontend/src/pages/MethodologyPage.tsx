@@ -1,5 +1,5 @@
 import React from 'react';
-import { Info, Shield, Brain, Cpu, Database } from 'lucide-react';
+import { Info, Shield, Brain, Cpu, Database, PawPrint, Cat } from 'lucide-react';
 
 export const MethodologyPage: React.FC = () => {
   return (
@@ -7,21 +7,21 @@ export const MethodologyPage: React.FC = () => {
       {/* Header */}
       <div className="space-y-2">
         <div className="inline-flex items-center gap-1.5 text-xs font-mono text-felid-accent uppercase tracking-wider mb-1">
-          <Info className="w-3.5 h-3.5" />
+          <PawPrint className="w-3.5 h-3.5" />
           <span>Scientific Documentation</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-felid-ivory tracking-tight">
-          Methodology & <span className="text-felid-accent">Architecture</span>
+          Methodology & <span className="text-felid-accent">Architecture</span> 🐾
         </h1>
         <p className="text-sm text-felid-muted leading-relaxed">
-          How FelidLens identifies felids, computes uncertainty, protects wildlife, and curates global biodiversity records.
+          How FelidLens identifies felids, calculates entropy uncertainty, safeguards cat populations, and curates global biodiversity records.
         </p>
       </div>
 
       {/* Section 1: Identification Architecture */}
-      <section className="rounded-2xl border border-felid-border bg-felid-surface/60 p-6 sm:p-8 space-y-4">
+      <section className="rounded-3xl border border-felid-border bg-felid-surface/60 p-6 sm:p-8 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-felid-pine border border-felid-border flex items-center justify-center text-felid-accent">
+          <div className="w-10 h-10 rounded-2xl bg-felid-pine border border-felid-border flex items-center justify-center text-felid-accent shadow-pink-glow">
             <Brain className="w-5 h-5" />
           </div>
           <div>
@@ -29,7 +29,7 @@ export const MethodologyPage: React.FC = () => {
               Provider-Independent Inference Architecture
             </h2>
             <span className="text-xs text-felid-muted font-mono">
-              Abstract Classifier Interface & Multi-Stage Pipeline
+              Abstract Classifier Interface & Multi-Stage Feline Pipeline
             </span>
           </div>
         </div>
@@ -55,9 +55,9 @@ export const MethodologyPage: React.FC = () => {
       </section>
 
       {/* Section 2: Mathematical Uncertainty Engine */}
-      <section className="rounded-2xl border border-felid-border bg-felid-surface/60 p-6 sm:p-8 space-y-4">
+      <section className="rounded-3xl border border-felid-border bg-felid-surface/60 p-6 sm:p-8 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-felid-pine border border-felid-border flex items-center justify-center text-felid-accent">
+          <div className="w-10 h-10 rounded-2xl bg-felid-pine border border-felid-border flex items-center justify-center text-felid-accent shadow-pink-glow">
             <Cpu className="w-5 h-5" />
           </div>
           <div>
@@ -74,7 +74,7 @@ export const MethodologyPage: React.FC = () => {
           In natural wildlife photography, illumination artifacts, vegetation occlusion, motion blur, and morphological convergence between sister taxa (such as <em>Panthera onca</em> and <em>Panthera pardus</em>) introduce epistemic uncertainty.
         </p>
 
-        <div className="p-4 rounded-xl bg-felid-pine border border-felid-border font-mono text-xs text-felid-accent/90">
+        <div className="p-4 rounded-2xl bg-felid-pine border border-felid-border font-mono text-xs text-felid-accent shadow-sm">
           H(P) = - ∑ [ p(x) · ln( p(x) ) ]
         </div>
 
@@ -84,9 +84,9 @@ export const MethodologyPage: React.FC = () => {
       </section>
 
       {/* Section 3: Responsible Wildlife Data Protocol */}
-      <section className="rounded-2xl border border-felid-border bg-felid-surface/60 p-6 sm:p-8 space-y-4">
+      <section className="rounded-3xl border border-felid-border bg-felid-surface/60 p-6 sm:p-8 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-felid-pine border border-felid-border flex items-center justify-center text-emerald-400">
+          <div className="w-10 h-10 rounded-2xl bg-felid-pine border border-felid-border flex items-center justify-center text-emerald-400">
             <Shield className="w-5 h-5" />
           </div>
           <div>
@@ -94,7 +94,7 @@ export const MethodologyPage: React.FC = () => {
               Conservation Safety & Coordinate Obscuration
             </h2>
             <span className="text-xs text-felid-muted font-mono">
-              Zero Vulnerable Wildlife Coordinates Exposed
+              Zero Vulnerable Feline Coordinates Exposed
             </span>
           </div>
         </div>
@@ -117,9 +117,9 @@ export const MethodologyPage: React.FC = () => {
       </section>
 
       {/* Section 4: Data Provenance & Citations */}
-      <section className="rounded-2xl border border-felid-border bg-felid-surface/60 p-6 sm:p-8 space-y-4">
+      <section className="rounded-3xl border border-felid-border bg-felid-surface/60 p-6 sm:p-8 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-felid-pine border border-felid-border flex items-center justify-center text-felid-accent">
+          <div className="w-10 h-10 rounded-2xl bg-felid-pine border border-felid-border flex items-center justify-center text-felid-accent shadow-pink-glow">
             <Database className="w-5 h-5" />
           </div>
           <div>
