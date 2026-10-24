@@ -21,37 +21,37 @@ export const ScannerEffect: React.FC = () => {
   }, []);
 
   return (
-    <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-4 bg-felid-dark/50 backdrop-blur-[2px]">
+    <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-4 bg-[#0c0a0e]/70 backdrop-blur-[2px] z-20">
       {/* HUD Reticle Corners in Rose Pink */}
       <div className="flex justify-between items-start">
-        <div className="w-6 h-6 border-t-2 border-l-2 border-felid-accent rounded-tl" />
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/80 border border-felid-accent/40 text-[10px] uppercase font-mono tracking-wider text-felid-accent shadow-pink-glow">
-          <PawPrint className="w-3 h-3 animate-pulse text-felid-accent" />
-          <span>Feline Neural Scan</span>
+        <div className="w-8 h-8 border-t-3 border-l-3 border-felid-accent" />
+        <div className="flex items-center gap-2 px-3 py-1 bg-black border-2 border-black shadow-brutal-sm text-[10px] uppercase font-mono font-black tracking-wider text-felid-accent">
+          <PawPrint className="w-3.5 h-3.5 animate-pulse text-felid-accent" />
+          <span>DIAGNOSTIC NEURAL SCAN</span>
         </div>
-        <div className="w-6 h-6 border-t-2 border-r-2 border-felid-accent rounded-tr" />
+        <div className="w-8 h-8 border-t-3 border-r-3 border-felid-accent" />
       </div>
 
       {/* Moving Laser Scan Line with Pink Velvet Glow */}
       <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-felid-accent to-transparent shadow-[0_0_20px_#f472b6] animate-scanline" />
 
-      {/* Center Target Crosshair with Playful Feline Laser Dot */}
+      {/* Center Target Crosshair with Feline Laser Dot */}
       <div className="self-center flex items-center justify-center">
-        <div className="w-20 h-20 rounded-full border border-felid-accent/40 border-dashed animate-pulse flex items-center justify-center">
-          <div className="w-2.5 h-2.5 rounded-full bg-felid-accent animate-ping shadow-[0_0_10px_#f472b6]" />
+        <div className="w-24 h-24 border-2 border-felid-accent/50 border-dashed animate-pulse flex items-center justify-center">
+          <div className="w-3 h-3 bg-felid-accent animate-ping shadow-[0_0_12px_#f472b6]" />
         </div>
       </div>
 
-      {/* HUD Bottom Status */}
+      {/* HUD Bottom Status Box */}
       <div className="flex justify-between items-end">
-        <div className="w-6 h-6 border-b-2 border-l-2 border-felid-accent rounded-bl" />
-        <div className="px-3.5 py-1.5 rounded-xl bg-black/85 border border-felid-border text-center max-w-sm shadow-card">
-          <p className="text-xs font-mono text-felid-ivory flex items-center justify-center gap-2">
+        <div className="w-8 h-8 border-b-3 border-l-3 border-felid-accent" />
+        <div className="px-4 py-2 bg-black border-2 border-black text-center max-w-md shadow-brutal-sm">
+          <p className="text-xs font-mono font-bold text-felid-ivory flex items-center justify-center gap-2">
             <Sparkles className="w-3.5 h-3.5 text-felid-accent animate-pulse" />
             <span>{FELINE_DIAGNOSTIC_STEPS[stepIndex]}</span>
           </p>
         </div>
-        <div className="w-6 h-6 border-b-2 border-r-2 border-felid-accent rounded-br" />
+        <div className="w-8 h-8 border-b-3 border-r-3 border-felid-accent" />
       </div>
     </div>
   );

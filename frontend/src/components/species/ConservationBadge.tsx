@@ -13,44 +13,44 @@ export const ConservationBadge: React.FC<Props> = ({ status, className = '', sho
     switch (code) {
       case 'CR':
         return {
-          bg: 'bg-red-950/80 border-red-700 text-red-300',
-          dot: 'bg-red-500',
+          bg: 'bg-[#f43f5e] text-white border-black',
+          dot: 'bg-white',
           title: 'Critically Endangered',
         };
       case 'EN':
         return {
-          bg: 'bg-orange-950/80 border-orange-700 text-orange-300',
-          dot: 'bg-orange-500',
+          bg: 'bg-[#fb7185] text-black border-black',
+          dot: 'bg-black',
           title: 'Endangered',
         };
       case 'VU':
         return {
-          bg: 'bg-amber-950/80 border-amber-700 text-amber-300',
-          dot: 'bg-amber-400',
+          bg: 'bg-[#fb923c] text-black border-black',
+          dot: 'bg-black',
           title: 'Vulnerable',
         };
       case 'NT':
         return {
-          bg: 'bg-yellow-950/70 border-yellow-700 text-yellow-300',
-          dot: 'bg-yellow-400',
+          bg: 'bg-[#eab308] text-black border-black',
+          dot: 'bg-black',
           title: 'Near Threatened',
         };
       case 'LC':
         return {
-          bg: 'bg-emerald-950/80 border-emerald-700 text-emerald-300',
-          dot: 'bg-emerald-500',
+          bg: 'bg-[#34d399] text-black border-black',
+          dot: 'bg-black',
           title: 'Least Concern',
         };
       case 'DOMESTIC':
         return {
-          bg: 'bg-cyan-950/70 border-cyan-700 text-cyan-300',
-          dot: 'bg-cyan-400',
+          bg: 'bg-[#f472b6] text-black border-black',
+          dot: 'bg-black',
           title: 'Domesticated',
         };
       default:
         return {
-          bg: 'bg-neutral-900 border-neutral-700 text-neutral-300',
-          dot: 'bg-neutral-500',
+          bg: 'bg-[#1d1922] text-[#fdf2f8] border-black',
+          dot: 'bg-[#9e94a4]',
           title: 'Unassessed',
         };
     }
@@ -60,12 +60,12 @@ export const ConservationBadge: React.FC<Props> = ({ status, className = '', sho
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${style.bg} ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-mono font-black border-2 shadow-brutal-sm ${style.bg} ${className}`}
       title={style.title}
     >
-      <span className={`w-1.5 h-1.5 rounded-full ${style.dot} animate-pulse`} />
+      <span className={`w-1.5 h-1.5 ${style.dot} animate-pulse`} />
       <span>{code}</span>
-      {showTitle && <span className="opacity-80">· {style.title}</span>}
+      {showTitle && <span className="font-bold opacity-90">· {style.title}</span>}
     </span>
   );
 };

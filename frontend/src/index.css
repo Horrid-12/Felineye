@@ -63,3 +63,49 @@
 .animate-pulse-glow {
   animation: pulseGlow 2s infinite ease-in-out;
 }
+
+/* Neo-Brutalist & Reference 1/2 Utility Styles */
+.hazard-stripe {
+  background: repeating-linear-gradient(
+    -45deg,
+    #f59e0b,
+    #f59e0b 14px,
+    #0c0a0e 14px,
+    #0c0a0e 28px
+  );
+}
+
+.hazard-stripe-rose {
+  background: repeating-linear-gradient(
+    -45deg,
+    #f472b6,
+    #f472b6 14px,
+    #141218 14px,
+    #141218 28px
+  );
+}
+
+/* Tactile press physics for buttons and interactive cards */
+.brutal-press {
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.brutal-press:hover {
+  transform: translate(-1px, -1px);
+}
+
+.brutal-press:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px #000000 !important;
+}
+
+/* Promptify Double Frame styling */
+.promptify-frame {
+  border: 2px solid #000000;
+  box-shadow: 4px 4px 0px #000000;
+  position: relative;
+}
+
+.promptify-inner {
+  border: 1px solid #483f52;
+}

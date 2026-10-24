@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, Footprints, Compass, Sunrise, Flame, Crown, Eye, Mountain, Waves, ShieldCheck, Snowflake, PawPrint, Cat } from 'lucide-react';
+import { Award, Compass, Sunrise, Flame, Crown, Eye, Mountain, Waves, ShieldCheck, Snowflake, PawPrint, Cat } from 'lucide-react';
 import { RankTier } from '../../types';
 
 interface Props {
@@ -38,66 +38,65 @@ export const RankProgress: React.FC<Props> = ({
   const range = nextMin - currentMin;
   const progressInTier = Math.max(0, totalXp - currentMin);
   const percentage = nextRank ? Math.min(100, Math.round((progressInTier / range) * 100)) : 100;
+  const completionPercent = totalSpeciesCount ? Math.round((discoveryCount / totalSpeciesCount) * 100) : 0;
 
   return (
-    <div className="rounded-3xl border border-felid-border bg-felid-surface/80 p-6 shadow-card mb-8">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        {/* Current Rank Badge with Pink Glow */}
+    <div className="border-2 border-black bg-[#141218] p-6 shadow-brutal mb-8 space-y-6">
+      
+      {/* Top Banner & Rank Profile */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b-2 border-black">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-felid-pine border border-felid-accent/40 flex items-center justify-center shadow-pink-glow shrink-0">
+          <div className="w-16 h-16 bg-[#0c0a0e] border-2 border-black flex items-center justify-center shadow-brutal-sm shrink-0">
             {getIconComponent(currentRank.badge_icon)}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase font-mono tracking-wider text-felid-accent px-2.5 py-0.5 rounded-full bg-felid-accent/10 border border-felid-accent/25">
-                Rank {currentRank.rank}
+              <span className="text-[10px] uppercase font-mono font-black tracking-wider text-black px-2 py-0.5 bg-felid-accent border border-black">
+                RANK {currentRank.rank}
               </span>
-              <span className="text-xs text-felid-muted font-mono">{totalXp} Total XP</span>
+              <span className="text-xs text-felid-muted font-mono">{totalXp} TOTAL XP</span>
             </div>
-            <h2 className="font-display font-bold text-xl text-felid-ivory mt-1">
+            <h2 className="font-display font-black text-2xl text-felid-ivory uppercase mt-1">
               {currentRank.title}
             </h2>
-            <p className="text-xs text-felid-muted mt-0.5">
+            <p className="text-xs text-felid-muted font-mono mt-0.5">
               {currentRank.description}
             </p>
           </div>
         </div>
 
-        {/* Global Catalog Completion */}
-        <div className="w-full md:w-auto flex items-center justify-between md:justify-end gap-6 pt-4 md:pt-0 border-t md:border-t-0 border-felid-border/50">
-          <div className="text-left md:text-right">
-            <span className="block text-[11px] uppercase tracking-wider text-felid-muted font-mono">
-              Felids Logged
+        {/* Promptify-Style Metric Tiles (Reference 1) */}
+        <div className="w-full md:w-auto grid grid-cols-2 gap-3">
+          <div className="bg-[#0c0a0e] border-2 border-black p-3 text-center shadow-brutal-sm">
+            <span className="text-2xl font-black text-felid-ivory font-mono block">
+              {discoveryCount} <span className="text-xs text-felid-muted font-normal">/ {totalSpeciesCount || 41}</span>
             </span>
-            <span className="font-display font-bold text-lg text-felid-ivory">
-              {discoveryCount} <span className="text-felid-muted text-sm font-normal">/ {totalSpeciesCount || 37}</span>
-            </span>
+            <span className="text-[10px] font-mono font-bold text-felid-muted uppercase">FELIDS LOGGED</span>
           </div>
-          <div className="text-right">
-            <span className="block text-[11px] uppercase tracking-wider text-felid-muted font-mono">
-              Completion
+
+          <div className="bg-[#0c0a0e] border-2 border-black p-3 text-center shadow-brutal-sm">
+            <span className="text-2xl font-black text-felid-accent font-mono block">
+              {completionPercent}%
             </span>
-            <span className="font-mono font-bold text-lg text-felid-accent">
-              {totalSpeciesCount ? Math.round((discoveryCount / totalSpeciesCount) * 100) : 0}%
-            </span>
+            <span className="text-[10px] font-mono font-bold text-felid-muted uppercase">ATLAS COMPLETE</span>
           </div>
         </div>
       </div>
 
-      {/* Progress Bar to Next Rank in Pink Rose Quartz */}
+      {/* Progress Bar to Next Rank in Neo-Brutalist Frame */}
       {nextRank && (
-        <div className="mt-6 pt-4 border-t border-felid-border/40">
-          <div className="flex items-center justify-between text-xs mb-1.5">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs font-mono font-bold">
             <span className="text-felid-muted">
-              Progress to <strong className="text-felid-ivory">{nextRank.title}</strong>
+              NEXT TIER: <strong className="text-felid-ivory uppercase">{nextRank.title}</strong>
             </span>
-            <span className="font-mono text-felid-accent">
-              {nextMin - totalXp} XP needed
+            <span className="text-felid-accent">
+              {nextMin - totalXp} XP NEEDED
             </span>
           </div>
-          <div className="w-full h-2.5 rounded-full bg-felid-pine overflow-hidden border border-felid-border">
+          <div className="w-full h-3.5 bg-[#0c0a0e] border-2 border-black overflow-hidden shadow-brutal-sm">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-pink-600 via-rose-500 to-pink-400 transition-all duration-700 shadow-pink-glow"
+              className="h-full bg-gradient-to-r from-pink-600 via-rose-500 to-pink-400 transition-all duration-700"
               style={{ width: `${percentage}%` }}
             />
           </div>

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { ActivePage } from './types';
 import { Navbar } from './components/layout/Navbar';
-import { Footer } from './components/layout/Footer';
 import { HomePage } from './pages/HomePage';
 import { IdentifyPage } from './pages/IdentifyPage';
 import { SpeciesAtlasPage } from './pages/SpeciesAtlasPage';
@@ -71,9 +70,6 @@ export function App() {
 
         {activePage === 'methodology' && <MethodologyPage />}
       </main>
-
-      {/* Global Responsible Feline Welfare Footer */}
-      <Footer setActivePage={setActivePage} />
     </div>
   );
 }

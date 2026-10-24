@@ -1,5 +1,5 @@
 import React from 'react';
-import { PawPrint, MapPin } from 'lucide-react';
+import { PawPrint, MapPin, ArrowRight } from 'lucide-react';
 import { SpeciesSummary } from '../../types';
 import { ConservationBadge } from './ConservationBadge';
 import { useCollectionStore } from '../../store/useCollectionStore';
@@ -16,37 +16,40 @@ export const SpeciesCard: React.FC<Props> = ({ species, onClick }) => {
   return (
     <div
       onClick={() => onClick(species.id)}
-      className="group relative rounded-3xl overflow-hidden border border-felid-border bg-felid-surface/70 hover:bg-felid-surface hover:border-felid-accent/60 transition-all duration-300 hover:shadow-pink-glow cursor-pointer flex flex-col"
+      className="group relative border-2 border-black bg-[#141218] hover:bg-[#1d1922] transition-all shadow-brutal hover:shadow-brutal-lg cursor-pointer flex flex-col brutal-press"
     >
-      {/* Photo Container */}
-      <div className="relative h-48 w-full overflow-hidden bg-felid-pine">
+      {/* Photo Container with Optical Crosshairs */}
+      <div className="relative h-48 w-full overflow-hidden bg-[#0c0a0e] border-b-2 border-black">
         <img
           src={species.thumbnail_url}
           alt={species.common_name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-felid-surface via-transparent to-black/30" />
+
+        {/* Viewfinder crosshairs in corners */}
+        <div className="absolute top-1 left-1 text-felid-accent font-mono text-[9px] pointer-events-none">+</div>
+        <div className="absolute top-1 right-1 text-felid-accent font-mono text-[9px] pointer-events-none">+</div>
 
         {/* Top Badges */}
-        <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
+        <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-2">
           <ConservationBadge status={species.conservation_status} />
 
           {/* Discovery Stamp */}
           {discovered ? (
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-felid-accent text-black shadow-sm flex items-center gap-1">
-              <PawPrint className="w-2.5 h-2.5" /> Logged
+            <span className="px-2 py-0.5 text-[10px] font-mono font-black uppercase tracking-wider bg-felid-accent text-black border-2 border-black shadow-brutal-sm flex items-center gap-1">
+              <PawPrint className="w-2.5 h-2.5" /> LOGGED
             </span>
           ) : (
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-black/60 text-felid-muted border border-white/10 backdrop-blur-sm">
+            <span className="px-2 py-0.5 text-[10px] font-mono font-black bg-black text-felid-ivory border-2 border-black shadow-brutal-sm">
               +{species.xp_reward} XP
             </span>
           )}
         </div>
 
-        {/* Lineage Subtitle */}
-        <div className="absolute bottom-2 left-3 right-3">
-          <span className="text-[10px] font-mono tracking-wider uppercase text-felid-accent">
+        {/* Lineage Subtitle Banner */}
+        <div className="absolute bottom-2 left-2.5 right-2.5">
+          <span className="text-[9px] font-mono font-black tracking-widest uppercase bg-black/80 px-2 py-0.5 border border-[#332c3a] text-felid-accent inline-block">
             {species.subfamily} · {species.genus}
           </span>
         </div>
@@ -55,7 +58,7 @@ export const SpeciesCard: React.FC<Props> = ({ species, onClick }) => {
       {/* Card Content */}
       <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
         <div>
-          <h3 className="font-display font-bold text-base text-felid-ivory group-hover:text-felid-accent transition-colors">
+          <h3 className="font-display font-black text-base text-felid-ivory uppercase group-hover:text-felid-accent transition-colors">
             {species.common_name}
           </h3>
           <p className="text-xs italic text-felid-muted font-serif">
@@ -65,27 +68,29 @@ export const SpeciesCard: React.FC<Props> = ({ species, onClick }) => {
 
         {/* Geographic Range Preview */}
         {species.geographic_range && (
-          <p className="text-xs text-felid-muted/90 line-clamp-1 flex items-center gap-1">
-            <MapPin className="w-3 h-3 text-felid-accent/70 shrink-0" />
+          <p className="text-xs text-felid-muted font-mono line-clamp-1 flex items-center gap-1">
+            <MapPin className="w-3.5 h-3.5 text-felid-accent shrink-0" />
             <span>{species.geographic_range}</span>
           </p>
         )}
 
-        {/* Habitat Tags */}
-        <div className="flex flex-wrap gap-1.5 pt-2 border-t border-felid-border/50">
-          {species.habitats.slice(0, 3).map((h, i) => (
-            <span
-              key={i}
-              className="px-2 py-0.5 rounded-md text-[10px] bg-felid-pine text-felid-muted border border-felid-border/60"
-            >
-              {h}
-            </span>
-          ))}
-          {species.habitats.length > 3 && (
-            <span className="text-[10px] text-felid-muted self-center">
-              +{species.habitats.length - 3}
-            </span>
-          )}
+        {/* Habitat Tags & Action */}
+        <div className="flex flex-wrap items-center justify-between gap-1.5 pt-2 border-t-2 border-black">
+          <div className="flex flex-wrap gap-1">
+            {species.habitats.slice(0, 2).map((h, i) => (
+              <span
+                key={i}
+                className="px-1.5 py-0.5 text-[9px] font-mono bg-[#0c0a0e] text-felid-muted border border-[#332c3a]"
+              >
+                {h}
+              </span>
+            ))}
+          </div>
+
+          <span className="text-xs font-mono font-bold text-felid-accent flex items-center gap-0.5 group-hover:translate-x-1 transition-transform">
+            <span>INSPECT</span>
+            <ArrowRight className="w-3 h-3" />
+          </span>
         </div>
       </div>
     </div>

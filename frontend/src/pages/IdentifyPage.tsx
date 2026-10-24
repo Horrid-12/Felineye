@@ -60,13 +60,11 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
       const res = await api.identifyImage(selectedFile);
       setResult(res);
 
-      // If valid identification, check and record discovery unlock!
       if (
         (res.status === 'high_confidence' || res.status === 'moderate_confidence') &&
         res.top_candidate
       ) {
         const top = res.top_candidate;
-        // Base XP: 150 for high confidence, 100 for moderate
         const xpAmount = res.status === 'high_confidence' ? 150 : 100;
         const unlockRes = unlockDiscovery(top.species_id, top.confidence_score, xpAmount);
 
@@ -76,7 +74,6 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
             xp: unlockRes.earnedXp,
             name: top.common_name,
           });
-          // Fire celebratory pink/rose feline confetti!
           try {
             confetti({
               particleCount: 90,
@@ -97,14 +94,18 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-6 space-y-8">
+    <div className="max-w-4xl mx-auto py-4 space-y-8">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-felid-ivory tracking-tight">
-          Feline <span className="text-felid-accent">Paw Scanner</span> 🐾
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm text-xs font-mono font-black text-felid-accent uppercase">
+          <PawPrint className="w-3.5 h-3.5" />
+          <span>NEURAL OPTICAL INFERENCE // SHANNON ENTROPY GATE</span>
+        </div>
+        <h1 className="font-display font-black text-3xl sm:text-5xl text-felid-ivory uppercase tracking-tight">
+          FELINE <span className="text-felid-accent underline decoration-4 underline-offset-4">PAW SCANNER</span>
         </h1>
-        <p className="text-sm text-felid-muted max-w-xl mx-auto leading-relaxed">
-          Upload any photograph of a cat or wild feline to detect its species, evaluate diagnostic features, and record discoveries in your field journal.
+        <p className="text-xs sm:text-sm text-felid-muted max-w-xl mx-auto font-mono leading-relaxed">
+          Upload any feline photo to detect diagnostic features, classify morphology across 41 species, and log verified discoveries to your journal.
         </p>
       </div>
 
@@ -121,26 +122,26 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
         {isLoading && <ScannerEffect />}
       </div>
 
-      {/* Action Button */}
+      {/* Action Button (Komi Store Tactile CTA Style) */}
       {selectedFile && !result && !isLoading && (
         <div className="flex justify-center">
           <button
             type="button"
             onClick={runIdentification}
-            className="px-8 py-3.5 rounded-2xl bg-felid-accent hover:bg-felid-accent-hover text-black font-semibold text-sm inline-flex items-center gap-2 shadow-pink-glow transition-all hover:scale-[1.02] focus:outline-none"
+            className="px-8 py-4 bg-felid-accent hover:bg-felid-accent-hover text-black font-mono font-black text-sm uppercase border-2 border-black shadow-brutal brutal-press inline-flex items-center gap-2.5"
           >
-            <PawPrint className="w-4 h-4" />
-            Analyze Feline Features
+            <PawPrint className="w-5 h-5" />
+            <span>ANALYZE FELINE MORPHOLOGY</span>
           </button>
         </div>
       )}
 
       {/* Error state */}
       {errorMsg && (
-        <div className="p-4 rounded-2xl bg-pink-950/60 border border-pink-800 text-pink-200 text-sm flex items-start gap-3">
+        <div className="p-4 bg-red-950/70 border-2 border-black shadow-brutal text-pink-200 text-xs font-mono flex items-start gap-3">
           <ShieldAlert className="w-5 h-5 text-felid-accent shrink-0 mt-0.5" />
           <div>
-            <strong className="block font-semibold mb-0.5">Identification Failed</strong>
+            <strong className="block font-black uppercase mb-0.5">IDENTIFICATION FAILED // TELEMETRY REJECTED</strong>
             {errorMsg}
           </div>
         </div>
@@ -151,78 +152,81 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
         <div className="space-y-6 animate-fadeIn">
           {/* New Discovery Unlock Banner */}
           {unlockedNotice && (
-            <div className="p-4 rounded-2xl bg-pink-950/40 border border-felid-accent/80 text-pink-100 text-sm flex items-center justify-between shadow-pink-glow">
+            <div className="p-4 bg-[#141218] border-2 border-black shadow-brutal text-pink-100 text-xs font-mono flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-felid-accent/20 flex items-center justify-center text-felid-accent">
+                <div className="w-9 h-9 bg-felid-accent border-2 border-black flex items-center justify-center text-black font-black text-base shadow-brutal-sm">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="font-bold text-felid-accent block">
-                    New Cat Logged in Field Journal!
+                  <span className="font-black text-felid-accent block uppercase text-sm">
+                    NEW SPECIES LOGGED IN FIELD JOURNAL!
                   </span>
-                  <span className="text-xs text-felid-ivory-dim">
-                    Discovered {unlockedNotice.name} · Awarded +{unlockedNotice.xp} Discovery XP
+                  <span className="text-felid-ivory-dim">
+                    Discovered {unlockedNotice.name} // Awarded +{unlockedNotice.xp} Discovery XP
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => setActivePage('collection')}
-                className="px-3.5 py-1.5 rounded-xl bg-felid-accent text-black font-semibold text-xs transition-colors hover:bg-felid-accent-hover"
+                className="px-4 py-2 bg-felid-accent text-black font-mono font-black text-xs border-2 border-black shadow-brutal-sm brutal-press uppercase"
               >
-                View Journal
+                VIEW JOURNAL
               </button>
             </div>
           )}
 
           {/* Development Mock Warning Banner (Honesty Requirement) */}
           {result.is_mock && (
-            <div className="p-3.5 rounded-2xl bg-felid-surface border border-felid-border text-felid-muted text-xs flex items-center gap-2.5">
+            <div className="p-3.5 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm text-felid-muted text-xs font-mono flex items-center gap-2.5">
               <Info className="w-4 h-4 shrink-0 text-felid-accent" />
               <span>
-                <strong className="text-felid-ivory">Development Simulation Active:</strong> Offline test heuristic active. These results are demonstration ranks and not authentic production AI predictions.
+                <strong className="text-felid-ivory uppercase">DEVELOPMENT SIMULATION ACTIVE:</strong> Offline test heuristic active. These results are demonstration ranks and not authentic production AI predictions.
               </span>
             </div>
           )}
 
           {/* Outcome State Header */}
           {result.status === 'non_felid_detected' ? (
-            <div className="p-6 rounded-3xl bg-pink-950/20 border border-pink-800/40 text-pink-200 space-y-2 text-center">
+            <div className="p-6 bg-[#0c0a0e] border-2 border-black shadow-brutal text-pink-200 space-y-2 text-center">
               <FileQuestion className="w-10 h-10 text-felid-accent mx-auto mb-2" />
-              <h3 className="font-display font-bold text-lg text-felid-ivory">
-                Non-Felid Image Detected
+              <h3 className="font-display font-black text-lg text-felid-ivory uppercase">
+                NON-FELID IMAGE DETECTED
               </h3>
-              <p className="text-xs text-felid-muted max-w-lg mx-auto leading-relaxed">
+              <p className="text-xs text-felid-muted max-w-lg mx-auto font-mono leading-relaxed">
                 The neural model could not identify diagnostic feline cranial geometry, slit/round pupils, ear contours, or coat patterns. Please upload a clear photo containing a cat or wild felid.
               </p>
             </div>
           ) : result.status === 'uncertain' ? (
-            <div className="p-6 rounded-3xl bg-pink-950/20 border border-pink-700/40 text-pink-200 space-y-2">
+            <div className="p-6 bg-[#0c0a0e] border-2 border-black shadow-brutal text-pink-200 space-y-2">
               <div className="flex items-center gap-2 text-felid-accent">
-                <AlertTriangle className="w-5 h-5" />
-                <h3 className="font-display font-bold text-base text-felid-ivory">
-                  High Ambiguity / Uncertain Identification
+                <AlertTriangle className="w-5 h-5 text-amber-400" />
+                <h3 className="font-display font-black text-base text-felid-ivory uppercase">
+                  HIGH AMBIGUITY // UNCERTAIN TAXONOMIC RESOLUTION
                 </h3>
               </div>
-              <p className="text-xs text-felid-muted leading-relaxed">
+              <p className="text-xs text-felid-muted font-mono leading-relaxed">
                 {result.uncertainty_note ||
                   'The model detected feline features but cannot definitively distinguish among candidate species. The closest matches are listed below for your evaluation.'}
               </p>
             </div>
           ) : (
-            <div className="p-4 rounded-2xl bg-felid-surface border border-felid-border flex flex-wrap items-center justify-between gap-3 text-xs">
+            /* Promptify-Style Telemetry Strip */
+            <div className="p-4 bg-[#141218] border-2 border-black shadow-brutal flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-felid-accent animate-pulse" />
-                <span className="font-semibold text-felid-ivory capitalize">
-                  {result.status.replace('_', ' ')} Match
+                <span className="w-3 h-3 bg-felid-accent" />
+                <span className="font-black text-felid-ivory uppercase">
+                  {result.status.replace('_', ' ')} MATCH
                 </span>
                 <span className="text-felid-muted">· Semantics: {result.score_semantics}</span>
               </div>
-              <div className="flex items-center gap-3 text-felid-muted font-mono text-[11px]">
-                <span className="flex items-center gap-1">
+              <div className="flex items-center gap-3 text-felid-muted text-[11px]">
+                <span className="flex items-center gap-1 bg-[#0c0a0e] px-2 py-0.5 border border-black">
                   <Clock className="w-3 h-3 text-felid-accent" />
                   {result.processing_time_ms}ms
                 </span>
-                <span>Entropy: {result.entropy}</span>
+                <span className="bg-[#0c0a0e] px-2 py-0.5 border border-black text-emerald-400 font-bold">
+                  ENTROPY: {result.entropy} NATS
+                </span>
               </div>
             </div>
           )}
@@ -230,14 +234,16 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
           {/* Candidate Predictions List */}
           {result.candidates.length > 0 && (
             <div className="space-y-4">
-              <h3 className="font-display font-bold text-lg text-felid-ivory flex items-center justify-between">
-                <span>Ranked Candidates</span>
-                <span className="text-xs text-felid-muted font-normal font-sans">
-                  {result.candidates.length} taxa identified
+              <div className="flex items-center justify-between pb-2 border-b-2 border-black">
+                <h3 className="font-display font-black text-xl text-felid-ivory uppercase">
+                  RANKED CANDIDATES
+                </h3>
+                <span className="text-xs text-felid-muted font-mono font-bold">
+                  {result.candidates.length} TAXA IDENTIFIED
                 </span>
-              </h3>
+              </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {result.candidates.map((cand, idx) => (
                   <CandidateCard
                     key={cand.species_id}
@@ -257,15 +263,15 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
             <button
               type="button"
               onClick={handleClear}
-              className="px-6 py-2.5 rounded-2xl bg-felid-surface hover:bg-felid-surface-hover text-felid-ivory text-xs font-medium border border-felid-border inline-flex items-center gap-2 transition-colors hover:border-felid-accent"
+              className="px-6 py-3 bg-[#1d1922] hover:bg-[#26222d] text-felid-ivory text-xs font-mono font-bold uppercase border-2 border-black shadow-brutal brutal-press inline-flex items-center gap-2"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-felid-accent" />
+              <RotateCcw className="w-4 h-4 text-felid-accent" />
               Upload Another Cat Photo
             </button>
           </div>
 
           {/* Scientific Disclaimer */}
-          <p className="text-[11px] text-felid-muted text-center max-w-xl mx-auto italic">
+          <p className="text-[11px] text-felid-muted text-center max-w-xl mx-auto italic font-mono">
             {result.disclaimer}
           </p>
         </div>

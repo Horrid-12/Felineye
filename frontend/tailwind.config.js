@@ -37,13 +37,19 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
-        display: ['Cinzel', 'Playfair Display', 'Georgia', 'serif'],
+        sans: ['Plus Jakarta Sans', 'Space Grotesk', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['Syne', 'Cinzel', 'Playfair Display', 'Georgia', 'serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       boxShadow: {
         'forest-glow': '0 0 25px -4px rgba(244, 114, 182, 0.25)',
         'pink-glow': '0 0 25px -4px rgba(244, 114, 182, 0.35)',
         'card': '0 4px 20px -2px rgba(0, 0, 0, 0.6)',
+        'brutal': '4px 4px 0px #000000',
+        'brutal-sm': '2px 2px 0px #000000',
+        'brutal-lg': '6px 6px 0px #000000',
+        'brutal-rose': '4px 4px 0px #f472b6',
+        'brutal-inset': 'inset 2px 2px 0px #000000',
       },
       backgroundImage: {
         'topo-subtle': "radial-gradient(circle at 50% 0%, rgba(244, 114, 182, 0.08) 0%, transparent 65%)",

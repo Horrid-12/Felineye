@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Award,
   Sparkles,
   Lock,
-  Eye,
   CheckCircle2,
   PawPrint,
   Cat
@@ -48,7 +46,6 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
     loadMeta();
   }, []);
 
-  // Compute badge unlock progress
   const evaluateBadgeProgress = (badgeId: string): { count: number; unlocked: boolean } => {
     const discoveredIds = Object.keys(discoveries);
 
@@ -97,19 +94,19 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
   };
 
   return (
-    <div className="py-6 space-y-10">
+    <div className="py-4 space-y-10">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b-2 border-black">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-mono text-felid-accent uppercase tracking-wider mb-1">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm text-xs font-mono font-black text-felid-accent uppercase tracking-wider mb-2">
             <PawPrint className="w-3.5 h-3.5" />
-            <span>Feline Field Journal</span>
+            <span>LOCAL LOG // PRIVACY ENCRYPTED</span>
           </div>
-          <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-felid-ivory tracking-tight">
-            Discovery <span className="text-felid-accent">Expedition</span> 🐾
+          <h1 className="font-display font-black text-3xl sm:text-5xl text-felid-ivory uppercase tracking-tight">
+            DISCOVERY <span className="text-felid-accent underline decoration-4 underline-offset-4">EXPEDITION</span>
           </h1>
-          <p className="text-xs sm:text-sm text-felid-muted mt-1 max-w-xl">
-            Track your cat discoveries, rank progression, and field badges. Identified felids are permanently cataloged in your private local expedition log.
+          <p className="text-xs sm:text-sm text-felid-muted mt-1 max-w-xl font-mono leading-relaxed">
+            Track logged feline discoveries, rank progression, and field achievement badges. All verified sightings are persistently cataloged in your private local journal.
           </p>
         </div>
 
@@ -118,25 +115,25 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
             {!showResetConfirm ? (
               <button
                 onClick={() => setShowResetConfirm(true)}
-                className="px-3 py-1.5 rounded-xl text-xs text-felid-muted hover:text-pink-400 hover:bg-pink-950/40 border border-transparent hover:border-pink-900/40 transition-colors"
+                className="px-3.5 py-2 text-xs font-mono font-bold text-red-400 bg-[#0c0a0e] hover:bg-red-950 border-2 border-black shadow-brutal-sm brutal-press uppercase"
               >
                 Reset Progress
               </button>
             ) : (
-              <div className="flex items-center gap-2 bg-pink-950/60 p-2 rounded-xl border border-pink-800 text-xs">
+              <div className="flex items-center gap-2 bg-[#0c0a0e] p-2 border-2 border-black text-xs font-mono shadow-brutal-sm">
                 <span className="text-pink-200">Clear journal?</span>
                 <button
                   onClick={() => {
                     clearProgress();
                     setShowResetConfirm(false);
                   }}
-                  className="px-2.5 py-0.5 rounded-lg bg-pink-800 text-white font-medium"
+                  className="px-2.5 py-1 bg-red-600 text-white font-bold border border-black brutal-press uppercase"
                 >
                   Yes, reset
                 </button>
                 <button
                   onClick={() => setShowResetConfirm(false)}
-                  className="px-2.5 py-0.5 rounded-lg bg-felid-surface text-felid-muted"
+                  className="px-2.5 py-1 bg-[#1d1922] text-felid-muted border border-black brutal-press uppercase"
                 >
                   Cancel
                 </button>
@@ -146,29 +143,29 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
         )}
       </div>
 
-      {/* Rank Progress Bar */}
+      {/* Rank Progress Bar (Promptify Inset Influence) */}
       <RankProgress
         currentRank={currentRank}
         nextRank={nextRank}
         totalXp={totalXp}
         discoveryCount={discoveryCount}
-        totalSpeciesCount={meta?.species.length || 37}
+        totalSpeciesCount={meta?.species.length || 41}
       />
 
       {loading && (
-        <div className="py-12 text-center text-felid-muted space-y-2">
-          <div className="w-8 h-8 rounded-full border-2 border-felid-accent border-t-transparent animate-spin mx-auto" />
-          <p className="text-xs font-mono">Loading field journal records...</p>
+        <div className="py-12 text-center text-felid-muted space-y-2 font-mono">
+          <div className="w-8 h-8 border-2 border-felid-accent border-t-transparent animate-spin mx-auto" />
+          <p className="text-xs uppercase">LOADING EXPEDITION JOURNAL RECORDS...</p>
         </div>
       )}
 
       {/* Expedition Milestones & Badges */}
       {meta && (
         <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display font-bold text-xl text-felid-ivory flex items-center gap-2">
+          <div className="flex items-center justify-between pb-2 border-b-2 border-black">
+            <h2 className="font-display font-black text-xl text-felid-ivory uppercase flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-felid-accent" />
-              Field Badges & Feline Milestones
+              FIELD BADGES & MILESTONES
             </h2>
           </div>
 
@@ -191,13 +188,13 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
       {/* Discoveries Grid: Logged vs Uncataloged Silhouettes */}
       {meta && (
         <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display font-bold text-xl text-felid-ivory flex items-center gap-2">
+          <div className="flex items-center justify-between pb-2 border-b-2 border-black">
+            <h2 className="font-display font-black text-xl text-felid-ivory uppercase flex items-center gap-2">
               <Cat className="w-5 h-5 text-felid-accent" />
-              Felidae Field Roster
+              FELIDAE FIELD ROSTER
             </h2>
-            <span className="text-xs font-mono text-felid-muted">
-              {discoveryCount} Discovered / {meta.species.length - discoveryCount} Undocumented
+            <span className="text-xs font-mono font-bold text-felid-muted">
+              {discoveryCount} DISCOVERED / {meta.species.length - discoveryCount} UNDOCUMENTED
             </span>
           </div>
 
@@ -209,14 +206,14 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
                 <div
                   key={sp.id}
                   onClick={() => onSelectSpecies(sp.id)}
-                  className={`relative rounded-2xl overflow-hidden border p-2 flex flex-col items-center text-center cursor-pointer transition-all ${
+                  className={`relative border-2 border-black p-2 flex flex-col items-center text-center cursor-pointer transition-all brutal-press ${
                     isFound
-                      ? 'bg-felid-surface border-felid-accent/50 shadow-sm hover:shadow-pink-glow hover:scale-[1.02]'
-                      : 'bg-felid-surface/20 border-felid-border/50 opacity-40 hover:opacity-75'
+                      ? 'bg-[#141218] shadow-brutal-sm hover:shadow-brutal'
+                      : 'bg-[#0c0a0e]/60 opacity-40 hover:opacity-75'
                   }`}
                 >
                   {/* Thumbnail / Silhouette */}
-                  <div className="w-full aspect-square rounded-xl overflow-hidden bg-black relative mb-2">
+                  <div className="w-full aspect-square overflow-hidden bg-black border-2 border-black relative mb-2">
                     <img
                       src={sp.thumbnail_url}
                       alt={sp.common_name}
@@ -227,26 +224,26 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
                     />
 
                     {isFound ? (
-                      <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-felid-accent text-black flex items-center justify-center shadow">
-                        <CheckCircle2 className="w-3 h-3" />
+                      <div className="absolute top-1 right-1 w-5 h-5 bg-felid-accent text-black border border-black flex items-center justify-center shadow-brutal-sm font-black">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
                       </div>
                     ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                        <Lock className="w-4 h-4 text-felid-muted/70" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                        <Lock className="w-4 h-4 text-felid-muted" />
                       </div>
                     )}
                   </div>
 
-                  <span className="font-display font-bold text-xs text-felid-ivory truncate w-full">
+                  <span className="font-display font-black text-xs text-felid-ivory uppercase truncate w-full">
                     {sp.common_name}
                   </span>
                   <span className="text-[10px] text-felid-muted truncate w-full font-serif italic">
                     {sp.scientific_name}
                   </span>
 
-                  <div className="mt-1.5 pt-1.5 border-t border-felid-border/40 w-full flex items-center justify-between text-[10px] text-felid-muted font-mono">
+                  <div className="mt-1.5 pt-1.5 border-t border-[#332c3a] w-full flex items-center justify-between text-[10px] text-felid-muted font-mono font-bold">
                     <span>{sp.rarity}</span>
-                    <span className="text-felid-accent font-semibold">+{sp.xp_reward}XP</span>
+                    <span className="text-felid-accent">+{sp.xp_reward}XP</span>
                   </div>
                 </div>
               );
@@ -257,14 +254,14 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
 
       {/* Call to action if no discoveries */}
       {discoveryCount === 0 && (
-        <div className="p-8 rounded-3xl border border-dashed border-felid-border bg-felid-surface/30 text-center space-y-3">
-          <p className="text-sm text-felid-ivory font-medium">Your cat journal is currently blank.</p>
-          <p className="text-xs text-felid-muted max-w-md mx-auto">
+        <div className="p-8 border-2 border-dashed border-[#332c3a] bg-[#0c0a0e] text-center space-y-4 shadow-brutal-sm">
+          <p className="text-sm text-felid-ivory font-mono font-bold uppercase">YOUR EXPEDITION JOURNAL IS CURRENTLY BLANK.</p>
+          <p className="text-xs text-felid-muted max-w-md mx-auto font-mono leading-relaxed">
             Take or upload a photograph of your cat, kitten, or any wild felid in the Paw Scanner to earn your first discovery badge and XP!
           </p>
           <button
             onClick={() => setActivePage('identify')}
-            className="px-5 py-2.5 rounded-2xl bg-felid-accent hover:bg-felid-accent-hover text-black text-xs font-semibold inline-flex items-center gap-2 transition-all shadow-pink-glow"
+            className="px-6 py-3 bg-felid-accent hover:bg-felid-accent-hover text-black text-xs font-mono font-black uppercase border-2 border-black shadow-brutal brutal-press inline-flex items-center gap-2"
           >
             <PawPrint className="w-4 h-4" /> Go to Paw Scanner
           </button>

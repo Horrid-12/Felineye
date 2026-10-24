@@ -107,6 +107,30 @@ flowchart TD
 
 ## 🚀 Quick Start Guide
 
+### ⚡ One-Command Full-Stack Launch (Backend + Frontend)
+
+Start both the FastAPI backend and Vite frontend concurrently with unified logging and graceful shutdown:
+
+```bash
+# Windows (PowerShell):
+.\start.ps1
+
+# Windows (Command Prompt / Double-Click):
+start.bat
+
+# Cross-Platform (Python):
+python start.py
+```
+
+This launches:
+- **Web App**: `http://localhost:5173`
+- **Backend API**: `http://127.0.0.1:8000`
+- **Interactive Swagger Docs**: `http://127.0.0.1:8000/docs`
+
+Press `Ctrl+C` in the terminal to stop both services cleanly.
+
+---
+
 ### Prerequisites
 - **Node.js** >= v18.0.0
 - **Python** >= 3.10 (Python 3.12 recommended; `uv` supported)
