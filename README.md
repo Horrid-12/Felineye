@@ -53,58 +53,6 @@
 
 ---
 
-##  System Architecture
-
-```mermaid
-flowchart TD
-    subgraph Client ["Frontend (React 18 + TypeScript + Vite + Tailwind CSS)"]
-        UI[Pinky-Gray Feline UI]
-        Store[LocalStorage Collection Store]
-        ClientAPI[Typed API Client]
-        UI --> Store
-        UI --> ClientAPI
-    end
-
-    subgraph Backend ["Backend API (FastAPI + Python 3.12)"]
-        Router[FastAPI Endpoints]
-        Validator[Pillow Image Validator & Sanitizer]
-        Pipeline[Identification Pipeline]
-        SpeciesSvc[Curated Taxonomy Service]
-        ObsSvc[iNaturalist / GBIF Client]
-
-        Router --> Validator
-        Router --> Pipeline
-        Router --> SpeciesSvc
-        Router --> ObsSvc
-        Validator --> Pipeline
-    end
-
-    subgraph AI ["AI Inference Layer"]
-        Onnx[ONNX Runtime Classifier]
-        DevMock[Development Simulation Provider]
-        EntropyCalc[Shannon Entropy & Ambiguity Gate]
-
-        Pipeline --> Onnx
-        Pipeline --> DevMock
-        Pipeline --> EntropyCalc
-    end
-
-    subgraph DataSources ["External Wildlife Authorities & Local Catalog"]
-        iNat[iNaturalist API v1 - Generalized Coordinates]
-        GBIF[GBIF Taxonomy Backbone]
-        Catalog[Curated Local JSON Catalog - 37+ Felidae Species]
-
-        SpeciesSvc --> Catalog
-        ObsSvc --> iNat
-        ObsSvc --> GBIF
-        ObsSvc -.-> Catalog
-    end
-
-    ClientAPI <--> Router
-```
-
----
-
 ##  Quick Start Guide
 
 ### Prerequisites
