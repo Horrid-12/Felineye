@@ -1,4 +1,4 @@
-# FelidLens 🐾
+# FelidLens 
 ### AI-Powered Feline Identification & Wildlife Discovery Platform
 
 [![Status: Alpha](https://img.shields.io/badge/Status-Alpha%20(v0.1.0)-f472b6.svg)](https://github.com/Horrid-12/felidlens)
@@ -21,7 +21,7 @@
 
 ---
 
-## 🌟 Key Features
+##  Key Features
 
 1. **AI Feline Paw Scanner**:
    - Drag-and-drop, file picker, and mobile camera capture.
@@ -53,59 +53,7 @@
 
 ---
 
-## 🏗️ System Architecture
-
-```mermaid
-flowchart TD
-    subgraph Client ["Frontend (React 18 + TypeScript + Vite + Tailwind CSS)"]
-        UI[Pinky-Gray Feline UI]
-        Store[LocalStorage Collection Store]
-        ClientAPI[Typed API Client]
-        UI --> Store
-        UI --> ClientAPI
-    end
-
-    subgraph Backend ["Backend API (FastAPI + Python 3.12)"]
-        Router[FastAPI Endpoints]
-        Validator[Pillow Image Validator & Sanitizer]
-        Pipeline[Identification Pipeline]
-        SpeciesSvc[Curated Taxonomy Service]
-        ObsSvc[iNaturalist / GBIF Client]
-
-        Router --> Validator
-        Router --> Pipeline
-        Router --> SpeciesSvc
-        Router --> ObsSvc
-        Validator --> Pipeline
-    end
-
-    subgraph AI ["AI Inference Layer"]
-        Onnx[ONNX Runtime Classifier]
-        DevMock[Development Simulation Provider]
-        EntropyCalc[Shannon Entropy & Ambiguity Gate]
-
-        Pipeline --> Onnx
-        Pipeline --> DevMock
-        Pipeline --> EntropyCalc
-    end
-
-    subgraph DataSources ["External Wildlife Authorities & Local Catalog"]
-        iNat[iNaturalist API v1 - Generalized Coordinates]
-        GBIF[GBIF Taxonomy Backbone]
-        Catalog[Curated Local JSON Catalog - 37+ Felidae Species]
-
-        SpeciesSvc --> Catalog
-        ObsSvc --> iNat
-        ObsSvc --> GBIF
-        ObsSvc -.-> Catalog
-    end
-
-    ClientAPI <--> Router
-```
-
----
-
-## 🚀 Quick Start Guide
+##  Quick Start Guide
 
 ### ⚡ One-Command Full-Stack Launch (Backend + Frontend)
 
@@ -194,7 +142,7 @@ Vite is preconfigured to reverse-proxy `/api` requests directly to `http://127.0
 
 ---
 
-## 📡 Backend API Endpoints
+##  Backend API Endpoints
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
@@ -208,7 +156,7 @@ Vite is preconfigured to reverse-proxy `/api` requests directly to `http://127.0
 
 ---
 
-## 🧠 AI Identification & Uncertainty Handling
+##  AI Identification & Uncertainty Handling
 
 ### Provider Interface
 The identification service implements an abstract `BaseClassifier` protocol:
@@ -232,7 +180,7 @@ $$H(P) = -\sum_{i=1}^{N} p_i \ln(p_i)$$
 
 ---
 
-## 🛡️ Responsible Wildlife Data Protocol
+##  Responsible Wildlife Data Protocol
 
 FelidLens strictly adheres to biodiversity conservation ethics:
 - **No Precise GPS Coordinates**: Observations retrieved from the iNaturalist API have their latitude and longitude generalized to broad regional boundaries.
@@ -241,7 +189,7 @@ FelidLens strictly adheres to biodiversity conservation ethics:
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ### Backend Test Suite
 Run all unit and integration tests covering image validation, identification status handling, taxonomy filters, and API contracts:
@@ -256,7 +204,7 @@ npm run build --prefix frontend
 
 ---
 
-## 📄 License & Attribution
+##  License & Attribution
 
 - **Software**: MIT License
 - **Original Inspiration**: [BirdLens](https://github.com/sdprojects12/birdlens) by [sdprojects12](https://github.com/sdprojects12)
