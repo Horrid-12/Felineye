@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Cat, PawPrint, BookOpen, Award, MapPin, Info, Menu, X, Sparkles } from 'lucide-react';
+import { BookOpen, MapPin, Info, Menu, X } from 'lucide-react';
 import { ActivePage } from '../../types';
 import { useCollectionStore } from '../../store/useCollectionStore';
 
@@ -13,10 +13,7 @@ export const Navbar: React.FC<Props> = ({ activePage, setActivePage }) => {
   const { totalXp, currentRank, discoveryCount } = useCollectionStore();
 
   const navItems: { id: ActivePage; label: string; icon: React.ReactNode }[] = [
-    { id: 'home', label: 'Cat Haven', icon: <Cat className="w-3.5 h-3.5" /> },
-    { id: 'identify', label: 'Paw Scanner', icon: <PawPrint className="w-3.5 h-3.5" /> },
     { id: 'species', label: 'Species Atlas', icon: <BookOpen className="w-3.5 h-3.5" /> },
-    { id: 'collection', label: 'Expedition Log', icon: <Award className="w-3.5 h-3.5" /> },
     { id: 'observations', label: 'Observations', icon: <MapPin className="w-3.5 h-3.5" /> },
     { id: 'methodology', label: 'Methodology', icon: <Info className="w-3.5 h-3.5" /> },
   ];
@@ -75,7 +72,7 @@ export const Navbar: React.FC<Props> = ({ activePage, setActivePage }) => {
             })}
           </nav>
 
-          {/* Promptify-Style Discovery Rank Capsule & Quick Action */}
+          {/* Promptify-Style Discovery Rank Capsule */}
           <div className="hidden lg:flex items-center gap-3">
             <button
               onClick={() => handleNavClick('collection')}
@@ -91,14 +88,6 @@ export const Navbar: React.FC<Props> = ({ activePage, setActivePage }) => {
                   {totalXp} XP <span className="text-felid-accent">· {discoveryCount} Discovered</span>
                 </span>
               </div>
-            </button>
-
-            <button
-              onClick={() => handleNavClick('identify')}
-              className="bg-felid-accent hover:bg-felid-accent-hover text-black font-mono font-black text-xs px-3.5 py-2 border-2 border-black shadow-brutal-sm brutal-press flex items-center gap-1.5"
-            >
-              <PawPrint className="w-3.5 h-3.5" />
-              <span>SCAN</span>
             </button>
           </div>
 
@@ -132,10 +121,16 @@ export const Navbar: React.FC<Props> = ({ activePage, setActivePage }) => {
               {item.label}
             </button>
           ))}
-          <div className="pt-2 border-t-2 border-black flex items-center justify-between text-xs font-mono">
+          <button
+            onClick={() => handleNavClick('collection')}
+            className={`w-full pt-2 border-t-2 border-black flex items-center justify-between text-xs font-mono ${
+              activePage === 'collection' ? 'text-felid-accent' : ''
+            }`}
+            title={`${discoveryCount} species discovered. ${totalXp} XP accumulated.`}
+          >
             <span className="text-felid-muted">Status: <strong className="text-felid-accent">{currentRank.title}</strong></span>
             <span className="text-felid-accent font-bold">{totalXp} XP</span>
-          </div>
+          </button>
         </div>
       )}
     </header>

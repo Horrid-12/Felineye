@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { PawPrint, Cat, ArrowRight, Shield, Compass, Award } from 'lucide-react';
+import { PawPrint, Cat, ArrowRight, Compass, Award } from 'lucide-react';
 import { ActivePage, SpeciesDetail } from '../types';
 import { api } from '../services/api';
 import { ConservationBadge } from '../components/species/ConservationBadge';
@@ -27,7 +27,7 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
   }, []);
 
   return (
-    <div className="space-y-12 py-4">
+    <div className="space-y-8 py-2">
       {/* Hero Section with Velvet Neo-Brutalist Aesthetic */}
       <section className="border-2 border-black bg-[#141218] shadow-brutal-lg relative overflow-hidden">
         {/* Background Graphic Elements */}
@@ -44,31 +44,31 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
         <div className="absolute top-2 left-2 text-felid-accent font-mono text-[10px] z-10 select-none">+ [HUD_STATION]</div>
         <div className="absolute top-2 right-2 text-felid-accent font-mono text-[10px] z-10 select-none">ONLINE +</div>
 
-        <div className="relative z-10 max-w-3xl p-6 sm:p-10 lg:p-12 space-y-6">
+        <div className="relative z-10 max-w-3xl p-5 sm:p-7 lg:p-8 space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm text-xs font-mono font-black text-felid-accent uppercase">
             <PawPrint className="w-3.5 h-3.5" />
             <span>AI FIELD GUIDE // 41 EXTANT FELIDAE SPECIES</span>
           </div>
 
-          <h1 className="font-display font-black text-3xl sm:text-5xl lg:text-6xl text-felid-ivory uppercase tracking-tight leading-[1.1]">
+          <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-felid-ivory uppercase tracking-tight leading-[1.05]">
             DISCOVER THE WORLD OF <span className="text-felid-accent underline decoration-4 underline-offset-4">CATS</span>
           </h1>
 
-          <p className="text-sm sm:text-base text-felid-muted max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-felid-muted max-w-2xl leading-relaxed">
             From playful domestic companions curled on your couch to solitary snow leopards of alpine cliffs. Upload any photograph to classify feline morphology with transparent Shannon entropy confidence gates.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 pt-2">
+          <div className="flex flex-wrap items-center gap-3 pt-1">
             <button
               onClick={() => setActivePage('identify')}
-              className="px-6 py-3.5 bg-felid-accent hover:bg-felid-accent-hover text-black font-mono font-black text-xs uppercase border-2 border-black shadow-brutal brutal-press inline-flex items-center gap-2"
+              className="px-5 py-2.5 bg-felid-accent hover:bg-felid-accent-hover text-black font-mono font-black text-xs uppercase border-2 border-black shadow-brutal brutal-press inline-flex items-center gap-2"
             >
               <PawPrint className="w-4 h-4" />
               Scan a Cat Photo
             </button>
             <button
               onClick={() => setActivePage('species')}
-              className="px-6 py-3.5 bg-[#1d1922] hover:bg-[#26222d] text-felid-ivory font-mono font-bold text-xs uppercase border-2 border-black shadow-brutal brutal-press inline-flex items-center gap-2"
+              className="px-5 py-2.5 bg-[#1d1922] hover:bg-[#26222d] text-felid-ivory font-mono font-bold text-xs uppercase border-2 border-black shadow-brutal brutal-press inline-flex items-center gap-2"
             >
               <Cat className="w-4 h-4 text-felid-accent" />
               Browse Cat Atlas
@@ -78,32 +78,32 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
 
         {/* Promptify-Style Quick Platform Metrics Strip */}
         <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 border-t-2 border-black bg-[#0c0a0e] divide-x-2 divide-black text-center">
-          <div className="p-3.5">
-            <span className="block font-mono font-black text-xl sm:text-2xl text-felid-accent">
+          <div className="p-2.5">
+            <span className="block font-mono font-black text-lg sm:text-xl text-felid-accent">
               41
             </span>
             <span className="text-[10px] uppercase tracking-wider text-felid-muted font-mono font-bold">
               Felid Species
             </span>
           </div>
-          <div className="p-3.5">
-            <span className="block font-mono font-black text-xl sm:text-2xl text-felid-accent">
+          <div className="p-2.5">
+            <span className="block font-mono font-black text-lg sm:text-xl text-felid-accent">
               8
             </span>
             <span className="text-[10px] uppercase tracking-wider text-felid-muted font-mono font-bold">
               Cat Lineages
             </span>
           </div>
-          <div className="p-3.5">
-            <span className="block font-mono font-black text-xl sm:text-2xl text-emerald-400">
+          <div className="p-2.5">
+            <span className="block font-mono font-black text-lg sm:text-xl text-emerald-400">
               100%
             </span>
             <span className="text-[10px] uppercase tracking-wider text-felid-muted font-mono font-bold">
               Ethical GPS
             </span>
           </div>
-          <div className="p-3.5">
-            <span className="block font-mono font-black text-xl sm:text-2xl text-felid-ivory">
+          <div className="p-2.5">
+            <span className="block font-mono font-black text-lg sm:text-xl text-felid-ivory">
               {discoveryCount}
             </span>
             <span className="text-[10px] uppercase tracking-wider text-felid-muted font-mono font-bold">
@@ -210,56 +210,6 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
               <Award className="w-4 h-4" />
               Open Field Journal
             </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Ethical Exploration Highlights */}
-      <section className="border-2 border-black bg-[#141218] p-6 sm:p-8 space-y-6 shadow-brutal">
-        <div className="text-center max-w-2xl mx-auto space-y-2">
-          <h2 className="font-display font-black text-2xl text-felid-ivory uppercase tracking-tight">
-            SCIENTIFIC RIGOR & FELINE PROTECTION
-          </h2>
-          <p className="text-xs text-felid-muted font-mono leading-relaxed">
-            Curated from peer-reviewed cat taxonomy, verified occurrences, and transparent AI models.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-          <div className="p-5 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm space-y-2.5">
-            <div className="w-8 h-8 bg-felid-accent/20 border border-felid-accent/50 text-felid-accent flex items-center justify-center">
-              <Shield className="w-4 h-4" />
-            </div>
-            <h4 className="font-display font-black text-sm text-felid-ivory uppercase">
-              ETHICAL OBFUSCATION
-            </h4>
-            <p className="text-xs text-felid-muted leading-relaxed">
-              We never expose precise latitude and longitude for threatened felids like tigers or snow leopards. Locations are generalized to broad protected reserves.
-            </p>
-          </div>
-
-          <div className="p-5 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm space-y-2.5">
-            <div className="w-8 h-8 bg-felid-accent/20 border border-felid-accent/50 text-felid-accent flex items-center justify-center">
-              <PawPrint className="w-4 h-4" />
-            </div>
-            <h4 className="font-display font-black text-sm text-felid-ivory uppercase">
-              TRANSPARENT UNCERTAINTY
-            </h4>
-            <p className="text-xs text-felid-muted leading-relaxed">
-              Models evaluate Shannon entropy and feature bounds. If lighting, angle, or quality prevents definitive identification, the system returns an explicit uncertain state.
-            </p>
-          </div>
-
-          <div className="p-5 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm space-y-2.5">
-            <div className="w-8 h-8 bg-felid-accent/20 border border-felid-accent/50 text-felid-accent flex items-center justify-center">
-              <Cat className="w-4 h-4" />
-            </div>
-            <h4 className="font-display font-black text-sm text-felid-ivory uppercase">
-              ALL 8 CAT LINEAGES
-            </h4>
-            <p className="text-xs text-felid-muted leading-relaxed">
-              Includes comprehensive morphometrics, diet, behaviour, and IUCN Red List statuses for all 41 extant species across both Pantherinae and Felinae subfamilies.
-            </p>
           </div>
         </div>
       </section>

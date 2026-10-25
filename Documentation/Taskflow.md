@@ -45,6 +45,7 @@
 - [X] Build reusable cards, badges, modal, loading, empty, and error patterns.
 - [X] Add basic focus styles, aria labels, and semantic layout landmarks.
 - [X] Implement responsive navbar, mobile menu, and footer.
+- [X] Remove navbar duplication: entries that mirrored another control were dropped — `Paw Scanner` and the `SCAN` shortcut (both duplicated the home hero "Scan a Cat Photo" CTA), `Expedition Log` (duplicated the rank capsule, which already opens the collection page), and `Cat Haven` (duplicated the `FELIDLENS` brand button, which returns home).
 - [X] Implement state-driven page switching (`ActivePage` in `App.tsx`).
 - [X] Scaffold Home, Identify, Atlas, Detail, Collection, Observations, and Methodology pages.
 
@@ -53,6 +54,8 @@
 ## Phase 2 — Home Dashboard
 
 - [X] Build the hero section and primary identification call to action.
+- [X] Compact the hero (tighter padding, smaller display type, shorter metrics strip) so the fold shows the featured feline sooner.
+- [X] Drop the "Scientific Rigor & Feline Protection" card strip from the home page; that material lives on the Methodology page.
 - [X] Add the featured feline of the day.
 - [X] Add discovery progress, rank, and XP summaries.
 - [X] Add entry points to the Species Atlas and Collection.
@@ -167,6 +170,7 @@
 ## Phase 9 — Hardening and Quality Gates
 
 - [ ] Load `.env` explicitly (or document exported variables) and make CORS origins environment-driven.
+- [ ] Delete or reinstate `components/layout/Footer.tsx`, which is not rendered by `App.tsx` (dead code today).
 - [ ] Add catalog schema validation to startup or CI.
 - [ ] Add frontend test setup for jest-dom and accessibility assertions.
 - [ ] Add error boundaries and reduced-motion support.
@@ -187,6 +191,7 @@
 - [ ] Choose and document a deployment target and production serving model.
 - [ ] Define versioning and release checklist (changelog, screenshots, license, attribution).
 - [ ] Decide whether deep-linkable URLs are required; if so, replace state navigation with a router.
+- [ ] Decide whether the Home, Identify, and Collection pages need nav entries or active-state mappings now that their navbar shortcuts were removed (Home: highlight the brand button; Identify: map to Home; Collection: the rank capsule/drawer status row already opens it).
 - [ ] Complete a manual accessibility, responsive, and performance pass.
 
 **Exit criteria:** A new maintainer can set up, verify, deploy, and release from the documentation alone.
