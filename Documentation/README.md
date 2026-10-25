@@ -204,6 +204,14 @@ npm run build --prefix frontend
 
 ---
 
+##  Project Documentation
+
+- [Taskflow](Taskflow.md) — living roadmap with phase status, completed work, and next priorities.
+- [Architecture Decisions](Decisions.md) — decision log and the constraints each decision creates.
+- [Agent Instructions](../AGENTS.md) — repo-specific guidance for coding agents.
+
+---
+
 ##  License & Attribution
 
 - **Software**: MIT License

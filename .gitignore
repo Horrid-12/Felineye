@@ -58,3 +58,5 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+AGENTS.md
+Documentation/Decisions.md
