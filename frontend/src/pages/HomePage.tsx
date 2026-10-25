@@ -65,7 +65,7 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies, onOp
           </h1>
 
           <p className="text-xs sm:text-sm text-felid-muted max-w-2xl leading-relaxed">
-            From playful domestic companions curled on your couch to solitary snow leopards of alpine cliffs. Upload any photograph to classify feline morphology with transparent Shannon entropy confidence gates.
+            From playful domestic companions curled on your couch to solitary snow leopards of alpine cliffs. Upload a photograph and let a local vision model rank candidate species — with honest abstention when the evidence is weak.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-1">

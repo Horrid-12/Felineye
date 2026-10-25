@@ -1,12 +1,16 @@
-import { useState, useEffect } from 'react';
-import { DiscoveryRecord, RankTier } from '../types';
+import { useCallback, useSyncExternalStore } from 'react';
+import { RankTier } from '../types';
+import {
+  awardDiscovery,
+  CollectionState,
+  createEmptyCollectionState,
+  DiscoveryAwardInput,
+  DiscoveryAwardOutcome,
+  loadCollectionState,
+  STORAGE_KEY,
+} from './collectionStorage';
 
-const STORAGE_KEY = 'felidlens_discovery_store_v1';
-
-export interface CollectionState {
-  discoveries: Record<string, DiscoveryRecord>;
-  totalXp: number;
-}
+export type { CollectionState } from './collectionStorage';
 
 const DEFAULT_RANKS: RankTier[] = [
   { rank: 1, title: 'Kitten Scout', min_xp: 0, badge_icon: 'Eye', description: 'Beginning your journey into the world of cats.' },
@@ -17,56 +21,85 @@ const DEFAULT_RANKS: RankTier[] = [
   { rank: 6, title: 'Supreme Felid Sovereign', min_xp: 4500, badge_icon: 'Crown', description: 'Master of the Felidae kingdom, having documented the rarest cats on Earth.' },
 ];
 
-export function useCollectionStore() {
-  const [state, setState] = useState<CollectionState>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch (e) {
-      console.warn('Failed to read collection from localStorage:', e);
-    }
-    return { discoveries: {}, totalXp: 0 };
-  });
+// ---------------------------------------------------------------------------
+// Module-level store
+//
+// A single source of truth shared by every hook consumer (Navbar, IdentifyPage,
+// CollectionPage…). Updates are applied to the current snapshot synchronously,
+// so two rapid identifications cannot both observe the same empty journal and
+// award duplicate XP.
+// ---------------------------------------------------------------------------
 
-  useEffect(() => {
-    try {
+let currentState: CollectionState | null = null;
+const listeners = new Set<() => void>();
+
+function persist(state: CollectionState): void {
+  try {
+    if (typeof localStorage !== 'undefined') {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-      console.warn('Failed to persist collection to localStorage:', e);
     }
-  }, [state]);
+  } catch (error) {
+    console.warn('Failed to persist collection to localStorage:', error);
+  }
+}
 
-  const unlockDiscovery = (
-    speciesId: string,
-    confidence: number,
-    xpReward: number,
-    imagePreview?: string
-  ): { isNew: boolean; earnedXp: number } => {
-    if (state.discoveries[speciesId]) {
-      return { isNew: false, earnedXp: 0 };
-    }
+function getSnapshot(): CollectionState {
+  if (currentState === null) {
+    currentState = loadCollectionState();
+  }
+  return currentState;
+}
 
-    const newRecord: DiscoveryRecord = {
-      species_id: speciesId,
-      discovered_at: new Date().toISOString(),
-      confidence_score: confidence,
-      image_preview: imagePreview,
-      xp_earned: xpReward,
-    };
-
-    setState((prev) => ({
-      discoveries: { ...prev.discoveries, [speciesId]: newRecord },
-      totalXp: prev.totalXp + xpReward,
-    }));
-
-    return { isNew: true, earnedXp: xpReward };
+function subscribe(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
   };
+}
 
-  const isDiscovered = (speciesId: string): boolean => {
-    return Boolean(state.discoveries[speciesId]);
-  };
+function commit(next: CollectionState): void {
+  if (next === currentState) return;
+  currentState = next;
+  persist(next);
+  for (const listener of listeners) listener();
+}
+
+/**
+ * Discard the in-memory snapshot so the next read rehydrates from storage.
+ * Intended for tests and for a deliberate hard reset.
+ */
+export function resetCollectionStoreCache(): void {
+  currentState = null;
+}
+
+export function clearCollectionProgress(): void {
+  commit(createEmptyCollectionState());
+}
+
+export function useCollectionStore() {
+  const state = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+
+  /**
+   * Record a server-eligible identification.
+   *
+   * The caller must only invoke this when `result.is_discovery_eligible` is
+   * true. Rewards are computed here from the server's `xp_reward`, never from
+   * the presentation status, and are idempotent by species and image
+   * fingerprint.
+   */
+  const recordDiscovery = useCallback(
+    (input: DiscoveryAwardInput): DiscoveryAwardOutcome => {
+      const { state: next, outcome } = awardDiscovery(getSnapshot(), input);
+      commit(next);
+      return outcome;
+    },
+    [],
+  );
+
+  const isDiscovered = useCallback(
+    (speciesId: string): boolean => Boolean(getSnapshot().discoveries[speciesId]),
+    [],
+  );
 
   const currentRank = [...DEFAULT_RANKS]
     .reverse()
@@ -83,7 +116,7 @@ export function useCollectionStore() {
     currentRank,
     nextRank,
     isDiscovered,
-    unlockDiscovery,
-    clearProgress: () => setState({ discoveries: {}, totalXp: 0 }),
+    recordDiscovery,
+    clearProgress: clearCollectionProgress,
   };
 }

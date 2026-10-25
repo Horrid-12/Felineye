@@ -45,11 +45,13 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Models & Weights (keep large binaries out of git)
-models/*.onnx
-models/*.pt
-models/*.pth
-models/*.bin
-models/weights/
+*.onnx
+*.pt
+*.pth
+*.bin
+/models/
+/backend/models/*
+!/backend/models/.gitkeep
 
 # OS / Editors
 .DS_Store

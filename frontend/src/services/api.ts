@@ -39,7 +39,15 @@ async function handleResponse<T>(res: Response): Promise<T> {
 }
 
 export const api = {
-  async getHealth(): Promise<{ status: string; provider: string; is_mock: boolean; indexed_species_count: number }> {
+  async getHealth(): Promise<{
+    status: string;
+    provider: string;
+    provider_kind?: string;
+    is_mock: boolean;
+    model_available?: boolean;
+    indexed_species_count: number;
+    capabilities?: Record<string, unknown>;
+  }> {
     const res = await fetch(`${API_BASE}/health`);
     return handleResponse(res);
   },

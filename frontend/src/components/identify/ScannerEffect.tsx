@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { PawPrint, Sparkles } from 'lucide-react';
 
 const FELINE_DIAGNOSTIC_STEPS = [
-  'Detecting feline whisker & muzzle geometry...',
-  'Scanning ear tufts & cranial profile...',
-  'Mapping rosette, stripe, or tabby topology...',
-  'Tracing feline pupil aperture & eye symmetry...',
-  'Evaluating Shannon entropy & species ranks...',
-  'Calibrating feline confidence distribution...',
+  'Validating image quality and dimensions...',
+  'Checking feline content with an independent gate...',
+  'Encoding the image with the local vision model...',
+  'Comparing against Felidae species prompts...',
+  'Applying wild vs domestic taxonomy rules...',
+  'Checking evidence margins before accepting a species...',
 ];
 
 export const ScannerEffect: React.FC = () => {
@@ -27,7 +27,7 @@ export const ScannerEffect: React.FC = () => {
         <div className="w-8 h-8 border-t-3 border-l-3 border-felid-accent" />
         <div className="flex items-center gap-2 px-3 py-1 bg-black border-2 border-black shadow-brutal-sm text-[10px] uppercase font-mono font-black tracking-wider text-felid-accent">
           <PawPrint className="w-3.5 h-3.5 animate-pulse text-felid-accent" />
-          <span>DIAGNOSTIC NEURAL SCAN</span>
+          <span>LOCAL MODEL INFERENCE</span>
         </div>
         <div className="w-8 h-8 border-t-3 border-r-3 border-felid-accent" />
       </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, PawPrint, Scale, Info, Check } from 'lucide-react';
+import { ArrowRight, PawPrint, Scale, Info, Target } from 'lucide-react';
 import { CandidatePrediction } from '../../types';
 import { ConservationBadge } from '../species/ConservationBadge';
 
@@ -8,6 +8,12 @@ const CATEGORY_LABELS: Record<string, string> = {
   domestic_species: 'DOMESTIC CAT',
   domestic_breed: 'DOMESTIC BREED',
   hybrid: 'HYBRID',
+};
+
+const SCORE_SEMANTICS_LABELS: Record<string, string> = {
+  bioclip_image_text_cosine_similarity: 'IMAGE–TEXT SIMILARITY',
+  imagenet_softmax_class_score: 'IMAGENET CLASS SCORE',
+  simulated_rank_distribution: 'SIMULATED RANK (NOT AI)',
 };
 
 interface Props {
@@ -27,6 +33,10 @@ export const CandidateCard: React.FC<Props> = ({
 }) => {
   const category =
     candidate.category ?? (candidate.is_wild ? 'wild_species' : 'domestic_species');
+  const scoreLabel = candidate.score_semantics
+    ? SCORE_SEMANTICS_LABELS[candidate.score_semantics] ??
+      candidate.score_semantics.replace(/_/g, ' ').toUpperCase()
+    : 'MODEL SCORE';
 
   return (
     <div
@@ -36,11 +46,11 @@ export const CandidateCard: React.FC<Props> = ({
           : 'bg-[#1d1922] shadow-brutal hover:bg-[#26222d]'
       }`}
     >
-      {/* Top Banner Tag for Top Match */}
+      {/* Top banner for the asserted species-level match */}
       {isTop && (
         <div className="absolute -top-3 left-4 bg-felid-accent text-black font-mono font-black text-[10px] px-2.5 py-0.5 border-2 border-black shadow-brutal-sm uppercase flex items-center gap-1">
-          <Check className="w-3 h-3 stroke-[3]" />
-          <span>PRIMARY CLASSIFICATION MATCH</span>
+          <Target className="w-3 h-3 stroke-[3]" />
+          <span>TOP MODEL CANDIDATE</span>
         </div>
       )}
 
@@ -93,20 +103,18 @@ export const CandidateCard: React.FC<Props> = ({
 
             <div className="flex items-center gap-2">
               <ConservationBadge status={candidate.conservation_status} />
-              {isTop && (
-                <div className="bg-[#34d399] text-black border-2 border-black shadow-brutal-sm px-2 py-0.5 text-center font-mono font-black text-[10px] uppercase">
-                  CONFIRMED
-                </div>
-              )}
+              <div className="bg-[#0c0a0e] text-felid-muted border-2 border-black px-2 py-0.5 text-center font-mono font-black text-[10px] uppercase">
+                MODEL ESTIMATE
+              </div>
             </div>
           </div>
 
-          {/* Morphological Match Bar in Neo-Brutalist Slot */}
+          {/* Model score bar in neo-brutalist slot */}
           <div className="pt-1">
             <div className="flex items-center justify-between text-xs mb-1 font-mono">
               <span className="text-felid-muted flex items-center gap-1 text-[11px]">
                 {isTop && <PawPrint className="w-3.5 h-3.5 text-felid-accent" />}
-                CONFIDENCE EVALUATION
+                {scoreLabel}
               </span>
               <span className="font-bold text-felid-accent">
                 {candidate.score_percentage}%
@@ -122,13 +130,17 @@ export const CandidateCard: React.FC<Props> = ({
                 style={{ width: `${candidate.score_percentage}%` }}
               />
             </div>
+            <p className="mt-1 text-[10px] text-felid-muted font-mono">
+              Not a calibrated probability. Weak or close scores are reported as an abstention, not
+              a confirmation.
+            </p>
           </div>
 
-          {/* Diagnostic Traits / Rationale block */}
+          {/* Model rationale block */}
           {candidate.rationale && (
             <div className="bg-[#0c0a0e] border-2 border-black p-3 text-xs space-y-1">
               <span className="text-felid-accent font-mono font-black text-[10px] uppercase tracking-wider block">
-                DIAGNOSTIC TRAITS & MORPHOLOGY:
+                MODEL RATIONALE:
               </span>
               <p className="text-felid-ivory-dim leading-relaxed">
                 {candidate.rationale}

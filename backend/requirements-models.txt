@@ -1,0 +1,15 @@
+# Optional development dependencies for reproducing the real identification
+# weights. The FastAPI runtime does NOT need these; it needs only the packages
+# in requirements.txt (onnxruntime, numpy, pillow).
+#
+# Install PyTorch from the CPU wheel index first, then:
+#   python -m pip install -r backend/requirements-models.txt
+#
+# See Documentation/Identification-Model.md for the full setup procedure.
+
+torch>=2.4
+open_clip_torch>=2.24
+onnx>=1.16
+numpy>=1.26
+pillow>=10.2
+huggingface_hub>=0.23

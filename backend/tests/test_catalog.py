@@ -175,48 +175,69 @@ def test_identification_never_returns_breeds_or_hybrids():
     for candidate in data["candidates"]:
         assert candidate["category"] in ("wild_species", "domestic_species")
 
-    if data["status"] in ("high_confidence", "moderate_confidence"):
+    if data["status"].startswith("identified_"):
         assert data["top_candidate"]["category"] in ("wild_species", "domestic_species")
 
 
 class _StubClassifier:
-    """Deterministic classifier used to exercise category handling in the pipeline."""
+    """Deterministic provider used to exercise taxonomy handling in the pipeline."""
 
     def __init__(self, predictions):
         self._predictions = predictions
 
+    @property
+    def is_available(self):
+        return True
+
+    @property
+    def model_info(self):
+        return {"name": "stub", "version": "test", "license": "test", "available": True}
+
     async def predict(self, image):
         from backend.app.services.identification.base import RawInferenceResult
 
-        return RawInferenceResult(predictions=self._predictions, is_mock=True)
+        return RawInferenceResult(
+            predictions=self._predictions,
+            feline_detected=True,
+            feline_evidence=0.5,
+            score_semantics="test_similarity",
+            is_mock=False,
+            model_name="stub",
+        )
+
+
+def _textured_image():
+    """Deterministic high-detail image so the quality gate does not abstain."""
+    import numpy as np
+    from PIL import Image
+
+    rng = np.random.default_rng(7)
+    array = rng.integers(0, 256, size=(128, 128, 3), dtype=np.uint8)
+    return Image.fromarray(array, mode="RGB")
 
 
 def _run_pipeline(predictions):
     import asyncio
 
-    from PIL import Image
-
     from backend.app.services.identification.pipeline import IdentificationPipeline
 
-    pipe = IdentificationPipeline()
-    pipe._classifier = _StubClassifier(predictions)
-    image = Image.new("RGB", (64, 64), color=(140, 100, 70))
-    return asyncio.run(pipe.identify(image, {}))
+    pipe = IdentificationPipeline(classifier=_StubClassifier(predictions))
+    return asyncio.run(pipe.identify(_textured_image(), {"image_fingerprint": "stub-fixture"}))
 
 
-def test_breed_prediction_is_downgraded_to_uncertain_domestic_cat():
+def test_breed_prediction_is_downgraded_to_domestic_cat_without_breed_claim():
     from backend.app.models.identification import IdentificationStatus
     from backend.app.services.identification.base import RawPrediction
 
     result = _run_pipeline(
         [
-            RawPrediction(species_id="ragdoll", score=0.81),
-            RawPrediction(species_id="persian", score=0.12),
-            RawPrediction(species_id="panthera-leo", score=0.07),
+            RawPrediction(label="Ragdoll", species_id="ragdoll", score=0.81),
+            RawPrediction(label="Persian", species_id="persian", score=0.12),
+            RawPrediction(label="Lion", species_id="panthera-leo", score=0.07),
         ]
     )
 
-    assert result.status == IdentificationStatus.UNCERTAIN
+    assert result.status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT
     assert result.top_candidate is not None
     assert result.top_candidate.species_id == "felis-catus"
     assert result.top_candidate.category == "domestic_species"
@@ -230,15 +251,12 @@ def test_domestic_species_result_notes_undetermined_breed():
 
     result = _run_pipeline(
         [
-            RawPrediction(species_id="felis-catus", score=0.92),
-            RawPrediction(species_id="panthera-leo", score=0.03),
+            RawPrediction(label="Domestic Cat", species_id="felis-catus", score=0.92),
+            RawPrediction(label="Lion", species_id="panthera-leo", score=0.03),
         ]
     )
 
-    assert result.status in (
-        IdentificationStatus.HIGH_CONFIDENCE,
-        IdentificationStatus.MODERATE_CONFIDENCE,
-    )
+    assert result.status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT
     assert result.top_candidate.category == "domestic_species"
     assert "breed" in (result.uncertainty_note or "").lower()
 
@@ -247,9 +265,9 @@ def test_hybrid_prediction_is_dropped_and_never_classified():
     from backend.app.models.identification import IdentificationStatus
     from backend.app.services.identification.base import RawPrediction
 
-    result = _run_pipeline([RawPrediction(species_id="liger", score=0.95)])
+    result = _run_pipeline([RawPrediction(label="Liger", species_id="liger", score=0.95)])
 
-    assert result.status == IdentificationStatus.UNCERTAIN
+    assert result.status == IdentificationStatus.UNABLE_TO_IDENTIFY
     assert result.top_candidate is None
     assert result.candidates == []
     assert "taxonomy" in (result.uncertainty_note or "").lower()

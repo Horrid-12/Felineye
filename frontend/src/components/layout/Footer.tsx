@@ -103,7 +103,9 @@ export const Footer: React.FC<Props> = ({ setActivePage }) => {
             <div className="flex items-start gap-2 text-xs font-mono">
               <Shield className="w-4 h-4 text-felid-accent shrink-0 mt-0.5" />
               <span className="leading-relaxed text-felid-muted">
-                Evaluates prediction entropy and out-of-domain boundaries to provide honest confidence scores and prevent deceptive predictions.
+                Runs BioCLIP zero-shot ranking behind an independent feline content gate. Scores are
+                visual similarities, not calibrated probabilities, and weak or conflicting evidence
+                is reported as an abstention instead of a guess.
               </span>
             </div>
             <div className="pt-2 text-[10px] text-felid-muted font-mono">
