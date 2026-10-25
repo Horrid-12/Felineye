@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from .config import settings
-from .routes import health, identify, species, observations, collection
+from .routes import health, identify, species, breeds, catalog, taxa, observations, collection
 
 logging.basicConfig(
     level=logging.INFO,
@@ -42,6 +42,9 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.include_router(health.router)
 app.include_router(identify.router)
 app.include_router(species.router)
+app.include_router(breeds.router)
+app.include_router(catalog.router)
+app.include_router(taxa.router)
 app.include_router(observations.router)
 app.include_router(collection.router)
 
@@ -51,7 +54,9 @@ async def root_index():
         "service": "FelidLens API",
         "documentation": "/docs",
         "health": "/api/health",
-        "species_catalog": "/api/species"
+        "species_catalog": "/api/species",
+        "breed_catalog": "/api/breeds",
+        "taxonomy_meta": "/api/catalog/meta"
     }
 
 if __name__ == "__main__":

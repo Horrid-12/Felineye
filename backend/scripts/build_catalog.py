@@ -1271,12 +1271,920 @@ SPECIES = [
     }
 ]
 
+# --- CATALOG ADDITIONS (reviewed data; edit here, then regenerate) ---
+
+TAXONOMY = {'authority': 'IUCN/SSC Cat Specialist Group',
+ 'reference': 'Kitchener A.C. et al. (2017). A revised taxonomy of the Felidae: The final report of the Cat '
+              'Classification Task Force of the IUCN/SSC Cat Specialist Group. Cat News Special Issue 11.',
+ 'year': 2017,
+ 'url': 'https://www.catsg.org/',
+ 'taxonomy_note': 'The 41 recognised extant felid species comprise 40 wild species plus the domestic cat (Felis '
+                  'catus). This follows the 2017 CatSG revision; it is a documented snapshot, not a permanent '
+                  'universal constant.',
+ 'breed_registry': {'name': "Cat Fanciers' Association (CFA)",
+                    'url': 'https://cfa.org/breeds/',
+                    'verification': 'Each breed profile URL was fetched and its page title checked on 2026-10-25.',
+                    'note': 'TICA and FIFe recognise partly different breed lists. FelidLens uses CFA as the single '
+                            'documented registry for this catalogue.'},
+ 'breed_note': 'Breed names are not scientific taxa. Every breed is assigned to Felis catus and excluded from '
+               'species counts.',
+ 'hybrid_note': 'Hybrids are listed separately for completeness and are excluded from species and breed counts.',
+ 'updated': '2026-10-25'}
+
+NEW_SPECIES = [{'id': 'leopardus-tigrinus',
+  'common_name': 'Oncilla / Northern Tiger Cat',
+  'scientific_name': 'Leopardus tigrinus',
+  'subfamily': 'Felinae',
+  'lineage': 'Ocelot',
+  'genus': 'Leopardus',
+  'conservation_status': 'VU',
+  'conservation_title': 'Vulnerable (IUCN Red List)',
+  'is_wild': True,
+  'description': 'The oncilla, also called the northern tiger cat, is a small spotted cat of Central America and the '
+                 'Amazon basin. Its slender build, narrow muzzle and open rosettes separate it from the larger '
+                 'ocelot, while genetic work continues to revise the boundaries of the Leopardus tigrinus complex.',
+  'distinguishing_characteristics': ['Small, slender build with a narrow muzzle and long tail',
+                                     'Open black rosettes on a tawny to ochre ground colour',
+                                     'Two dark bands across the chest and sides of the neck',
+                                     'Nocturnal and partly arboreal, using trees for rest and hunting'],
+  'size_and_weight': 'Head-body: 38-59 cm; Tail: 20-42 cm; Weight: 1.5-3 kg',
+  'geographic_range': 'Disjunct populations in Costa Rica and Panama; Amazon basin and Cerrado of northern and '
+                      'central Brazil',
+  'habitats': ['Tropical Moist Forest', 'Montane Cloud Forest', 'Cerrado Savanna', 'Secondary Woodland'],
+  'diet': 'Small rodents, lizards, birds, tree frogs, and insects',
+  'behavior': 'Nocturnal and crepuscular; solitary and agile in trees; often rests in dense cover.',
+  'discovery_rarity': 'Rare',
+  'xp_reward': 220,
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Snethlage%27s_Tigrina_imported_from_iNaturalist_photo_354017009_on_2_August_2024_%28cropped%29.jpg',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Snethlage%27s_Tigrina_imported_from_iNaturalist_photo_354017009_on_2_August_2024_%28cropped%29.jpg',
+  'image_attribution': 'Photo: (c) Thomaz de Carvalho Callado, some rights reserved (CC BY) / Wikimedia Commons (CC '
+                       'BY 4.0)',
+  'similar_species': [{'slug': 'leopardus-wiedii',
+                       'common_name': 'Margay',
+                       'differentiator': 'Margays are similar in size but have larger eyes, broader rosettes, and '
+                                         'more fully arboreal habits.'},
+                      {'slug': 'leopardus-pardalis',
+                       'common_name': 'Ocelot',
+                       'differentiator': 'Ocelots are noticeably larger and heavier with denser, more complex '
+                                         'rosettes.'}],
+  'provenance': {'taxonomy': 'IUCN/SSC Cat Specialist Group (Kitchener et al. 2017)',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'External taxon identifiers omitted because iNaturalist and GBIF currently split the L. '
+                         'tigrinus complex differently from the 2017 CatSG treatment.'}},
+ {'id': 'leopardus-guttulus',
+  'common_name': 'Southern Tigrina / Southern Tiger Cat',
+  'scientific_name': 'Leopardus guttulus',
+  'subfamily': 'Felinae',
+  'lineage': 'Ocelot',
+  'genus': 'Leopardus',
+  'conservation_status': 'VU',
+  'conservation_title': 'Vulnerable (IUCN Red List)',
+  'is_wild': True,
+  'description': 'The southern tigrina is a small spotted cat of the Atlantic Forest and adjacent savannas in '
+                 'southern Brazil, Paraguay and northeastern Argentina. It was separated from the oncilla on genetic '
+                 'evidence and is extremely difficult to tell apart by coat alone.',
+  'distinguishing_characteristics': ['Yellowish-ochre coat with open black rosettes',
+                                     'Slightly darker and larger-rosetted than the oncilla, with a shorter tail',
+                                     'Adults weigh roughly 1.9-2.4 kg',
+                                     'Inhabits dense tropical and subtropical forest as well as open savanna'],
+  'size_and_weight': 'Weight: 1.9-2.4 kg (adult); body length comparable to the oncilla',
+  'geographic_range': 'Atlantic Forest from Minas Gerais and Goiás south through eastern Paraguay to northeastern '
+                      'Argentina',
+  'habitats': ['Atlantic Forest', 'Subtropical Rainforest', 'Deciduous Forest', 'Open Savanna'],
+  'diet': 'Small mammals (mostly under 100 g), birds, and lizards',
+  'behavior': 'Nocturnal and solitary; competes with the ocelot where their ranges overlap.',
+  'discovery_rarity': 'Rare',
+  'xp_reward': 240,
+  'image_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/Gato-do-mato-pequeno-REBIO_Municipal_da_Serra_do_Japi-Marcelo_Figueiroa%28001%29.jpg/1280px-Gato-do-mato-pequeno-REBIO_Municipal_da_Serra_do_Japi-Marcelo_Figueiroa%28001%29.jpg',
+  'thumbnail_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/Gato-do-mato-pequeno-REBIO_Municipal_da_Serra_do_Japi-Marcelo_Figueiroa%28001%29.jpg/960px-Gato-do-mato-pequeno-REBIO_Municipal_da_Serra_do_Japi-Marcelo_Figueiroa%28001%29.jpg',
+  'image_attribution': 'Photo: Marcelo Figueiroa / Wikimedia Commons (CC BY-SA 4.0)',
+  'similar_species': [{'slug': 'leopardus-tigrinus',
+                       'common_name': 'Oncilla',
+                       'differentiator': 'Oncillas are slightly smaller and paler with a longer tail; genetic '
+                                         'evidence, not coat pattern, is the reliable separator.'},
+                      {'slug': 'leopardus-geoffroyi',
+                       'common_name': "Geoffroy's Cat",
+                       'differentiator': "Geoffroy's cats are more uniform in colour with small, evenly spaced spots "
+                                         'rather than open rosettes.'}],
+  'provenance': {'taxonomy': 'IUCN/SSC Cat Specialist Group (Kitchener et al. 2017)',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'External taxon identifiers omitted because iNaturalist and GBIF currently split the L. '
+                         'tigrinus complex differently from the 2017 CatSG treatment.'}},
+ {'id': 'leopardus-colocolo',
+  'common_name': 'Pampas Cat',
+  'scientific_name': 'Leopardus colocolo',
+  'subfamily': 'Felinae',
+  'lineage': 'Ocelot',
+  'genus': 'Leopardus',
+  'conservation_status': 'NT',
+  'conservation_title': 'Near Threatened (IUCN Red List)',
+  'is_wild': True,
+  'description': 'The Pampas cat is a small, thick-furred wild cat of South American grasslands, shrublands and '
+                 'Andean slopes. Its coat varies strongly across its range, but all forms show two dark cheek lines '
+                 'and a bushy, ringed tail.',
+  'distinguishing_characteristics': ['Stocky build with a broad face and bushy tail',
+                                     'Two dark lines on each cheek',
+                                     'Highly variable pelage, from spotted to almost plain',
+                                     'Occurs from lowland grasslands to Andean páramo at 5,000 m'],
+  'size_and_weight': 'Head-body: 46-75 cm; Tail: 23-29 cm',
+  'geographic_range': 'Argentina, Uruguay, Paraguay, Bolivia, Brazil, Chile, Peru, Ecuador, and possibly '
+                      'southwestern Colombia',
+  'habitats': ['Pampas Grassland', 'Patagonian Steppe', 'Andean Páramo', 'Dry Forest', 'Shrubland'],
+  'diet': 'Small rodents, birds, and lizards',
+  'behavior': 'Mostly nocturnal and terrestrial; uses dense grass and rocks for cover.',
+  'discovery_rarity': 'Rare',
+  'xp_reward': 230,
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/0/09/Lydekker_-_Colocolo.JPG',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/0/09/Lydekker_-_Colocolo.JPG',
+  'image_attribution': 'Photo: Wyman & Sons Limited / Wikimedia Commons (Public domain)',
+  'similar_species': [{'slug': 'leopardus-jacobita',
+                       'common_name': 'Andean Mountain Cat',
+                       'differentiator': 'Andean mountain cats have a longer, ringed tail and live at higher, '
+                                         'rockier elevations.'},
+                      {'slug': 'leopardus-geoffroyi',
+                       'common_name': "Geoffroy's Cat",
+                       'differentiator': "Geoffroy's cats are smaller, more uniform in coat, and lack the two cheek "
+                                         'lines.'}],
+  'provenance': {'taxonomy': 'IUCN/SSC Cat Specialist Group (Kitchener et al. 2017)',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'The 2017 CatSG treatment keeps L. pajeros and L. braccatus within Leopardus colocolo; some '
+                         'external databases split them.'}},
+ {'id': 'prionailurus-javanensis',
+  'common_name': 'Sunda Leopard Cat',
+  'scientific_name': 'Prionailurus javanensis',
+  'subfamily': 'Felinae',
+  'lineage': 'Leopard Cat',
+  'genus': 'Prionailurus',
+  'conservation_status': 'LC',
+  'conservation_title': 'Least Concern (IUCN Red List, assessed under Leopard Cat P. bengalensis)',
+  'is_wild': True,
+  'description': 'The Sunda leopard cat is a small spotted cat of Sumatra, Borneo, Java, Bali and the Philippines, '
+                 'recognised as distinct from the mainland leopard cat. It is slender and long-legged, with small '
+                 'dark spots and a tail about half its head-body length.',
+  'distinguishing_characteristics': ['Small brown spots on grey-brown to ochre fur',
+                                     'Two dark stripes from the eyes to the ears and white muzzle markings',
+                                     'Long legs with well-developed toe webbing',
+                                     'Tail about 40-50% of head-body length'],
+  'size_and_weight': 'Head-body: 38.8-66 cm; Weight: 0.55-3.8 kg',
+  'geographic_range': 'Sumatra, Borneo, Java, Bali, Tebingtinggi, Palawan, Negros, Cebu and Panay',
+  'habitats': ['Lowland Tropical Evergreen Forest',
+               'Secondary Forest',
+               'Rubber and Oil Palm Plantations',
+               'Agricultural Edges'],
+  'diet': 'Small mammals, birds, lizards, frogs, and insects',
+  'behavior': 'Nocturnal and solitary; terrestrial but climbs well and often hunts near water.',
+  'discovery_rarity': 'Uncommon',
+  'xp_reward': 150,
+  'image_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Sunda_Leopard_Cat_0A2A1305.jpg/1280px-Sunda_Leopard_Cat_0A2A1305.jpg',
+  'thumbnail_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Sunda_Leopard_Cat_0A2A1305.jpg/960px-Sunda_Leopard_Cat_0A2A1305.jpg',
+  'image_attribution': 'Photo: JJ Harrison / Wikimedia Commons (CC BY-SA 3.0)',
+  'similar_species': [{'slug': 'prionailurus-bengalensis',
+                       'common_name': 'Leopard Cat',
+                       'differentiator': 'Mainland leopard cats are almost identical in appearance; geographic range '
+                                         'is the most reliable distinction.'},
+                      {'slug': 'prionailurus-viverrinus',
+                       'common_name': 'Fishing Cat',
+                       'differentiator': 'Fishing cats are larger and stockier with partly webbed feet and a strong '
+                                         'association with wetlands.'}],
+  'provenance': {'taxonomy': 'IUCN/SSC Cat Specialist Group (Kitchener et al. 2017)',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'IUCN does not assess P. javanensis separately; its status follows the Least Concern '
+                         'assessment of the Leopard Cat complex. GBIF currently treats the name as a synonym, so no '
+                         'GBIF key is stored.'}}]
+
+BREEDS = [{'id': 'ragdoll',
+  'common_name': 'Ragdoll',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/ragdoll/',
+  'origin': 'United States',
+  'development': 'Behavioral mutation in a crossbreed, presumed to be between the Persian or Turkish Angora and the '
+                 'Birman or Burmese',
+  'body_type': 'Cobby',
+  'coat_length': 'Long',
+  'coat_pattern': 'Colorpoint, mitted, or bicolor',
+  'description': 'The Ragdoll is a breed of cat with a distinct colorpoint coat and blue eyes. Its morphology is '
+                 'large and weighty, and it has a semi-long and silky soft coat.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/6/64/Ragdoll_from_Gatil_Ragbelas.jpg',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/6/64/Ragdoll_from_Gatil_Ragbelas.jpg',
+  'image_attribution': 'Photo: Simone Johnsson / Wikimedia Commons (CC BY-SA 2.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/ragdoll/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Ragdoll',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'persian',
+  'common_name': 'Persian',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/persian/',
+  'origin': 'Greater Iran',
+  'development': 'Natural, but some crossbreeding with the Turkish Angora',
+  'body_type': 'Cobby',
+  'coat_length': 'Long',
+  'coat_pattern': 'All but colorpoint',
+  'description': 'The Persian cat, also known as the Persian Longhair or simply Persian, is a long-haired '
+                 'traditional breed of cat characterised by a round face and petite, but not flat and not smashed '
+                 'in, muzzle. The short flat nose was created in the US from in-breeding and causes breathing '
+                 'difficulties in the breed, whereas the traditional Persian breed has a petite nose which enables '
+                 'them to breathe without difficulties.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/8/81/Persialainen.jpg',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/8/81/Persialainen.jpg',
+  'image_attribution': 'Photo: The original uploader was Lajoma at Finnish Wikipedia. / Wikimedia Commons (CC BY-SA '
+                       '3.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/persian/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Persian_cat',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'siamese',
+  'common_name': 'Siamese',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/siamese/',
+  'origin': 'Developed in United States and Europe; foundation stock from Thailand',
+  'development': 'Mutation of the Thai',
+  'body_type': 'Oriental',
+  'coat_length': 'Short',
+  'coat_pattern': 'Colorpoint',
+  'description': 'The Siamese cat is one of the first distinctly recognised breeds of domestic cat. It is '
+                 'selectively bred since the end of the 19th-century from the Wichianmat landrace, one of several '
+                 'varieties of cats native to Thailand, and is pedigreed in all major cat fancier and breeder '
+                 'organisations.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/1/16/Siamese_cat_Vaillante.JPG',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/1/16/Siamese_cat_Vaillante.JPG',
+  'image_attribution': 'Photo: Meekahoo / Wikimedia Commons (CC BY-SA 3.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/siamese/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Siamese_cat',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'maine-coon',
+  'common_name': 'Maine Coon',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/maine-coon/',
+  'origin': 'United States',
+  'development': 'Natural, crossbreed',
+  'body_type': 'Large',
+  'coat_length': 'Semi-long/long',
+  'coat_pattern': 'All Western',
+  'description': 'The Maine Coon is a large domesticated cat breed. The breed is selectively bred from one of the '
+                 'oldest landraces in North America, and is pedigreed in all major cat registries worldwide.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/8/87/M%C3%A2le_Black_Silver_Blotched_Tabby.jpeg',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/8/87/M%C3%A2le_Black_Silver_Blotched_Tabby.jpeg',
+  'image_attribution': 'Wikimedia Commons (CC BY-SA 4.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/maine-coon/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Maine_Coon',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'bengal',
+  'common_name': 'Bengal',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/bengal/',
+  'origin': 'Developed in United States, but created in Asia',
+  'development': "Hybrid of the Abyssinian and Egyptian Mau × leopard cat (''Prionailurus bengalensis'')",
+  'body_type': 'Large',
+  'coat_length': 'Short',
+  'coat_pattern': 'Spotted, marbled, or rosetted',
+  'description': 'The Bengal cat is a breed of hybrid cat created from crossbreeding an Asian leopard cat to '
+                 'domestic cats, especially the spotted tabby Egyptian Mau. Bengals have varying appearances.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Paintedcats_Red_Star_standing.jpg',
+  'thumbnail_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Paintedcats_Red_Star_standing.jpg/960px-Paintedcats_Red_Star_standing.jpg',
+  'image_attribution': 'Photo: User:Lightburst / Wikimedia Commons (CC BY-SA 4.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/bengal/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Bengal_cat',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'sphynx',
+  'common_name': 'Sphynx',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/sphynx/',
+  'origin': 'Canada, Europe',
+  'development': 'Mutation',
+  'body_type': 'Oriental',
+  'coat_length': 'Hairless',
+  'coat_pattern': 'All',
+  'description': 'The Sphynx cat also known as the Canadian Sphynx, is a breed of cat known for its lack of fur. '
+                 'Hairlessness in cats is a naturally occurring genetic mutation, and the Sphynx was developed '
+                 'through selective breeding of these animals, starting in the 1960s.',
+  'image_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/Sphynx_-_cat._img_031.jpg/1280px-Sphynx_-_cat._img_031.jpg',
+  'thumbnail_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/Sphynx_-_cat._img_031.jpg/960px-Sphynx_-_cat._img_031.jpg',
+  'image_attribution': 'Photo: Dmitry Makeev / Wikimedia Commons (CC BY-SA 4.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/sphynx/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Sphynx_cat',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'british-shorthair',
+  'common_name': 'British Shorthair',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/british-shorthair/',
+  'origin': 'United Kingdom (England)',
+  'development': 'Natural',
+  'body_type': 'Cobby',
+  'coat_length': 'Short',
+  'coat_pattern': 'All',
+  'description': 'The British Shorthair is the pedigree version of the landrace of British domestic cat, with a '
+                 'distinctively stocky body, thick coat, and broad face. The most familiar colour variant is the '
+                 '"British Blue", with a solid grey-blue coat, copper-coloured eyes, and a medium-sized tail.',
+  'image_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Mystica_from_British_Empire_Cattery.jpg/1280px-Mystica_from_British_Empire_Cattery.jpg',
+  'thumbnail_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Mystica_from_British_Empire_Cattery.jpg/960px-Mystica_from_British_Empire_Cattery.jpg',
+  'image_attribution': 'Photo: BritishEmpire / Wikimedia Commons (CC BY-SA 3.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/british-shorthair/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/British_Shorthair',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'scottish-fold',
+  'common_name': 'Scottish Fold',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/scottish-fold/',
+  'origin': 'United Kingdom (Scotland)',
+  'development': 'Mutation of the bones and cartilage of the ears',
+  'body_type': 'Cobby',
+  'coat_length': 'Short/long',
+  'coat_pattern': 'All',
+  'description': 'The Scottish Fold is a breed of domestic cat characterised by a naturally occurring autosomal '
+                 'dominant mutation associated with feline osteochondrodysplasia (FOCD). This genetic health '
+                 "condition affects cartilage development throughout the body and produces the breed's defining "
+                 'feature: ears that "fold" forward and down towards the front of the head, contributing to its '
+                 'often described “owl-like” appearance.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Scottish_Fold_-_CFF_cat_show_Heinola_2008-05-03_IMG_7882.JPG',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Scottish_Fold_-_CFF_cat_show_Heinola_2008-05-03_IMG_7882.JPG',
+  'image_attribution': 'Photo: Heikki Siltala / Wikimedia Commons (CC BY 3.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/scottish-fold/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Scottish_Fold',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'abyssinian',
+  'common_name': 'Abyssinian',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/abyssinian/',
+  'origin': 'Unspecified, but somewhere in Afro-Asia, likely Ethiopia',
+  'development': 'Natural',
+  'body_type': 'Semi-foreign',
+  'coat_length': 'Short',
+  'coat_pattern': 'Ticked tabby',
+  'description': 'The Abyssinian, colloquially known as the Aby, is a standardised breed of cat with a distinctive '
+                 '"ticked" tabby coat, in which individual agouti hairs are banded with different colours. The '
+                 "breed's distinctive appearance, seeming long, lean and finely coloured compared to other cats, has "
+                 'been analogised to that of human fashion models.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/9/9b/Gustav_chocolate.jpg',
+  'thumbnail_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9b/Gustav_chocolate.jpg/960px-Gustav_chocolate.jpg',
+  'image_attribution': 'Photo: Karin Langner-Bahmann / Wikimedia Commons (CC BY-SA 3.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/abyssinian/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Abyssinian_cat',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'american-shorthair',
+  'common_name': 'American Shorthair',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/american-shorthair/',
+  'origin': 'United States',
+  'development': 'Natural',
+  'body_type': 'Cobby',
+  'coat_length': 'Short',
+  'coat_pattern': 'All',
+  'description': 'The American Shorthair (ASH) is a breed of domestic cat believed to be descended from European '
+                 'cats brought to North America by early settlers to protect valuable cargo from mice and rats. '
+                 "According to the Cat Fanciers' Association (CFA), it was the eighth-most-popular pedigreed cat in "
+                 'the world for 2020.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Jewelkatz_Romeo_Of_Stalker-Bars.jpg',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Jewelkatz_Romeo_Of_Stalker-Bars.jpg',
+  'image_attribution': 'Photo: odin_aka_zero-one / Wikimedia Commons (CC BY-SA 3.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/american-shorthair/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/American_Shorthair',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'balinese',
+  'common_name': 'Balinese',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/balinese/',
+  'origin': 'Developed in United States; foundation stock from Thailand',
+  'development': 'Mutation of the Siamese',
+  'body_type': 'Semi-foreign',
+  'coat_length': 'Long',
+  'coat_pattern': 'Colorpoint',
+  'description': 'The Balinese is a long-haired breed of domestic cat with Siamese-style point coloration and '
+                 'sapphire-blue eyes. The Balinese is also known as the purebred long-haired Siamese since it '
+                 'originated as a natural mutation of that breed and hence is essentially the same cat but with a '
+                 'medium-length silky coat and a distinctively plumed tail.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/0/05/Old-Style_Balinese_Cat.png',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/0/05/Old-Style_Balinese_Cat.png',
+  'image_attribution': 'Photo: Mary Desmond / Wikimedia Commons (CC BY-SA 3.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/balinese/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Balinese_cat',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'birman',
+  'common_name': 'Birman',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/birman/',
+  'origin': 'Developed in France; foundation stock from Burma (Myanmar)',
+  'development': 'The original Birman was crossed with the Siamese and the Persian to create the Birman of today',
+  'body_type': 'Cobby',
+  'coat_length': 'Semi-long',
+  'coat_pattern': 'Mitted colorpoint',
+  'description': 'The Birman, also called the "Sacred Cat of Burma", is a domestic cat breed. The Birman is a '
+                 'long-haired, colour-pointed cat distinguished by a silky coat, deep blue eyes, and contrasting '
+                 'white "gloves" on each paw.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/0/06/Birmanstrofe.jpg',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/0/06/Birmanstrofe.jpg',
+  'image_attribution': 'Photo: Kristin Kokkersvold / Wikimedia Commons (Copyrighted free use)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/birman/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Birman',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'bombay',
+  'common_name': 'Bombay',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/bombay/',
+  'origin': 'United States and Burma (Myanmar)',
+  'development': 'Crossbreed between the Black American Shorthair and Sable Burmese',
+  'body_type': 'Cobby',
+  'coat_length': 'Short',
+  'coat_pattern': 'Solid black',
+  'description': 'The Bombay cat is a short-haired breed of domestic cat. Bombays are glossy solid black cats with a '
+                 'muscular build, and have characteristic large bright copper-golden eyes.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Bombay_femelle.JPG',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Bombay_femelle.JPG',
+  'image_attribution': 'Photo: Pititebilette / Wikimedia Commons (CC BY-SA 3.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/bombay/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Bombay_cat',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'burmese',
+  'common_name': 'Burmese',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/burmese/',
+  'origin': 'Burma (Myanmar)',
+  'development': 'Natural',
+  'body_type': 'Semi-foreign or semi-cobby',
+  'coat_length': 'Short',
+  'coat_pattern': 'Solid and Tortoiseshell',
+  'description': 'The Burmese cat is a pedigreed breed of domestic cat, originating in Burma, believed to have its '
+                 'roots near the Thai–Burma border, and developed by selective breeding in the United States and '
+                 'Britain.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/5/5c/British_burmese_-_Andel_Alois_at_Cat_show.JPG',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/5/5c/British_burmese_-_Andel_Alois_at_Cat_show.JPG',
+  'image_attribution': 'Photo: Heikkisiltala / Wikimedia Commons (CC BY 3.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/burmese/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Burmese_cat',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'devon-rex',
+  'common_name': 'Devon Rex',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/devon-rex/',
+  'origin': 'Buckfastleigh, Devon, England, United Kingdom',
+  'development': 'Mutation',
+  'body_type': 'Semi-foreign',
+  'coat_length': 'Rex',
+  'coat_pattern': 'All',
+  'description': 'The Devon Rex is a tall-eared, short-haired breed of cat that emerged in England during the late '
+                 '1950s. The breed is known for its atypical appearance, with an oddly shaped head, large eyes, and '
+                 'the short and wavy coat.',
+  'image_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/Devon_Rex_Cassini.jpeg/1280px-Devon_Rex_Cassini.jpeg',
+  'thumbnail_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/Devon_Rex_Cassini.jpeg/960px-Devon_Rex_Cassini.jpeg',
+  'image_attribution': 'Photo: Anna Belial / Wikimedia Commons (CC BY 4.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/devon-rex/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Devon_Rex',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'egyptian-mau',
+  'common_name': 'Egyptian Mau',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/egyptian-mau/',
+  'origin': 'Egypt',
+  'development': 'Natural',
+  'body_type': 'Moderate and muscular',
+  'coat_length': 'Short',
+  'coat_pattern': 'Spotted tabby',
+  'description': 'The Egyptian Mau is a small to medium-sized, short to medium-haired rare standardised cat breed. '
+                 'It bears a solid or spotted tabby coat pattern, which makes the Mau relatively unique as it is one '
+                 'of the few naturally spotted tabby breeds of domesticated cat.',
+  'image_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/RoyalNefertt_Serket_of_AchetAton.jpg/1280px-RoyalNefertt_Serket_of_AchetAton.jpg',
+  'thumbnail_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/RoyalNefertt_Serket_of_AchetAton.jpg/960px-RoyalNefertt_Serket_of_AchetAton.jpg',
+  'image_attribution': 'Photo: Achet Aton / Wikimedia Commons (CC BY-SA 4.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/egyptian-mau/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Egyptian_Mau',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'manx',
+  'common_name': 'Manx',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/manx/',
+  'origin': 'Isle of Man',
+  'development': 'Mutation of shortened tail',
+  'body_type': 'Moderate',
+  'coat_length': 'Short/long',
+  'coat_pattern': 'All',
+  'description': 'The Manx cat is a breed of domestic cat originating on the Isle of Man, with a mutation that '
+                 'shortens the tail. Many Manx have a small stub of a tail, but Manx cats are best known as being '
+                 'entirely tailless; this is the most distinguishing characteristic of the breed, along with '
+                 'elongated hind legs and a rounded head.',
+  'image_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Manx_cat_Latte.jpg/1280px-Manx_cat_Latte.jpg',
+  'thumbnail_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Manx_cat_Latte.jpg/960px-Manx_cat_Latte.jpg',
+  'image_attribution': 'Photo: Hekl01999 / Wikimedia Commons (CC0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/manx/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Manx_cat',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'norwegian-forest-cat',
+  'common_name': 'Norwegian Forest Cat',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/norwegian-forest-cat/',
+  'origin': 'Norway',
+  'development': 'Natural',
+  'body_type': 'Cobby',
+  'coat_length': 'Long',
+  'coat_pattern': 'All Western',
+  'description': 'The Norwegian Forest Cat is a pedigreed breed of domestic cat originating in Northern Europe. This '
+                 'landrace breed is adapted to a very cold climate, with a top coat of long, glossy hair and a '
+                 'woolly undercoat for insulation.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/6/65/Dalaja-Doll-norv%C3%A9gien-ambre-blotched-tabby_avec-blanc_2008_%28cropped%29.jpg',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/6/65/Dalaja-Doll-norv%C3%A9gien-ambre-blotched-tabby_avec-blanc_2008_%28cropped%29.jpg',
+  'image_attribution': 'Photo: Gangburgondes / Wikimedia Commons (CC BY-SA 3.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/norwegian-forest-cat/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Norwegian_Forest_cat',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'russian-blue',
+  'common_name': 'Russian Blue',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/russian-blue/',
+  'origin': 'Russia',
+  'development': 'Natural',
+  'body_type': 'Moderate, Oriental',
+  'coat_length': 'Short',
+  'coat_pattern': 'Solid blue',
+  'description': 'The Russian Blue cat, commonly known as the Russian Blue, is a pedigreed cat breed characterised '
+                 'by a solid blue coat that has been the breed’s defining feature for over a century. The Russian '
+                 'Blue breed is accepted for registry and holds championship status with all major international cat '
+                 'registries.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/4/4f/Russian_blue_kitten_%28cropped%29.jpg',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/4/4f/Russian_blue_kitten_%28cropped%29.jpg',
+  'image_attribution': 'Photo: Anna Utekhina http://kidsphoto.ru/ / Wikimedia Commons (CC BY-SA 3.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/russian-blue/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Russian_Blue',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'siberian',
+  'common_name': 'Siberian',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/siberian/',
+  'origin': 'Siberian Tundra, Russia',
+  'development': 'Natural',
+  'body_type': 'Cobby',
+  'coat_length': 'Long',
+  'coat_pattern': 'All Western',
+  'description': 'The Siberian is a centuries-old landrace of domestic cat in Russia, and recently developed as a '
+                 'formal breed with standards promulgated the world over since the late-1980s. Since 2006, the breed '
+                 'is recognised for registry and championship status with all major cat registries.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/2/27/Samiha%27s_Siberian_cat_Moon_Pie.jpg',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/2/27/Samiha%27s_Siberian_cat_Moon_Pie.jpg',
+  'image_attribution': 'Photo: Floofymarshmallow / Wikimedia Commons (CC BY-SA 4.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/siberian/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Siberian_cat',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'tonkinese',
+  'common_name': 'Tonkinese',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/tonkinese/',
+  'origin': 'Canada, United States',
+  'development': 'Crossbreed between the Burmese and Siamese',
+  'body_type': 'Oriental',
+  'coat_length': 'Short',
+  'coat_pattern': 'Colorpoint, mink, or solid',
+  'description': 'Tonkinese is a domestic cat breed produced by crossbreeding between the Siamese and Burmese. '
+                 'Members of the breed are distinguished by a pointed coat pattern in a variety of colors.',
+  'image_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Tonkinese_Cat_-_Leo.jpg/1280px-Tonkinese_Cat_-_Leo.jpg',
+  'thumbnail_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Tonkinese_Cat_-_Leo.jpg/960px-Tonkinese_Cat_-_Leo.jpg',
+  'image_attribution': 'Photo: Luigi Leahy / Wikimedia Commons (CC BY-SA 4.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/tonkinese/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Tonkinese_cat',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}},
+ {'id': 'turkish-angora',
+  'common_name': 'Turkish Angora',
+  'scientific_name': 'Felis catus',
+  'category': 'domestic_breed',
+  'rank': 'breed',
+  'parent_id': 'felis-catus',
+  'registry': "Cat Fanciers' Association (CFA)",
+  'registry_url': 'https://cfa.org/breed/turkish-angora/',
+  'origin': 'Turkey',
+  'development': 'Natural',
+  'body_type': 'Semi-cobby',
+  'coat_length': 'Semi-long',
+  'coat_pattern': 'All',
+  'description': 'The Turkish Angora is a breed of domestic cat. Turkish Angoras are one of the ancient, natural '
+                 'breeds of cat, having originated in central Anatolia.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/7/76/Turkish_Angora_in_Ankara_Zoo_%28AO%C3%87%29.JPG',
+  'thumbnail_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Turkish_Angora_in_Ankara_Zoo_%28AO%C3%87%29.JPG/960px-Turkish_Angora_in_Ankara_Zoo_%28AO%C3%87%29.JPG',
+  'image_attribution': 'Photo: Ankarakediler / Wikimedia Commons (CC BY 3.0)',
+  'provenance': {'breed_registry': "Cat Fanciers' Association (CFA)",
+                 'registry_url': 'https://cfa.org/breed/turkish-angora/',
+                 'registry_verified': '2026-10-25',
+                 'descriptive_source': 'https://en.wikipedia.org/wiki/Turkish_Angora',
+                 'image_source': 'Wikimedia Commons',
+                 'note': 'CFA breed profile fetched and title-checked during curation. Breed names are not '
+                         'scientific taxa.'}}]
+
+HYBRIDS = [{'id': 'liger',
+  'common_name': 'Liger',
+  'scientific_name': 'Panthera leo × Panthera tigris',
+  'category': 'hybrid',
+  'rank': 'hybrid',
+  'parents': ['panthera-leo', 'panthera-tigris'],
+  'parent_names': ['Lion (male)', 'Tiger (female)'],
+  'description': 'The liger is the hybrid offspring of a male lion and a female tiger. It is not a species or a '
+                 'breed and is known only from captivity; males are generally sterile.',
+  'note': 'Hybrid cross listed for completeness. Excluded from wild-species, domestic-species, and breed counts.',
+  'image_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Liger_couple.jpg/1280px-Liger_couple.jpg',
+  'thumbnail_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Liger_couple.jpg/960px-Liger_couple.jpg',
+  'image_attribution': 'Photo: Hkandy / Wikimedia Commons (CC BY-SA 3.0)',
+  'provenance': {'taxonomy': 'Not a taxon; interspecific hybrid',
+                 'source': 'https://en.wikipedia.org/wiki/Liger',
+                 'image_source': 'Wikimedia Commons'}},
+ {'id': 'tigon',
+  'common_name': 'Tigon',
+  'scientific_name': 'Panthera tigris × Panthera leo',
+  'category': 'hybrid',
+  'rank': 'hybrid',
+  'parents': ['panthera-tigris', 'panthera-leo'],
+  'parent_names': ['Tiger (male)', 'Lion (female)'],
+  'description': 'The tigon is the hybrid offspring of a male tiger and a female lion. It is not a species or a '
+                 'breed and is known only from captivity; males are generally sterile.',
+  'note': 'Hybrid cross listed for completeness. Excluded from wild-species, domestic-species, and breed counts.',
+  'image_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/Tigon_tiger_x_lion_hybrid_by_artbyjrc_df4918k.jpg/1280px-Tigon_tiger_x_lion_hybrid_by_artbyjrc_df4918k.jpg',
+  'thumbnail_url': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/Tigon_tiger_x_lion_hybrid_by_artbyjrc_df4918k.jpg/960px-Tigon_tiger_x_lion_hybrid_by_artbyjrc_df4918k.jpg',
+  'image_attribution': 'Photo: artbyjrc / Wikimedia Commons (CC BY 4.0)',
+  'provenance': {'taxonomy': 'Not a taxon; interspecific hybrid',
+                 'source': 'https://en.wikipedia.org/wiki/Tigon',
+                 'image_source': 'Wikimedia Commons'}},
+ {'id': 'leopon',
+  'common_name': 'Leopon',
+  'scientific_name': 'Panthera pardus × Panthera leo',
+  'category': 'hybrid',
+  'rank': 'hybrid',
+  'parents': ['panthera-pardus', 'panthera-leo'],
+  'parent_names': ['Leopard', 'Lion'],
+  'description': 'The leopon is a captive-bred hybrid between a leopard and a lion. It is not a species or a breed '
+                 'and has no formal taxonomic standing; like most Panthera hybrids, males are generally infertile.',
+  'note': 'Hybrid cross listed for completeness. No species account image is available on Wikimedia Commons, so the '
+          'image fields are intentionally empty.',
+  'image_url': None,
+  'thumbnail_url': None,
+  'image_attribution': None,
+  'provenance': {'taxonomy': 'Not a taxon; interspecific hybrid',
+                 'source': 'https://en.wikipedia.org/wiki/Panthera_hybrid',
+                 'image_source': None}},
+ {'id': 'pumapard',
+  'common_name': 'Pumapard',
+  'scientific_name': 'Puma concolor × Panthera pardus',
+  'category': 'hybrid',
+  'rank': 'hybrid',
+  'parents': ['puma-concolor', 'panthera-pardus'],
+  'parent_names': ['Cougar', 'Leopard'],
+  'description': 'The pumapard is a hybrid of a cougar and a leopard, recorded from both reciprocal pairings in '
+                 'captivity. It is not a species or a breed and typically shows dwarfism.',
+  'note': 'Hybrid cross listed for completeness. Excluded from wild-species, domestic-species, and breed counts.',
+  'image_url': 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Pumapard-1904.jpg',
+  'thumbnail_url': 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Pumapard-1904.jpg',
+  'image_attribution': 'Wikimedia Commons (Public domain)',
+  'provenance': {'taxonomy': 'Not a taxon; interspecific hybrid',
+                 'source': 'https://en.wikipedia.org/wiki/Pumapard',
+                 'image_source': 'Wikimedia Commons'}}]
+
+# --- END CATALOG ADDITIONS ---
+
+CATEGORY_WILD = "wild_species"
+CATEGORY_DOMESTIC = "domestic_species"
+CATEGORY_BREED = "domestic_breed"
+CATEGORY_HYBRID = "hybrid"
+
+
+def _enrich_species(item):
+    record = dict(item)
+    is_domestic = record["id"] == "felis-catus"
+    record["category"] = CATEGORY_DOMESTIC if is_domestic else CATEGORY_WILD
+    record["rank"] = "species"
+    record["parent_id"] = None
+    record["taxonomy_source"] = "IUCN/SSC Cat Specialist Group (Kitchener et al. 2017)"
+    record.setdefault(
+        "provenance",
+        {
+            "taxonomy": "IUCN/SSC Cat Specialist Group (Kitchener et al. 2017)",
+            "image_source": "Wikimedia Commons",
+            "species_account": "Curated record in backend/scripts/build_catalog.py",
+        },
+    )
+    return record
+
+
+def _validate(species, breeds, hybrids):
+    records = species + breeds + hybrids
+    ids = [record["id"] for record in records]
+    duplicates = sorted({item for item in ids if ids.count(item) > 1})
+    assert not duplicates, f"duplicate catalog ids: {duplicates}"
+
+    wild = [item for item in species if item["category"] == CATEGORY_WILD]
+    domestic = [item for item in species if item["category"] == CATEGORY_DOMESTIC]
+    assert len(wild) == 40, f"expected 40 wild species, found {len(wild)}"
+    assert len(domestic) == 1, f"expected 1 domestic species, found {len(domestic)}"
+    assert domestic[0]["id"] == "felis-catus", "domestic species must be felis-catus"
+    assert all(item["is_wild"] is True for item in wild), "wild species must set is_wild=True"
+    assert all(item["is_wild"] is False for item in domestic), "domestic species must set is_wild=False"
+
+    species_ids = {item["id"] for item in species}
+    for breed in breeds:
+        assert breed["category"] == CATEGORY_BREED, f"{breed['id']}: wrong category"
+        assert breed["rank"] == "breed", f"{breed['id']}: wrong rank"
+        assert breed["parent_id"] == "felis-catus", f"{breed['id']}: breed parent must be felis-catus"
+        assert breed["registry_url"], f"{breed['id']}: missing registry URL"
+        assert breed["image_url"], f"{breed['id']}: missing image"
+    for hybrid in hybrids:
+        assert hybrid["category"] == CATEGORY_HYBRID, f"{hybrid['id']}: wrong category"
+        assert hybrid["rank"] == "hybrid", f"{hybrid['id']}: wrong rank"
+        assert set(hybrid["parents"]).issubset(species_ids), f"{hybrid['id']}: unknown parent"
+    for item in species:
+        assert item["image_url"], f"{item['id']}: missing image"
+        assert item["provenance"], f"{item['id']}: missing provenance"
+
+    return wild, domestic
+
+
 def build():
+    species = [_enrich_species(item) for item in SPECIES + NEW_SPECIES]
+    breeds = [dict(item) for item in BREEDS]
+    hybrids = [dict(item) for item in HYBRIDS]
+    wild, domestic = _validate(species, breeds, hybrids)
+
+    taxonomy = dict(TAXONOMY)
+    taxonomy.update(
+        wild_species_count=len(wild),
+        domestic_species_count=len(domestic),
+        species_count=len(species),
+        breed_count=len(breeds),
+        hybrid_count=len(hybrids),
+        lineage_count=len({item["lineage"] for item in species}),
+    )
+
     output_path = Path("backend/app/data/species_catalog.json")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(SPECIES, f, indent=2, ensure_ascii=False)
-    print(f"Successfully generated {len(SPECIES)} curated Felidae species records to {output_path}")
+        json.dump(
+            {"taxonomy": taxonomy, "species": species, "breeds": breeds, "hybrids": hybrids},
+            f,
+            indent=2,
+            ensure_ascii=False,
+        )
+    print(
+        "Successfully generated "
+        f"{len(wild)} wild species, {len(domestic)} domestic species, "
+        f"{len(breeds)} breeds, and {len(hybrids)} hybrids to {output_path}"
+    )
 
 if __name__ == "__main__":
     build()

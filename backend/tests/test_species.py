@@ -27,12 +27,14 @@ def test_list_species_filter_wild_vs_domestic():
     assert resp_domestic.status_code == 200
     data_domestic = resp_domestic.json()
     assert any(s["id"] == "felis-catus" for s in data_domestic["items"])
+    assert all(s["category"] == "domestic_species" for s in data_domestic["items"])
 
     # Test wild
     resp_wild = client.get("/api/species?is_wild=true")
     assert resp_wild.status_code == 200
     data_wild = resp_wild.json()
     assert all(s["is_wild"] is True for s in data_wild["items"])
+    assert all(s["category"] == "wild_species" for s in data_wild["items"])
 
 def test_get_species_by_slug_success():
     response = client.get("/api/species/panthera-leo")
@@ -41,6 +43,7 @@ def test_get_species_by_slug_success():
     assert data["id"] == "panthera-leo"
     assert data["common_name"] == "Lion"
     assert data["subfamily"] == "Pantherinae"
+    assert data["category"] == "wild_species"
     assert len(data["distinguishing_characteristics"]) > 0
 
 def test_get_species_by_slug_not_found():

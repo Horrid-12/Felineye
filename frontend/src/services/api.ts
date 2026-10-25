@@ -1,6 +1,11 @@
 import {
   SpeciesListResponse,
   SpeciesDetail,
+  BreedListResponse,
+  BreedDetail,
+  HybridListResponse,
+  CatalogMeta,
+  TaxonDetail,
   IdentificationResult,
   ObservationListResponse,
   CollectionMetaResponse
@@ -56,6 +61,7 @@ export const api = {
     lineage?: string;
     conservation_status?: string;
     is_wild?: boolean;
+    category?: 'wild_species' | 'domestic_species';
     habitat?: string;
     page?: number;
     page_size?: number;
@@ -66,6 +72,7 @@ export const api = {
     if (params?.lineage) query.set('lineage', params.lineage);
     if (params?.conservation_status) query.set('conservation_status', params.conservation_status);
     if (params?.is_wild !== undefined) query.set('is_wild', String(params.is_wild));
+    if (params?.category) query.set('category', params.category);
     if (params?.habitat) query.set('habitat', params.habitat);
     if (params?.page) query.set('page', String(params.page));
     if (params?.page_size) query.set('page_size', String(params.page_size));
@@ -79,9 +86,45 @@ export const api = {
     return handleResponse<SpeciesDetail>(res);
   },
 
+  async getTaxonDetail(slug: string): Promise<TaxonDetail> {
+    const res = await fetch(`${API_BASE}/taxa/${encodeURIComponent(slug)}`);
+    return handleResponse<TaxonDetail>(res);
+  },
+
   async getFeaturedSpecies(): Promise<SpeciesDetail> {
     const res = await fetch(`${API_BASE}/species/featured/today`);
     return handleResponse<SpeciesDetail>(res);
+  },
+
+  async getBreeds(params?: {
+    search?: string;
+    registry?: string;
+    page?: number;
+    page_size?: number;
+  }): Promise<BreedListResponse> {
+    const query = new URLSearchParams();
+    if (params?.search) query.set('search', params.search);
+    if (params?.registry) query.set('registry', params.registry);
+    if (params?.page) query.set('page', String(params.page));
+    if (params?.page_size) query.set('page_size', String(params.page_size));
+
+    const res = await fetch(`${API_BASE}/breeds?${query.toString()}`);
+    return handleResponse<BreedListResponse>(res);
+  },
+
+  async getBreedDetail(slug: string): Promise<BreedDetail> {
+    const res = await fetch(`${API_BASE}/breeds/${encodeURIComponent(slug)}`);
+    return handleResponse<BreedDetail>(res);
+  },
+
+  async getCatalogMeta(): Promise<CatalogMeta> {
+    const res = await fetch(`${API_BASE}/catalog/meta`);
+    return handleResponse<CatalogMeta>(res);
+  },
+
+  async getHybrids(): Promise<HybridListResponse> {
+    const res = await fetch(`${API_BASE}/catalog/hybrids`);
+    return handleResponse<HybridListResponse>(res);
   },
 
   async getObservations(params?: {

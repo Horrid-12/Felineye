@@ -19,6 +19,10 @@ class CandidatePrediction(BaseModel):
     is_wild: bool
     conservation_status: str
     thumbnail_url: str
+    category: str = Field(
+        default="wild_species",
+        description="wild_species, domestic_species, or domestic_breed. Hybrids are not classifiable.",
+    )
     rationale: Optional[str] = None
 
 class IdentificationResult(BaseModel):

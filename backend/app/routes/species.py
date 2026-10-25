@@ -12,6 +12,10 @@ async def list_species(
     lineage: Optional[str] = Query(None, description="Filter by feline lineage"),
     conservation_status: Optional[str] = Query(None, description="Filter by IUCN status code: CR, EN, VU, NT, LC, DOMESTIC"),
     is_wild: Optional[bool] = Query(None, description="Filter wild vs domestic felids"),
+    category: Optional[str] = Query(
+        None,
+        description="Filter by category: wild_species or domestic_species (breeds are exposed under /api/breeds)",
+    ),
     habitat: Optional[str] = Query(None, description="Filter by habitat tag"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(24, ge=1, le=100, description="Items per page")
@@ -22,6 +26,7 @@ async def list_species(
         lineage=lineage,
         conservation_status=conservation_status,
         is_wild=is_wild,
+        category=category,
         habitat=habitat,
         page=page,
         page_size=page_size

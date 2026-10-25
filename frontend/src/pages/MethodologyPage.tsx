@@ -1,7 +1,17 @@
-import React from 'react';
-import { Shield, Brain, Cpu, Database, PawPrint } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Shield, Brain, Cpu, Database, PawPrint, Cat, Dna } from 'lucide-react';
+import { CatalogMeta } from '../types';
+import { api } from '../services/api';
 
 export const MethodologyPage: React.FC = () => {
+  const [meta, setMeta] = useState<CatalogMeta | null>(null);
+
+  useEffect(() => {
+    api.getCatalogMeta().then(setMeta).catch(() => {
+      // Static copy below remains accurate without the live counts.
+    });
+  }, []);
+
   return (
     <div className="max-w-4xl mx-auto py-4 space-y-10">
       {/* Header */}
@@ -51,6 +61,9 @@ export const MethodologyPage: React.FC = () => {
           <li>
             <strong className="text-felid-ivory uppercase">Entropy-Based Uncertainty Evaluation:</strong> Shannon entropy is calculated across the candidate distribution to objectively measure ambiguity before assigning confidence tiers.
           </li>
+          <li>
+            <strong className="text-felid-ivory uppercase">Species First, Breeds Deferred:</strong> Candidate taxa carry an explicit category: wild species, domestic species, domestic breed, or hybrid. Hybrids are never classifiable. A breed-level cue is downgraded to the domestic cat (<em>Felis catus</em>) at species level with an <code>uncertain</code> result, because a single photograph cannot reliably establish breed ancestry.
+          </li>
         </ol>
       </section>
 
@@ -83,7 +96,70 @@ export const MethodologyPage: React.FC = () => {
         </p>
       </section>
 
-      {/* Section 3: Responsible Wildlife Data Protocol */}
+      {/* Section 3: Taxonomy Categories & Registry */}
+      <section className="border-2 border-black bg-[#141218] p-6 sm:p-8 space-y-4 shadow-brutal">
+        <div className="flex items-center gap-3 pb-3 border-b-2 border-black">
+          <div className="w-10 h-10 bg-felid-accent border-2 border-black flex items-center justify-center text-black font-black shadow-brutal-sm">
+            <Cat className="w-5 h-5 stroke-[2.5]" />
+          </div>
+          <div>
+            <h2 className="font-display font-black text-lg text-felid-ivory uppercase">
+              TAXONOMIC CATEGORIES & COUNT SEMANTICS
+            </h2>
+            <span className="text-xs text-felid-muted font-mono uppercase font-bold">
+              Wild Species · Domestic Species · Breeds · Hybrids
+            </span>
+          </div>
+        </div>
+
+        <p className="text-xs sm:text-sm text-felid-ivory-dim leading-relaxed font-sans">
+          FelidLens follows the IUCN/SSC Cat Specialist Group revision of Felidae (Kitchener et al. 2017).
+          That revision recognises 41 extant species, comprising 40 wild species plus the domestic cat
+          (<em>Felis catus</em>). This is a documented taxonomic snapshot, not a permanent universal constant:
+          authorities split and merge taxa over time, and the catalogue records its source so discrepancies can be audited.
+        </p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 border-2 border-black bg-[#0c0a0e] divide-x-2 divide-black shadow-brutal-sm">
+          {[
+            { label: 'Wild Species', value: meta?.wild_species_count ?? '—' },
+            { label: 'Domestic Species', value: meta?.domestic_species_count ?? '—' },
+            { label: 'CFA Breeds', value: meta?.breed_count ?? '—' },
+            { label: 'Hybrid Crosses', value: meta?.hybrid_count ?? '—' },
+          ].map((stat) => (
+            <div key={stat.label} className="p-3 text-center">
+              <span className="block font-mono font-black text-xl text-felid-accent">{stat.value}</span>
+              <span className="text-[10px] uppercase tracking-wider text-felid-muted font-mono font-bold">
+                {stat.label}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className="space-y-3 text-xs sm:text-sm text-felid-ivory-dim leading-relaxed font-sans">
+          <p>
+            <strong className="text-felid-ivory uppercase font-mono">Domestic breeds:</strong> Each breed profile is
+            linked to the Cat Fanciers&apos; Association (CFA) registry and was fetched and title-checked during
+            curation{meta ? ` (${meta.updated})` : ''}. Breed names are human-defined labels, not scientific taxa;
+            every breed is assigned to <em>Felis catus</em> and excluded from all species counts. Other registries
+            such as TICA and FIFe recognise partly different lists and are not claimed here.
+          </p>
+          <p>
+            <strong className="text-felid-ivory uppercase font-mono">Hybrids:</strong> Crosses such as the liger,
+            tigon, leopon, and pumapard are listed separately for completeness. They are not species and not breeds,
+            are excluded from both counts, and are never returned as identification results.
+          </p>
+        </div>
+
+        <div className="p-4 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm flex items-start gap-3">
+          <Dna className="w-4 h-4 text-felid-accent shrink-0 mt-0.5" />
+          <p className="text-xs text-felid-muted leading-relaxed font-mono">
+            Counts are reported independently so that adding breeds can never inflate the wild Felidae total.
+            The species atlas, collection roster, and home-page statistics all read these separate values.
+          </p>
+        </div>
+      </section>
+
+      {/* Section 4: Responsible Wildlife Data Protocol */}
       <section className="border-2 border-black bg-[#141218] p-6 sm:p-8 space-y-4 shadow-brutal">
         <div className="flex items-center gap-3 pb-3 border-b-2 border-black">
           <div className="w-10 h-10 bg-emerald-400 border-2 border-black flex items-center justify-center text-black font-black shadow-brutal-sm">
@@ -116,7 +192,7 @@ export const MethodologyPage: React.FC = () => {
         </ul>
       </section>
 
-      {/* Section 4: Data Provenance & Citations */}
+      {/* Section 5: Data Provenance & Citations */}
       <section className="border-2 border-black bg-[#141218] p-6 sm:p-8 space-y-4 shadow-brutal">
         <div className="flex items-center gap-3 pb-3 border-b-2 border-black">
           <div className="w-10 h-10 bg-felid-accent border-2 border-black flex items-center justify-center text-black font-black shadow-brutal-sm">
@@ -134,13 +210,16 @@ export const MethodologyPage: React.FC = () => {
 
         <div className="space-y-3 text-xs sm:text-sm text-felid-ivory-dim leading-relaxed font-mono">
           <p>
-            <strong className="text-felid-ivory uppercase">Taxonomic Classification:</strong> Based on the revised taxonomy of the Felidae established by Kitchener, A. C. et al. (2017), Cat News Special Issue 11, IUCN SSC Cat Specialist Group.
+            <strong className="text-felid-ivory uppercase">Taxonomic Classification:</strong> Based on the revised taxonomy of the Felidae established by Kitchener, A. C. et al. (2017), Cat News Special Issue 11, IUCN SSC Cat Specialist Group. Forty wild species plus the domestic cat are catalogued; breeds and hybrids are tracked in separate collections.
+          </p>
+          <p>
+            <strong className="text-felid-ivory uppercase">Domestic Breed Registry:</strong> Breed records follow the Cat Fanciers&apos; Association (CFA) breed profiles at cfa.org. Each registry URL was fetched and title-checked during curation; breed names are not treated as scientific taxa.
           </p>
           <p>
             <strong className="text-felid-ivory uppercase">Field Observations:</strong> Sourced via the iNaturalist Network API under Creative Commons open-access scientific licenses (CC BY-NC 4.0).
           </p>
           <p>
-            <strong className="text-felid-ivory uppercase">Taxonomic Backbone:</strong> Synchronized with the Global Biodiversity Information Facility (GBIF) Backbone Taxonomy.
+            <strong className="text-felid-ivory uppercase">Taxonomic Backbone:</strong> Cross-referenced with the Global Biodiversity Information Facility (GBIF) Backbone Taxonomy where its treatment agrees with the 2017 CatSG revision. Taxon identifiers are omitted where modern databases split or synonymise a CatSG species rather than asserting a false mapping.
           </p>
           <p>
             <strong className="text-felid-ivory uppercase">Conservation Statuses:</strong> Regularly aligned with the IUCN Red List of Threatened Species Version 2024-2.

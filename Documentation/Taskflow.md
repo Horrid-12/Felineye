@@ -4,7 +4,7 @@
 >
 > **Status:** Alpha v0.1.0. The app runs end-to-end, but identification is simulated unless a compatible ONNX model is supplied and wired.
 >
-> **Last verified:** 2026-10-25 — 17 backend tests, 8 frontend tests, frontend build passing.
+> **Last verified:** 2026-10-25 — 37 backend tests, 8 frontend tests, frontend build passing.
 
 ## How to Use This File
 
@@ -62,7 +62,7 @@
 - [ ] Add a home-page entry point to the Observation Explorer.
 - [ ] Add a "recently discovered" section.
 - [X] Use licensed imagery with attribution (Wikimedia Commons lead image per species, author + license recorded).
-- [ ] Make the displayed species count derive from the catalog instead of hardcoded copy.
+- [X] Make the displayed species count derive from the catalog instead of hardcoded copy.
 - [ ] Add an explicit error/retry state when the featured-species request fails.
 - [ ] Add automated responsive/visual regression coverage.
 
@@ -92,6 +92,7 @@
 - [X] Add a provider interface (`BaseClassifier`) and pipeline.
 - [X] Implement the development simulation provider and propagate `is_mock`.
 - [X] Compute Shannon entropy and assign confidence/uncertainty statuses.
+- [X] Enforce category-aware identification: hybrids are never returned, and a breed-level cue is downgraded to the domestic cat species with an `uncertain` result and an explicit note.
 - [X] Add structured 4xx errors and a global safe 500 handler.
 - [X] Cover validation, status handling, and API contracts with tests.
 - [ ] Add per-request inference timeouts.
@@ -108,14 +109,30 @@
 - [X] Implement species detail profiles with morphology, diet, behaviour, range, and similar taxa.
 - [X] Add the comparative morphology modal for lookalike species.
 - [X] Add the daily featured species endpoint and UI.
-- [ ] Complete the catalog to all 41 recognized Felidae species (currently 37 entries).
-- [ ] Replace remaining hardcoded "41 species" UI copy with values derived from the catalog.
+- [X] Complete the wild catalog to the 2017 CatSG set: 40 wild species plus the domestic cat. The audit of the previous 37 entries found no duplicates and no per-entry binomial errors, but four CatSG species were missing (`Leopardus tigrinus`, `Leopardus guttulus`, `Leopardus colocolo`, `Prionailurus javanensis`).
+- [X] Replace remaining hardcoded "41 species" UI copy with values derived from the catalog.
 - [ ] Surface lineage and habitat filters in the frontend.
-- [ ] Add a schema-validation test for catalog IDs, required fields, and duplicate keys.
+- [X] Add a schema-validation test for catalog IDs, required fields, and duplicate keys (`backend/tests/test_catalog.py` plus generator assertions).
 - [X] Re-source every species image from Wikimedia Commons; the earlier Unsplash URLs were mismatched (cheetah, snow leopard, clouded leopards, Asian golden cat and others showed unrelated subjects).
-- [ ] Verify IUCN statuses and taxon IDs for every record (image attribution is now verified for all 37).
+- [ ] Verify IUCN statuses and taxon IDs for every record (image attribution is now verified for all 41 species records; the four newest species intentionally omit external taxon IDs where databases split the CatSG treatment).
+- [X] Re-verify every image URL with rate-limit-safe pacing. All 110 unique catalog image URLs returned HTTP 200 on 2026-10-25; the earlier 14 failures were Wikimedia HTTP 429 throttling, not missing files.
 
-**Exit criteria:** The atlas matches the curated catalog exactly, and tests prevent count/schema drift.
+### Taxonomy split: wild species, domestic breeds, and hybrids
+
+- [X] Audit the existing 41-species claim before changing counts; keep every valid record.
+- [X] Model explicit categories: `wild_species`, `domestic_species`, `domestic_breed`, `hybrid`, with `rank` and `parent_id` on each record.
+- [X] Regenerate `species_catalog.json` as `{taxonomy, species, breeds, hybrids}` and enforce counts in `build_catalog.py` (40 wild, 1 domestic, 22 breeds, 4 hybrids, unique IDs, parent links, registry URLs, images, provenance).
+- [X] Curate 22 CFA-verified domestic breeds, including all eight required breeds (Ragdoll, Persian, Siamese, Maine Coon, Bengal, Sphynx, British Shorthair, Scottish Fold). TICA was blocked (403) and is not claimed; Exotic and Oriental Shorthair were excluded because their CFA URLs returned 404.
+- [X] Keep hybrids (Liger, Tigon, Leopon, Pumapard) in a separate collection excluded from species and breed counts.
+- [X] Add `/api/breeds`, `/api/breeds/{slug}`, `/api/catalog/meta`, `/api/catalog/hybrids`, and unified `/api/taxa/{slug}`; add a `category` filter to `/api/species`.
+- [X] Add a Domestic Cats section under the Species Atlas “Domestic Cat” filter: domestic species card, searchable CFA breed grid, hybrids, and taxonomy note. The earlier standalone page and navbar entry were removed so there is one canonical route to breeds; the home CTA opens the atlas with that filter active.
+- [X] Add separate counts on Home, Atlas, Collection, and Methodology, plus category-aware candidate badges.
+- [X] Keep the collection roster species-only; breeds are not discoverable and never inflate progress totals.
+- [X] Document the taxonomy authority, CFA registry, hybrid exclusion, and breed-uncertainty rule in `Decisions.md` and the Methodology page.
+- [ ] Decide whether the breed roster should expand toward the full CFA list or stay a representative subset.
+- [ ] Add a documented refresh procedure for CFA URLs and registry verification dates.
+
+**Exit criteria:** The atlas matches the curated catalog exactly, wild species and breeds are counted separately, and tests prevent count/schema drift.
 
 ## Phase 5 — Responsible Observations
 
@@ -139,6 +156,7 @@
 - [X] Implement badge evaluation, progress display, and unlock feedback.
 - [X] Add confetti, journal visuals, and clear-progress support.
 - [X] Cover discovery de-duplication and rank-up behaviour with tests.
+- [X] Keep the collection roster species-only; domestic breeds are catalogue-only and never unlock discoveries or XP.
 - [ ] Consolidate badge and rank definitions so backend and frontend cannot drift.
 - [ ] Decide whether XP should use the catalog `xp_reward` or the fixed 150/100 rule, then document it.
 - [ ] Add an explicit schema/version migration path for the localStorage key.
@@ -150,6 +168,7 @@
 - [X] Document the inference pipeline and entropy-based uncertainty.
 - [X] Document the conservation and coordinate-obscuring protocol.
 - [X] Add data provenance and taxonomy citations.
+- [X] Document the separate wild/domestic/breed/hybrid categories, the CFA registry source, and the breed-uncertainty disclosure.
 - [X] Disclose the development simulation in the identification UI.
 - [ ] Update model limitations, evaluation results, and calibration notes after real inference lands.
 
@@ -172,7 +191,7 @@
 
 - [ ] Load `.env` explicitly (or document exported variables) and make CORS origins environment-driven.
 - [ ] Delete or reinstate `components/layout/Footer.tsx`, which is not rendered by `App.tsx` (dead code today).
-- [ ] Add catalog schema validation to startup or CI.
+- [ ] Add catalog schema validation to startup or CI (the generator validates counts and links, but nothing enforces it at runtime or in CI).
 - [ ] Add frontend test setup for jest-dom and accessibility assertions.
 - [ ] Add error boundaries and reduced-motion support.
 - [ ] Configure linting and formatting, and document the commands.

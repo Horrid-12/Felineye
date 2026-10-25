@@ -60,11 +60,19 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
       const res = await api.identifyImage(selectedFile);
       setResult(res);
 
+      const top = res.top_candidate;
+      // Breeds are never counted as discoveries; a breed call is downgraded to the domestic
+      // species server-side, and hybrids are not classifiable at all.
+      const discoverable =
+        top !== undefined &&
+        top.category !== 'domestic_breed' &&
+        top.category !== 'hybrid';
+
       if (
         (res.status === 'high_confidence' || res.status === 'moderate_confidence') &&
-        res.top_candidate
+        top &&
+        discoverable
       ) {
-        const top = res.top_candidate;
         const xpAmount = res.status === 'high_confidence' ? 150 : 100;
         const unlockRes = unlockDiscovery(top.species_id, top.confidence_score, xpAmount);
 
@@ -105,7 +113,7 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
           FELINE <span className="text-felid-accent underline decoration-4 underline-offset-4">PAW SCANNER</span>
         </h1>
         <p className="text-xs sm:text-sm text-felid-muted max-w-xl mx-auto font-mono leading-relaxed">
-          Upload any feline photo to detect diagnostic features, classify morphology across 41 species, and log verified discoveries to your journal.
+          Upload any feline photo to detect diagnostic features across 40 wild species and the domestic cat. Breed-level calls are never asserted from a single image; uncertain results list the closest taxa instead.
         </p>
       </div>
 
@@ -228,6 +236,18 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
                   ENTROPY: {result.entropy} NATS
                 </span>
               </div>
+            </div>
+          )}
+
+          {/* Advisory note for otherwise-confident results that still carry a caveat,
+              e.g. domestic cat identified at species level but breed left undetermined. */}
+          {result.status !== 'uncertain' && result.uncertainty_note && (
+            <div className="p-3.5 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm text-felid-muted text-xs font-mono flex items-start gap-2.5">
+              <Info className="w-4 h-4 shrink-0 text-felid-accent mt-0.5" />
+              <span>
+                <strong className="text-felid-ivory uppercase">ADVISORY:</strong>{' '}
+                {result.uncertainty_note}
+              </span>
             </div>
           )}
 

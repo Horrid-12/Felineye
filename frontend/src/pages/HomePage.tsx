@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PawPrint, Cat, ArrowRight, Compass, Award } from 'lucide-react';
-import { ActivePage, SpeciesDetail } from '../types';
+import { ActivePage, CatalogMeta, SpeciesDetail } from '../types';
 import { api } from '../services/api';
 import { ConservationBadge } from '../components/species/ConservationBadge';
 import { useCollectionStore } from '../store/useCollectionStore';
@@ -8,10 +8,12 @@ import { useCollectionStore } from '../store/useCollectionStore';
 interface Props {
   setActivePage: (page: ActivePage) => void;
   onSelectSpecies: (slug: string) => void;
+  onOpenDomestic: () => void;
 }
 
-export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) => {
+export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies, onOpenDomestic }) => {
   const [featured, setFeatured] = useState<SpeciesDetail | null>(null);
+  const [meta, setMeta] = useState<CatalogMeta | null>(null);
   const { totalXp, currentRank, discoveryCount } = useCollectionStore();
 
   useEffect(() => {
@@ -23,7 +25,15 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
         console.error('Failed to load featured species:', e);
       }
     }
+    async function loadCounts() {
+      try {
+        setMeta(await api.getCatalogMeta());
+      } catch (e) {
+        console.error('Failed to load catalog counts:', e);
+      }
+    }
     loadFeatured();
+    loadCounts();
   }, []);
 
   return (
@@ -47,7 +57,7 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
         <div className="relative z-10 max-w-3xl p-5 sm:p-7 lg:p-8 space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm text-xs font-mono font-black text-felid-accent uppercase">
             <PawPrint className="w-3.5 h-3.5" />
-            <span>AI FIELD GUIDE // 41 EXTANT FELIDAE SPECIES</span>
+            <span>AI FIELD GUIDE // IUCN SSC CATSG 2017 TAXONOMY</span>
           </div>
 
           <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-felid-ivory uppercase tracking-tight leading-[1.05]">
@@ -73,6 +83,13 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
               <Cat className="w-4 h-4 text-felid-accent" />
               Browse Cat Atlas
             </button>
+            <button
+              onClick={onOpenDomestic}
+              className="px-5 py-2.5 bg-[#1d1922] hover:bg-[#26222d] text-felid-ivory font-mono font-bold text-xs uppercase border-2 border-black shadow-brutal brutal-press inline-flex items-center gap-2"
+            >
+              <Cat className="w-4 h-4 text-felid-accent" />
+              Domestic Cats
+            </button>
           </div>
         </div>
 
@@ -80,34 +97,34 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) =>
         <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 border-t-2 border-black bg-[#0c0a0e] divide-x-2 divide-black text-center">
           <div className="p-2.5">
             <span className="block font-mono font-black text-lg sm:text-xl text-felid-accent">
-              41
+              {meta?.wild_species_count ?? '—'}
             </span>
             <span className="text-[10px] uppercase tracking-wider text-felid-muted font-mono font-bold">
-              Felid Species
+              Wild Species
             </span>
           </div>
           <div className="p-2.5">
             <span className="block font-mono font-black text-lg sm:text-xl text-felid-accent">
-              8
+              {meta?.domestic_species_count ?? '—'}
             </span>
             <span className="text-[10px] uppercase tracking-wider text-felid-muted font-mono font-bold">
-              Cat Lineages
+              Domestic Species
             </span>
           </div>
           <div className="p-2.5">
             <span className="block font-mono font-black text-lg sm:text-xl text-emerald-400">
-              100%
+              {meta?.breed_count ?? '—'}
             </span>
             <span className="text-[10px] uppercase tracking-wider text-felid-muted font-mono font-bold">
-              Ethical GPS
+              CFA Breeds
             </span>
           </div>
           <div className="p-2.5">
             <span className="block font-mono font-black text-lg sm:text-xl text-felid-ivory">
-              {discoveryCount}
+              {meta?.lineage_count ?? '—'}
             </span>
             <span className="text-[10px] uppercase tracking-wider text-felid-muted font-mono font-bold">
-              Cats in Journal
+              Cat Lineages
             </span>
           </div>
         </div>

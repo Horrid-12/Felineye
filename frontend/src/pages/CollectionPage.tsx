@@ -6,7 +6,7 @@ import {
   PawPrint,
   Cat
 } from 'lucide-react';
-import { CollectionMetaResponse, ActivePage } from '../types';
+import { CollectionMetaResponse, CatalogMeta, ActivePage } from '../types';
 import { api } from '../services/api';
 import { useCollectionStore } from '../store/useCollectionStore';
 import { RankProgress } from '../components/collection/RankProgress';
@@ -19,6 +19,7 @@ interface Props {
 
 export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }) => {
   const [meta, setMeta] = useState<CollectionMetaResponse | null>(null);
+  const [catalogMeta, setCatalogMeta] = useState<CatalogMeta | null>(null);
   const [loading, setLoading] = useState(true);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
@@ -35,8 +36,12 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
     async function loadMeta() {
       try {
         setLoading(true);
-        const data = await api.getCollectionMeta();
+        const [data, counts] = await Promise.all([
+          api.getCollectionMeta(),
+          api.getCatalogMeta().catch(() => null),
+        ]);
         setMeta(data);
+        setCatalogMeta(counts);
       } catch (e) {
         console.error('Failed to load collection meta:', e);
       } finally {
@@ -149,8 +154,43 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
         nextRank={nextRank}
         totalXp={totalXp}
         discoveryCount={discoveryCount}
-        totalSpeciesCount={meta?.species.length || 41}
+        totalSpeciesCount={meta?.species.length ?? 0}
       />
+
+      {meta && (
+        <section className="grid grid-cols-2 sm:grid-cols-3 border-2 border-black bg-[#0c0a0e] divide-x-2 divide-black shadow-brutal-sm">
+          {(
+            [
+              {
+                label: 'Wild Species Logged',
+                value: meta.species.filter((s) => s.category === 'wild_species' && discoveries[s.id]).length,
+                total: meta.species.filter((s) => s.category === 'wild_species').length,
+              },
+              {
+                label: 'Domestic Cat Logged',
+                value: meta.species.filter((s) => s.category === 'domestic_species' && discoveries[s.id]).length,
+                total: meta.species.filter((s) => s.category === 'domestic_species').length,
+              },
+              {
+                label: 'CFA Breeds Catalogued',
+                value: catalogMeta?.breed_count ?? 0,
+              },
+            ] as { label: string; value: number; total?: number }[]
+          ).map((stat) => (
+            <div key={stat.label} className="p-3 text-center">
+              <span className="block font-mono font-black text-lg text-felid-accent">
+                {stat.value}
+                {stat.total !== undefined && (
+                  <span className="text-felid-muted text-xs"> / {stat.total}</span>
+                )}
+              </span>
+              <span className="text-[10px] uppercase tracking-wider text-felid-muted font-mono font-bold">
+                {stat.label}
+              </span>
+            </div>
+          ))}
+        </section>
+      )}
 
       {loading && (
         <div className="py-12 text-center text-felid-muted space-y-2 font-mono">
@@ -194,7 +234,7 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
               FELIDAE FIELD ROSTER
             </h2>
             <span className="text-xs font-mono font-bold text-felid-muted">
-              {discoveryCount} DISCOVERED / {meta.species.length - discoveryCount} UNDOCUMENTED
+              {discoveryCount} DISCOVERED / {Math.max(0, meta.species.length - discoveryCount)} UNDOCUMENTED
             </span>
           </div>
 
@@ -239,6 +279,9 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
                   </span>
                   <span className="text-[10px] text-felid-muted truncate w-full font-serif italic">
                     {sp.scientific_name}
+                  </span>
+                  <span className="text-[8px] text-felid-accent font-mono font-black uppercase tracking-wider">
+                    {sp.category === 'domestic_species' ? 'DOMESTIC' : 'WILD'}
                   </span>
 
                   <div className="mt-1.5 pt-1.5 border-t border-[#332c3a] w-full flex items-center justify-between text-[10px] text-felid-muted font-mono font-bold">

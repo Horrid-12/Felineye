@@ -48,9 +48,12 @@ export const SpeciesCard: React.FC<Props> = ({ species, onClick }) => {
         </div>
 
         {/* Lineage Subtitle Banner */}
-        <div className="absolute bottom-2 left-2.5 right-2.5">
+        <div className="absolute bottom-2 left-2.5 right-2.5 flex flex-wrap items-center gap-1">
           <span className="text-[9px] font-mono font-black tracking-widest uppercase bg-black/80 px-2 py-0.5 border border-[#332c3a] text-felid-accent inline-block">
             {species.subfamily} · {species.genus}
+          </span>
+          <span className="text-[9px] font-mono font-black tracking-widest uppercase bg-felid-accent text-black px-2 py-0.5 border border-black inline-block">
+            {species.category === 'domestic_species' ? 'DOMESTIC SPECIES' : 'WILD SPECIES'}
           </span>
         </div>
       </div>

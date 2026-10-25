@@ -69,7 +69,7 @@ export const RankProgress: React.FC<Props> = ({
         <div className="w-full md:w-auto grid grid-cols-2 gap-3">
           <div className="bg-[#0c0a0e] border-2 border-black p-3 text-center shadow-brutal-sm">
             <span className="text-2xl font-black text-felid-ivory font-mono block">
-              {discoveryCount} <span className="text-xs text-felid-muted font-normal">/ {totalSpeciesCount || 41}</span>
+              {discoveryCount} <span className="text-xs text-felid-muted font-normal">/ {totalSpeciesCount || 0}</span>
             </span>
             <span className="text-[10px] font-mono font-bold text-felid-muted uppercase">FELIDS LOGGED</span>
           </div>

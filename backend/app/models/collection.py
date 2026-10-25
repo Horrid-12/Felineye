@@ -12,6 +12,7 @@ class CollectionSpeciesItem(BaseModel):
     xp_reward: int
     thumbnail_url: str
     is_wild: bool
+    category: str = "wild_species"
 
 class Badge(BaseModel):
     id: str

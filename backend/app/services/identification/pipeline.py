@@ -103,23 +103,27 @@ class IdentificationPipeline:
         scores = [p.score for p in raw_result.predictions]
         entropy = self._calculate_entropy(scores)
 
-        # Enrich predictions with curated species details
+        # Enrich predictions with curated taxon details. Hybrids are never classifiable targets.
         enriched_candidates = []
         for p in raw_result.predictions:
-            species_detail = species_service.get_by_slug(p.species_id)
-            if not species_detail:
+            record = species_service.get_taxon_record(p.species_id)
+            if not record or record.get("category") == "hybrid":
                 continue
 
-            percentage = int(round(p.score * 100))
+            category = record.get("category", "wild_species")
+            conservation_status = record.get("conservation_status") or (
+                "DOMESTIC" if category == "domestic_breed" else "UNKNOWN"
+            )
             candidate = CandidatePrediction(
-                species_id=species_detail.id,
-                common_name=species_detail.common_name,
-                scientific_name=species_detail.scientific_name,
+                species_id=record["id"],
+                common_name=record["common_name"],
+                scientific_name=record["scientific_name"],
                 confidence_score=p.score,
-                score_percentage=percentage,
-                is_wild=species_detail.is_wild,
-                conservation_status=species_detail.conservation_status,
-                thumbnail_url=species_detail.thumbnail_url,
+                score_percentage=int(round(p.score * 100)),
+                is_wild=record.get("is_wild", category == "wild_species"),
+                conservation_status=conservation_status,
+                thumbnail_url=record.get("thumbnail_url") or record.get("image_url") or "",
+                category=category,
                 rationale=p.rationale
             )
             enriched_candidates.append(candidate)
@@ -135,8 +139,39 @@ class IdentificationPipeline:
 
         top_candidate = enriched_candidates[0]
 
+        # Breed-level identification is never asserted from a single photo. If a provider ever
+        # returns a breed, report the domestic cat species instead and keep the result uncertain.
+        if top_candidate.category == "domestic_breed":
+            domestic = species_service.get_by_slug("felis-catus")
+            breed_names = [c.common_name for c in enriched_candidates if c.category == "domestic_breed"]
+            if domestic:
+                enriched_candidates = [
+                    CandidatePrediction(
+                        species_id=domestic.id,
+                        common_name=domestic.common_name,
+                        scientific_name=domestic.scientific_name,
+                        confidence_score=top_candidate.confidence_score,
+                        score_percentage=top_candidate.score_percentage,
+                        is_wild=False,
+                        conservation_status=domestic.conservation_status,
+                        thumbnail_url=domestic.thumbnail_url,
+                        category="domestic_species",
+                        rationale=(
+                            "Domestic cat detected. Breed-level features were noted but are not reliable "
+                            "enough to assert a breed from this image."
+                        ),
+                    )
+                ] + [c for c in enriched_candidates if c.category != "domestic_breed"]
+                top_candidate = enriched_candidates[0]
+            status = IdentificationStatus.UNCERTAIN
+            uncertainty_note = (
+                "Domestic cat (Felis catus) detected at species level. A single photograph is not sufficient "
+                "to identify a breed"
+                + (f"; possible breed cues included {', '.join(breed_names)}" if breed_names else "")
+                + ". FelidLens does not assert breed identity from visual evidence alone."
+            )
         # Determine calibrated status based on top score and entropy
-        if top_candidate.confidence_score < settings.confidence_threshold:
+        elif top_candidate.confidence_score < settings.confidence_threshold:
             status = IdentificationStatus.UNCERTAIN
             uncertainty_note = (
                 f"Candidate confidence ({top_candidate.score_percentage}%) is below the reliable identification threshold "
@@ -155,6 +190,16 @@ class IdentificationPipeline:
         else:
             status = IdentificationStatus.MODERATE_CONFIDENCE
             uncertainty_note = "Moderate feature confidence; recommend comparing visual traits with similar species."
+
+        # A species-level domestic cat result is valid, but breed ancestry remains unresolved.
+        if top_candidate.category == "domestic_species" and status in (
+            IdentificationStatus.HIGH_CONFIDENCE,
+            IdentificationStatus.MODERATE_CONFIDENCE,
+        ):
+            uncertainty_note = (
+                "Domestic cat (Felis catus) identified at species level. Breed or mixed-breed ancestry "
+                "cannot be determined reliably from this image."
+            )
 
         elapsed_ms = round((time.perf_counter() - start_time) * 1000, 2)
 

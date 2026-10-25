@@ -3,6 +3,13 @@ import { ArrowRight, PawPrint, Scale, Info, Check } from 'lucide-react';
 import { CandidatePrediction } from '../../types';
 import { ConservationBadge } from '../species/ConservationBadge';
 
+const CATEGORY_LABELS: Record<string, string> = {
+  wild_species: 'WILD SPECIES',
+  domestic_species: 'DOMESTIC CAT',
+  domestic_breed: 'DOMESTIC BREED',
+  hybrid: 'HYBRID',
+};
+
 interface Props {
   candidate: CandidatePrediction;
   rank: number;
@@ -18,6 +25,9 @@ export const CandidateCard: React.FC<Props> = ({
   onViewDetails,
   onCompareSimilar,
 }) => {
+  const category =
+    candidate.category ?? (candidate.is_wild ? 'wild_species' : 'domestic_species');
+
   return (
     <div
       className={`border-2 border-black transition-all p-5 ${
@@ -70,6 +80,15 @@ export const CandidateCard: React.FC<Props> = ({
               <p className="text-xs italic text-felid-muted font-serif">
                 {candidate.scientific_name}
               </p>
+              <span
+                className={`inline-block mt-1 px-1.5 py-0.5 text-[9px] font-mono font-black uppercase tracking-wider border border-black ${
+                  category === 'wild_species'
+                    ? 'bg-[#0c0a0e] text-felid-accent'
+                    : 'bg-felid-accent text-black'
+                }`}
+              >
+                {CATEGORY_LABELS[category] ?? category}
+              </span>
             </div>
 
             <div className="flex items-center gap-2">
