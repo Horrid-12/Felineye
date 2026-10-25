@@ -61,7 +61,7 @@
 - [X] Add entry points to the Species Atlas and Collection.
 - [ ] Add a home-page entry point to the Observation Explorer.
 - [ ] Add a "recently discovered" section.
-- [X] Use licensed imagery with attribution.
+- [X] Use licensed imagery with attribution (Wikimedia Commons lead image per species, author + license recorded).
 - [ ] Make the displayed species count derive from the catalog instead of hardcoded copy.
 - [ ] Add an explicit error/retry state when the featured-species request fails.
 - [ ] Add automated responsive/visual regression coverage.
@@ -112,7 +112,8 @@
 - [ ] Replace remaining hardcoded "41 species" UI copy with values derived from the catalog.
 - [ ] Surface lineage and habitat filters in the frontend.
 - [ ] Add a schema-validation test for catalog IDs, required fields, and duplicate keys.
-- [ ] Verify IUCN statuses, taxon IDs, and image attribution for every record.
+- [X] Re-source every species image from Wikimedia Commons; the earlier Unsplash URLs were mismatched (cheetah, snow leopard, clouded leopards, Asian golden cat and others showed unrelated subjects).
+- [ ] Verify IUCN statuses and taxon IDs for every record (image attribution is now verified for all 37).
 
 **Exit criteria:** The atlas matches the curated catalog exactly, and tests prevent count/schema drift.
 

@@ -60,3 +60,5 @@ Thumbs.db
 *.swo
 AGENTS.md
 Documentation/Decisions.md
+*graphify-out/
+*graphify/
