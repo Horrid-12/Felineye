@@ -1,1 +1,1 @@
-# FelidLens Backend Application
+# Felineye Backend Application

@@ -10,7 +10,7 @@ router = APIRouter(prefix="/api", tags=["Health"])
 async def health_check():
     return {
         "status": "healthy" if pipeline.is_ready else "degraded",
-        "service": "FelidLens Identification Engine",
+        "service": "Felineye Identification Engine",
         "version": "2.0.0",
         "provider": pipeline.active_provider_name,
         "provider_kind": pipeline.provider_kind,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Download or regenerate the real FelidLens identification weights.
+"""Download or regenerate the real Felineye identification weights.
 
 Two artefacts are needed for the default ``CLASSIFIER_PROVIDER=auto`` path:
 
@@ -98,7 +98,7 @@ def download(url: str, destination: Path, *, force: bool = False) -> bool:
     if temporary.exists():
         temporary.unlink()
 
-    request = urllib.request.Request(url, headers={"User-Agent": "FelidLens-model-setup/1.0"})
+    request = urllib.request.Request(url, headers={"User-Agent": "Felineye-model-setup/1.0"})
     print(f"  [get ] {destination.name} <- {url}")
     try:
         with urllib.request.urlopen(request, timeout=120) as response, temporary.open("wb") as handle:

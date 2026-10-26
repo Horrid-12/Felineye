@@ -24,7 +24,7 @@ export const MethodologyPage: React.FC = () => {
           METHODOLOGY & <span className="text-felid-accent underline decoration-4 underline-offset-4">ARCHITECTURE</span>
         </h1>
         <p className="text-xs sm:text-sm text-felid-muted leading-relaxed font-mono">
-          How FelidLens runs a local vision model, applies abstention rules instead of guessing,
+          How Felineye runs a local vision model, applies abstention rules instead of guessing,
           safeguards cat populations, and curates global biodiversity records.
         </p>
       </div>
@@ -243,7 +243,7 @@ export const MethodologyPage: React.FC = () => {
         </div>
 
         <p className="text-xs sm:text-sm text-felid-ivory-dim leading-relaxed font-sans">
-          FelidLens follows the IUCN/SSC Cat Specialist Group revision of Felidae (Kitchener et al. 2017).
+          Felineye follows the IUCN/SSC Cat Specialist Group revision of Felidae (Kitchener et al. 2017).
           That revision recognises 41 extant species, comprising 40 wild species plus the domestic cat
           (<em>Felis catus</em>). This is a documented taxonomic snapshot, not a permanent universal constant:
           authorities split and merge taxa over time, and the catalogue records its source so discrepancies can be audited.
@@ -362,7 +362,7 @@ export const MethodologyPage: React.FC = () => {
             <strong className="text-felid-ivory uppercase">Conservation Statuses:</strong> Regularly aligned with the IUCN Red List of Threatened Species Version 2024-2.
           </p>
           <p>
-            <strong className="text-felid-ivory uppercase">Original Attribution:</strong> FelidLens is adapted from the open-source architecture of <strong className="text-felid-accent">BirdLens</strong> by sdprojects12.
+            <strong className="text-felid-ivory uppercase">Original Attribution:</strong> Felineye is adapted from the open-source architecture of <strong className="text-felid-accent">BirdLens</strong> by sdprojects12.
           </p>
         </div>
       </section>

@@ -1284,7 +1284,7 @@ TAXONOMY = {'authority': 'IUCN/SSC Cat Specialist Group',
  'breed_registry': {'name': "Cat Fanciers' Association (CFA)",
                     'url': 'https://cfa.org/breeds/',
                     'verification': 'Each breed profile URL was fetched and its page title checked on 2026-10-25.',
-                    'note': 'TICA and FIFe recognise partly different breed lists. FelidLens uses CFA as the single '
+                    'note': 'TICA and FIFe recognise partly different breed lists. Felineye uses CFA as the single '
                             'documented registry for this catalogue.'},
  'breed_note': 'Breed names are not scientific taxa. Every breed is assigned to Felis catus and excluded from '
                'species counts.',

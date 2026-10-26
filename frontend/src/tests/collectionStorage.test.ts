@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import {
   awardDiscovery,
   createEmptyCollectionState,
+  LEGACY_STORAGE_KEYS,
   loadCollectionState,
   normalizeCollectionState,
   STORAGE_KEY,
@@ -133,5 +134,30 @@ describe('collectionStorage', () => {
     const missing = { getItem: vi.fn(() => null) };
     expect(loadCollectionState(missing)).toEqual(createEmptyCollectionState());
     expect(missing.getItem).toHaveBeenCalledWith(STORAGE_KEY);
+  });
+
+  it('reads a pre-rename journal through the legacy storage key', () => {
+    const legacyState = JSON.stringify({
+      totalXp: 300,
+      discoveries: {
+        'panthera-leo': {
+          species_id: 'panthera-leo',
+          discovered_at: '2025-01-01T00:00:00.000Z',
+          confidence_score: 0.35,
+          xp_earned: 300,
+        },
+      },
+    });
+
+    const storage = {
+      getItem: vi.fn((key: string) => (key === LEGACY_STORAGE_KEYS[0] ? legacyState : null)),
+    };
+
+    const state = loadCollectionState(storage);
+
+    expect(state.totalXp).toBe(300);
+    expect(state.discoveries['panthera-leo']).toBeDefined();
+    expect(storage.getItem).toHaveBeenCalledWith(STORAGE_KEY);
+    expect(storage.getItem).toHaveBeenCalledWith(LEGACY_STORAGE_KEYS[0]);
   });
 });

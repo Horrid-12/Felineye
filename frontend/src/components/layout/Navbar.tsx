@@ -39,14 +39,14 @@ export const Navbar: React.FC<Props> = ({ activePage, setActivePage }) => {
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-display font-black text-lg text-felid-ivory tracking-tight">
-                  FELID<span className="text-felid-accent">LENS</span>
+                  FELINE<span className="text-felid-accent">EYE</span>
                 </span>
                 <span className="bg-black text-felid-accent text-[9px] font-mono font-black px-1.5 py-0.2 border border-felid-border">
                   NEO
                 </span>
               </div>
               <span className="block text-[9px] uppercase tracking-widest text-felid-muted font-mono -mt-0.5">
-                Felidae Field Guide // BirdLens
+                Felidae Field Guide // Felineye
               </span>
             </div>
           </button>

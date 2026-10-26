@@ -171,7 +171,12 @@ The frontend treats the server contract as authoritative and passes
 rewarded once; a different photo of an already-discovered species is logged as a
 `new_photo` with no XP; the same fingerprint is a `repeat_photo` no-op.
 
-## 6. Verification record (2026-10-25)
+## 6. Verification record (2026-10-25, re-run 2026-10-26)
+
+Latest full run: **55 backend tests passed** (7 of them real-weight tests against the
+actual ONNX files), **22 frontend tests passed**, and `npm run build --prefix
+frontend` succeeded. The mocked and real-model suites are reported separately
+below because they prove different things.
 
 ### Verified with the real BioCLIP + ImageNet models
 

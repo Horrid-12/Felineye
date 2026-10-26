@@ -9,10 +9,10 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
-logger = logging.getLogger("felidlens")
+logger = logging.getLogger("felineye")
 
 app = FastAPI(
-    title="FelidLens — AI Feline Identification & Discovery Engine",
+    title="Felineye — AI Feline Identification & Discovery Engine",
     description="Provider-independent AI identification, curated Felidae taxonomy, and responsible wildlife observations.",
     version="1.0.0"
 )
@@ -51,7 +51,7 @@ app.include_router(collection.router)
 @app.get("/", tags=["Root"])
 async def root_index():
     return {
-        "service": "FelidLens API",
+        "service": "Felineye API",
         "documentation": "/docs",
         "health": "/api/health",
         "species_catalog": "/api/species",

@@ -15,7 +15,7 @@ export const Footer: React.FC<Props> = ({ setActivePage }) => {
           <div className="space-y-3 md:col-span-1">
             <span className="font-display font-black text-lg text-felid-ivory uppercase tracking-tight flex items-center gap-2">
               <Cat className="w-5 h-5 text-felid-accent" />
-              FELID<span className="text-felid-accent">LENS</span>
+              FELINE<span className="text-felid-accent">EYE</span>
             </span>
             <p className="text-xs text-felid-muted leading-relaxed font-mono">
               Wildlife identification and field discovery platform for the family Felidae, combining neural computer vision with responsible conservation ethics.
@@ -116,7 +116,7 @@ export const Footer: React.FC<Props> = ({ setActivePage }) => {
 
         <div className="pt-8 border-t-2 border-black flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono">
           <div>
-            &copy; {new Date().getFullYear()} FelidLens. Created with care for cats and wildlife conservationists.
+            &copy; {new Date().getFullYear()} Felineye. Created with care for cats and wildlife conservationists.
           </div>
           <div className="flex items-center gap-1 text-felid-muted">
             Taxonomy: Kitchener et al. (IUCN Cat Specialist Group Revised Taxonomy).

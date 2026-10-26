@@ -4,7 +4,7 @@
 >
 > **Status:** Alpha v0.1.0. Real BioCLIP + ImageNet identification is integrated with conservative abstention, and discovery rewards are server-authoritative and idempotent. Weights are gitignored and reproduced with `backend/scripts/setup_identification_models.py`.
 >
-> **Last verified:** 2026-10-25 — 55 backend tests (7 of them against the real ONNX weights), 21 frontend tests, frontend build passing.
+> **Last verified:** 2026-10-26 - 55 backend tests (7 of them against the real ONNX weights), 22 frontend tests, frontend build passing.
 
 ## How to Use This File
 
@@ -45,7 +45,7 @@
 - [X] Build reusable cards, badges, modal, loading, empty, and error patterns.
 - [X] Add basic focus styles, aria labels, and semantic layout landmarks.
 - [X] Implement responsive navbar, mobile menu, and footer.
-- [X] Remove navbar duplication: entries that mirrored another control were dropped — `Paw Scanner` and the `SCAN` shortcut (both duplicated the home hero "Scan a Cat Photo" CTA), `Expedition Log` (duplicated the rank capsule, which already opens the collection page), and `Cat Haven` (duplicated the `FELIDLENS` brand button, which returns home).
+- [X] Remove navbar duplication: entries that mirrored another control were dropped — `Paw Scanner` and the `SCAN` shortcut (both duplicated the home hero "Scan a Cat Photo" CTA), `Expedition Log` (duplicated the rank capsule, which already opens the collection page), and `Cat Haven` (duplicated the `FELINEYE` brand button, which returns home).
 - [X] Implement state-driven page switching (`ActivePage` in `App.tsx`).
 - [X] Scaffold Home, Identify, Atlas, Detail, Collection, Observations, and Methodology pages.
 
@@ -230,6 +230,7 @@
 - [X] Provide interactive API documentation via FastAPI `/docs`.
 - [X] Correct the README environment setup (`.env` is not auto-loaded) and document the real model setup path.
 - [X] Link the identification-model documentation from the README and Methodology page.
+- [X] Rename the product from FelidLens to Felineye across UI, package metadata, backend metadata, scripts, tests, and documentation. The pre-rename `felidlens_discovery_store_v1` localStorage key is retained as a read-only legacy fallback so existing journals survive the migration.
 - [ ] Choose and document a deployment target and production serving model.
 - [ ] Define versioning and release checklist (changelog, screenshots, license, attribution).
 - [ ] Decide whether deep-linkable URLs are required; if so, replace state navigation with a router.

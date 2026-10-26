@@ -1,7 +1,7 @@
-# FelidLens 
+# Felineye 
 ### AI-Powered Feline Identification & Wildlife Discovery Platform
 
-[![Status: Alpha](https://img.shields.io/badge/Status-Alpha%20(v0.1.0)-f472b6.svg)](https://github.com/Horrid-12/felidlens)
+[![Status: Alpha](https://img.shields.io/badge/Status-Alpha%20(v0.1.0)-f472b6.svg)](https://github.com/Horrid-12/Felineye)
 [![License: MIT](https://img.shields.io/badge/License-MIT-pink.svg)](https://opensource.org/licenses/MIT)
 [![Backend: FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
 [![Frontend: React-18](https://img.shields.io/badge/Frontend-React%2018%20+%20Vite-61DAFB.svg)](https://vitejs.dev/)
@@ -9,15 +9,15 @@
 
 > [!IMPORTANT]
 > **Alpha Release Notice:**
-> FelidLens is currently in **Alpha** (v0.1.0-alpha). Features, neural inference models, and taxonomic mappings are in active development. Identification runs a local BioCLIP + ImageNet stack and reports visual-similarity estimates — **not calibrated probabilities**. Weak or conflicting evidence produces an explicit abstention rather than a forced species.
+> Felineye is currently in **Alpha** (v0.1.0-alpha). Features, neural inference models, and taxonomic mappings are in active development. Identification runs a local BioCLIP + ImageNet stack and reports visual-similarity estimates — **not calibrated probabilities**. Weak or conflicting evidence produces an explicit abstention rather than a forced species.
 
 > [!NOTE]
 > **Original Concept & Attribution:**
-> FelidLens was inspired by the original idea and architecture of **[BirdLens](https://github.com/sdprojects12/birdlens)** by [sdprojects12](https://github.com/sdprojects12). Reimagined and built from the ground up for the entire cat family (**Felidae**), FelidLens introduces a pinky-gray velvet feline aesthetic, responsible wildlife coordinate obscuration, abstention-aware local inference, and a curated multi-lineage cat taxonomy.
+> Felineye was inspired by the original idea and architecture of **[BirdLens](https://github.com/sdprojects12/birdlens)** by [sdprojects12](https://github.com/sdprojects12). Reimagined and built from the ground up for the entire cat family (**Felidae**), Felineye introduces a pinky-gray velvet feline aesthetic, responsible wildlife coordinate obscuration, abstention-aware local inference, and a curated multi-lineage cat taxonomy.
 
 ---
 
-**FelidLens** is an immersive wildlife discovery platform and AI field guide dedicated to the entire cat family (**Felidae**). Spanning 40 wild species plus the domestic cat (*Felis catus*), 22 CFA-verified breeds, and 4 informational hybrids, the application pairs local computer vision with honest uncertainty reporting, ethical wildlife conservation protocols, and a gamified naturalist expedition journal.
+**Felineye** is an immersive wildlife discovery platform and AI field guide dedicated to the entire cat family (**Felidae**). Spanning 40 wild species plus the domestic cat (*Felis catus*), 22 CFA-verified breeds, and 4 informational hybrids, the application pairs local computer vision with honest uncertainty reporting, ethical wildlife conservation protocols, and a gamified naturalist expedition journal.
 
 ---
 
@@ -109,8 +109,9 @@ uv pip install -r requirements.txt
 cd ..
 backend\.venv\Scripts\python.exe -m pytest backend/tests -q
 
-# Start FastAPI development server
-backend\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
+# Start FastAPI development server from backend/
+cd backend
+.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
 > [!IMPORTANT]
@@ -243,7 +244,7 @@ For model setup, thresholds, the real-vs-mocked verification record, and known f
 
 ##  Responsible Wildlife Data Protocol
 
-FelidLens strictly adheres to biodiversity conservation ethics:
+Felineye strictly adheres to biodiversity conservation ethics:
 - **No Precise GPS Coordinates**: Observations retrieved from the iNaturalist API have their latitude and longitude generalized to broad regional boundaries.
 - **Anti-Poaching Protection**: Vulnerable, endangered, and critically endangered species (such as *Panthera tigris*, *Panthera uncia*, *Leopardus jacobita*) are shielded from precise location harvesting.
 - **Wildlife Viewing Ethics**: Prominent in-app advisories remind users that past sighting records do not imply present animal location, and wild animals should never be disturbed in their natural habitats.
@@ -257,7 +258,7 @@ Run all tests from the **repository root** (tests import `backend.app.*`):
 ```bash
 backend\.venv\Scripts\python.exe -m pytest backend/tests -q
 ```
-This covers image validation, all identification outcomes, taxonomy filters, API contracts, and the atomic/idempotent collection store. Seven additional tests load the **real BioCLIP + ImageNet weights** from `backend/tests/fixtures/`; they skip automatically when the gitignored weights are absent, so run the model setup first to exercise them.
+This covers image validation, all identification outcomes, taxonomy filters, and API contracts. Seven additional tests load the **real BioCLIP + ImageNet weights** from `backend/tests/fixtures/`; they skip automatically when the gitignored weights are absent, so run the model setup first to exercise them.
 
 ### Frontend Tests & Build
 ```bash
@@ -265,7 +266,7 @@ npm test --prefix frontend
 npm run build --prefix frontend      # tsc -b && vite build
 ```
 
-**Verified on 2026-10-25:** 55 backend tests passed (including the 7 real-weight tests), 21 frontend tests passed, and the production build succeeded.
+**Verified on 2026-10-26:** 55 backend tests passed (including the 7 real-weight tests), 22 frontend tests passed, and the production build succeeded.
 
 ---
 

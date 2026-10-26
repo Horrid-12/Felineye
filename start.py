@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-FelidLens Full-Stack Development Server Launcher
+Felineye Full-Stack Development Server Launcher
 Starts both the FastAPI backend and Vite frontend concurrently with clean log prefixes and graceful termination.
 """
 
@@ -25,7 +25,7 @@ RED = "\033[91m"
 def print_banner():
     banner = f"""
 {MAGENTA}{BOLD}======================================================================
-  🐾 FELIDLENS // FULL-STACK DEV RUNNER
+  🐾 FELINEYE // FULL-STACK DEV RUNNER
 ======================================================================{RESET}
   {GREEN}➜ Backend API:{RESET}    http://127.0.0.1:8000
   {GREEN}➜ API Swagger:{RESET}    http://127.0.0.1:8000/docs

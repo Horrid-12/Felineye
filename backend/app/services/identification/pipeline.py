@@ -369,7 +369,7 @@ class IdentificationPipeline:
                 image_metadata=metadata,
                 quality=quality,
                 disclaimer=(
-                    "No identification was performed. FelidLens does not fall back to fake "
+                    "No identification was performed. Felineye does not fall back to fake "
                     "predictions when the real model is unavailable."
                 ),
             )

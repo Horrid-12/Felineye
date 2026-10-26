@@ -1,6 +1,13 @@
 import { DiscoveryRecord } from '../types';
 
-export const STORAGE_KEY = 'felidlens_discovery_store_v1';
+export const STORAGE_KEY = 'felineye_discovery_store_v1';
+
+/**
+ * Storage key used before the Felineye rename. It is read as a fallback so a
+ * branding migration never discards an existing player's field journal; new
+ * writes always go to {@link STORAGE_KEY}.
+ */
+export const LEGACY_STORAGE_KEYS = ['felidlens_discovery_store_v1'] as const;
 
 export interface CollectionState {
   discoveries: Record<string, DiscoveryRecord>;
@@ -103,13 +110,21 @@ export function loadCollectionState(storage?: Pick<Storage, 'getItem'>): Collect
   try {
     const target = storage ?? (typeof localStorage === 'undefined' ? null : localStorage);
     if (!target) return createEmptyCollectionState();
-    const saved = target.getItem(STORAGE_KEY);
+    const saved = target.getItem(STORAGE_KEY) ?? readLegacyState(target);
     if (!saved) return createEmptyCollectionState();
     return normalizeCollectionState(JSON.parse(saved));
   } catch (error) {
     console.warn('Failed to read collection from localStorage:', error);
     return createEmptyCollectionState();
   }
+}
+
+function readLegacyState(target: Pick<Storage, 'getItem'>): string | null {
+  for (const key of LEGACY_STORAGE_KEYS) {
+    const saved = target.getItem(key);
+    if (saved) return saved;
+  }
+  return null;
 }
 
 /**

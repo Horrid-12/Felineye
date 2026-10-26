@@ -160,7 +160,7 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
               'No real identification model is installed, so no prediction was attempted.'}
           </p>
           <p className="text-[11px] text-felid-muted font-mono leading-relaxed">
-            FelidLens does not fall back to random, hash-based, or heuristic predictions. When the
+            Felineye does not fall back to random, hash-based, or heuristic predictions. When the
             model is unavailable the honest answer is that no identification was performed.
           </p>
           {result.model_setup_hint && (
@@ -281,7 +281,7 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
         <p className="text-xs sm:text-sm text-felid-muted max-w-xl mx-auto font-mono leading-relaxed">
           Upload a feline photo to rank it against 40 wild species and the domestic cat. Scores are
           model similarities, not calibrated probabilities. When evidence is weak, conflicting, or
-          breed-level, FelidLens abstains instead of forcing a species.
+          breed-level, Felineye abstains instead of forcing a species.
         </p>
       </div>
 
