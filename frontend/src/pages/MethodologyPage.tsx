@@ -80,9 +80,15 @@ export const MethodologyPage: React.FC = () => {
           <li>
             <strong className="text-felid-ivory uppercase">Taxonomy Handling:</strong>{' '}
             Every candidate carries an explicit category: wild species, domestic species, domestic
-            breed, or hybrid. Hybrids are removed. A breed-level cue is downgraded to{' '}
-            <em>Felis catus</em> at species level with an advisory, because a single photograph
-            cannot establish breed ancestry with this model.
+            breed, or hybrid. Hybrids are removed. A breed-labelled species candidate is downgraded
+            to <em>Felis catus</em>; breed is never a species-level answer.
+          </li>
+          <li>
+            <strong className="text-felid-ivory uppercase">Separate Breed Estimate:</strong>{' '}
+            Only after a domestic cat is accepted at species level, a dedicated ViT breed classifier
+            may add a visual breed estimate. It must clear a confidence floor and a margin over the
+            next class; generic coat classes and non-catalogue breeds abstain. The estimate never
+            changes the species result or awards XP, and it is not pedigree verification.
           </li>
           <li>
             <strong className="text-felid-ivory uppercase">Conservative Acceptance / Abstention:</strong>{' '}
@@ -162,7 +168,7 @@ export const MethodologyPage: React.FC = () => {
               MODEL PROVENANCE, LICENCES & LIMITATIONS
             </h2>
             <span className="text-xs text-felid-muted font-mono uppercase font-bold">
-              BioCLIP ViT-B/16 + Independent ImageNet Gate
+              BioCLIP ViT-B/16 + ImageNet Gate + Breed Estimator
             </span>
           </div>
         </div>
@@ -189,6 +195,21 @@ export const MethodologyPage: React.FC = () => {
             trained differently, so their disagreement is meaningful evidence of uncertainty.
           </p>
           <p>
+            <strong className="text-felid-ivory uppercase font-mono">Breed estimator:</strong>{' '}
+            <a
+              className="text-felid-accent underline"
+              href="https://huggingface.co/dima806/cat_breed_image_detection"
+              target="_blank"
+              rel="noreferrer"
+            >
+              cat_breed_image_detection
+            </a>{' '}
+            (dima806), a ViT-B/16 fine-tuned on 48 cat classes under Apache-2.0. It runs only for
+            accepted domestic cats and is exported to ONNX. Its output is a softmax score, not a
+            calibrated probability, and it is reported as visual similarity rather than pedigree
+            verification.
+          </p>
+          <p>
             <strong className="text-felid-ivory uppercase font-mono">No silent fallback:</strong>{' '}
             the default <code>auto</code> provider prefers BioCLIP with the gate, then the
             ImageNet-only fallback, and otherwise returns <code>model_unavailable</code>. It never
@@ -212,8 +233,10 @@ export const MethodologyPage: React.FC = () => {
               species cannot be separated reliably.
             </li>
             <li>
-              Breed identity is not produced. A breed cue is reported as the domestic cat at species
-              level with an advisory, never as a breed.
+              Breed estimates are visual only. The dedicated classifier reports ~77% on its own
+              dataset, is not calibrated, and confuses some breed pairs (Maine Coon / Norwegian
+              Forest, Ragdoll / Birman / Siamese). Weak, generic, or non-catalogue evidence abstains
+              instead of forcing a breed.
             </li>
             <li>
               Hybrids are excluded from the model vocabulary and can never be returned.
@@ -345,9 +368,11 @@ export const MethodologyPage: React.FC = () => {
           </p>
           <p>
             <strong className="text-felid-ivory uppercase">Identification Models:</strong> BioCLIP
-            (Imageomics Institute, Stevens et al.) under the MIT licence, and MobileNetV2-12 from the
-            ONNX Model Zoo under Apache-2.0. Inference runs through ONNX Runtime. Model weights are
-            not committed to the repository; see the identification-model setup documentation.
+            (Imageomics Institute, Stevens et al.) under the MIT licence, MobileNetV2-12 from the
+            ONNX Model Zoo under Apache-2.0, and the cat-breed ViT
+            (dima806/cat_breed_image_detection) under Apache-2.0. Inference runs through ONNX
+            Runtime. Model weights are not committed to the repository; see the
+            identification-model setup documentation.
           </p>
           <p>
             <strong className="text-felid-ivory uppercase">Domestic Breed Registry:</strong> Breed records follow the Cat Fanciers&apos; Association (CFA) breed profiles at cfa.org. Each registry URL was fetched and title-checked during curation; breed names are not treated as scientific taxa.

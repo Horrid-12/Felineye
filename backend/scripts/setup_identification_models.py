@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Download or regenerate the real Felineye identification weights.
 
-Two artefacts are needed for the default ``CLASSIFIER_PROVIDER=auto`` path:
+Three artefacts are needed for the default ``CLASSIFIER_PROVIDER=auto`` path:
 
 1. ``backend/models/mobilenetv2-12.onnx`` + ``backend/app/data/imagenet_classes.txt``
    - MobileNetV2-12 (ONNX Model Zoo, Apache-2.0), used as the independent
@@ -16,6 +16,16 @@ Two artefacts are needed for the default ``CLASSIFIER_PROVIDER=auto`` path:
    - Exporting requires the optional development dependencies in
      ``backend/requirements-models.txt`` (torch + open_clip_torch). The FastAPI
      runtime itself only needs onnxruntime, numpy, and pillow.
+
+3. ``backend/models/cat_breed_vit.onnx`` +
+   ``backend/app/data/cat_breed_labels.json``
+   - ViT-B/16 fine-tuned on 48 cat breeds (dima806/cat_breed_image_detection,
+     Apache-2.0), used only for a *breed estimate* once the species pipeline has
+     already identified a domestic cat. It can never override the species result
+     or award XP.
+   - The label file maps the model's 48 classes onto the curated CFA breed
+     catalogue; generic coat/type classes and breeds outside the catalogue are
+     kept as explicit abstention classes.
 
 Weights are intentionally gitignored. Run this script after cloning:
 
@@ -54,6 +64,64 @@ IMAGENET_MODEL = MODELS_DIR / "mobilenetv2-12.onnx"
 IMAGENET_LABELS = DATA_DIR / "imagenet_classes.txt"
 BIOCLIP_ONNX = MODELS_DIR / "bioclip_vit_b16_vision.onnx"
 BIOCLIP_EMBEDDINGS = DATA_DIR / "bioclip_text_embeddings.npz"
+BREED_MODEL_ID = "dima806/cat_breed_image_detection"
+BREED_ONNX = MODELS_DIR / "cat_breed_vit.onnx"
+BREED_LABELS = DATA_DIR / "cat_breed_labels.json"
+
+#: Mapping from the breed classifier's 48 class labels to the curated catalogue.
+#: ``None`` means "not a catalogue breed": the pipeline must abstain rather than
+#: force the nearest breed. ``kind`` is one of breed, generic, or unmapped.
+BREED_LABEL_MAP: dict[str, tuple[str | None, str]] = {
+    "Abyssinian": ("abyssinian", "breed"),
+    "American Bobtail": (None, "unmapped"),
+    "American Curl": (None, "unmapped"),
+    "American Shorthair": ("american-shorthair", "breed"),
+    "Applehead Siamese": ("siamese", "breed"),
+    "Balinese": ("balinese", "breed"),
+    "Bengal": ("bengal", "breed"),
+    "Birman": ("birman", "breed"),
+    "Bombay": ("bombay", "breed"),
+    "British Shorthair": ("british-shorthair", "breed"),
+    "Burmese": ("burmese", "breed"),
+    "Calico": (None, "generic"),
+    "Cornish Rex": (None, "unmapped"),
+    "Devon Rex": ("devon-rex", "breed"),
+    "Dilute Calico": (None, "generic"),
+    "Dilute Tortoiseshell": (None, "generic"),
+    "Domestic Long Hair": (None, "generic"),
+    "Domestic Medium Hair": (None, "generic"),
+    "Domestic Short Hair": (None, "generic"),
+    "Egyptian Mau": ("egyptian-mau", "breed"),
+    "Exotic Shorthair": (None, "unmapped"),
+    "Extra-Toes Cat - Hemingway Polydactyl": (None, "unmapped"),
+    "Havana": (None, "unmapped"),
+    "Himalayan": (None, "unmapped"),
+    "Japanese Bobtail": (None, "unmapped"),
+    "Maine Coon": ("maine-coon", "breed"),
+    "Manx": ("manx", "breed"),
+    "Munchkin": (None, "unmapped"),
+    "Nebelung": (None, "unmapped"),
+    "Norwegian Forest": ("norwegian-forest-cat", "breed"),
+    "Oriental Short Hair": (None, "unmapped"),
+    "Persian": ("persian", "breed"),
+    "Ragamuffin": (None, "unmapped"),
+    "Ragdoll": ("ragdoll", "breed"),
+    "Russian Blue": ("russian-blue", "breed"),
+    "Scottish Fold": ("scottish-fold", "breed"),
+    "Siamese": ("siamese", "breed"),
+    "Siberian": ("siberian", "breed"),
+    "Snowshoe": (None, "unmapped"),
+    "Sphynx": ("sphynx", "breed"),
+    "Tabby": (None, "generic"),
+    "Tiger": (None, "generic"),
+    "Tonkinese": ("tonkinese", "breed"),
+    "Torbie": (None, "generic"),
+    "Tortoiseshell": (None, "generic"),
+    "Turkish Angora": ("turkish-angora", "breed"),
+    "Turkish Van": (None, "unmapped"),
+    "Tuxedo": (None, "generic"),
+}
+
 
 #: Downloaded artefacts have stable bytes, so their digests are pinned.
 EXPECTED_SHA256 = {
@@ -296,6 +364,115 @@ def setup_bioclip(*, force: bool = False) -> bool:
     return True
 
 
+def _write_breed_labels(label_map: dict[int, str]) -> bool:
+    labels = []
+    for index in sorted(label_map):
+        label = label_map[index]
+        if label not in BREED_LABEL_MAP:
+            print(f"  [FAIL] breed class {label!r} has no catalogue mapping")
+            return False
+        breed_id, kind = BREED_LABEL_MAP[label]
+        labels.append(
+            {
+                "index": index,
+                "label": label,
+                "breed_id": breed_id,
+                "kind": kind,
+            }
+        )
+
+    payload = {
+        "model": BREED_MODEL_ID,
+        "license": "Apache-2.0",
+        "score_semantics": "breed_classifier_softmax",
+        "input_size": 224,
+        "labels": labels,
+    }
+    BREED_LABELS.parent.mkdir(parents=True, exist_ok=True)
+    BREED_LABELS.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    print(
+        f"         wrote {BREED_LABELS.name} "
+        f"({len(labels)} classes, "
+        f"{len({item['breed_id'] for item in labels if item['kind'] == 'breed'})} catalogue breeds)"
+    )
+    return True
+
+
+def setup_breed(*, force: bool = False) -> bool:
+    print("Cat-breed classifier (dima806/cat_breed_image_detection, Apache-2.0)")
+
+    try:
+        import torch
+        from transformers import AutoModelForImageClassification
+    except ImportError as exc:
+        print(f"  [FAIL] optional export dependencies are missing: {exc}")
+        print("         Install transformers in the export environment:")
+        print("           .model-export\\Scripts\\python.exe -m pip install -r backend\\requirements-models.txt")
+        return False
+
+    try:
+        model = AutoModelForImageClassification.from_pretrained(BREED_MODEL_ID)
+        model.eval()
+    except Exception as exc:  # pragma: no cover - network dependent
+        print(f"  [FAIL] could not load {BREED_MODEL_ID}: {exc}")
+        return False
+
+    label_map = {int(index): label for index, label in model.config.id2label.items()}
+    if not _write_breed_labels(label_map):
+        return False
+
+    if BREED_ONNX.exists() and not force:
+        print(f"  [skip] {BREED_ONNX.name} already present ({format_size(BREED_ONNX.stat().st_size)})")
+        return True
+
+    class BreedEncoder(torch.nn.Module):
+        def __init__(self, wrapped):
+            super().__init__()
+            self.wrapped = wrapped
+
+        def forward(self, pixel_values):
+            return self.wrapped(pixel_values=pixel_values).logits
+
+    encoder = BreedEncoder(model).eval()
+    dummy = torch.randn(1, 3, 224, 224)
+    BREED_ONNX.parent.mkdir(parents=True, exist_ok=True)
+    print(f"  [exp ] exporting {BREED_ONNX.name} (opset 17)")
+
+    export_kwargs = dict(
+        input_names=["pixel_values"],
+        output_names=["logits"],
+        dynamic_axes={"pixel_values": {0: "batch"}, "logits": {0: "batch"}},
+        opset_version=17,
+        do_constant_folding=True,
+    )
+    try:
+        torch.onnx.export(encoder, dummy, str(BREED_ONNX), dynamo=False, **export_kwargs)
+    except TypeError:
+        torch.onnx.export(encoder, dummy, str(BREED_ONNX), **export_kwargs)
+
+    print(f"         wrote {format_size(BREED_ONNX.stat().st_size)}")
+    print(f"         sha256 {sha256(BREED_ONNX)}")
+
+    try:
+        import numpy as np
+        import onnxruntime as ort
+
+        session = ort.InferenceSession(str(BREED_ONNX), providers=["CPUExecutionProvider"])
+        with torch.no_grad():
+            expected = encoder(dummy).numpy()
+        actual = session.run(None, {"pixel_values": dummy.numpy()})[0]
+        max_diff = float(np.abs(expected - actual).max())
+        print(f"  [ok  ] ONNX/PyTorch max abs diff {max_diff:.2e}")
+        if max_diff > 1e-3:
+            print("  [FAIL] exported ONNX does not match PyTorch within tolerance")
+            return False
+    except ImportError:
+        print("  [note] onnxruntime not installed here; skipping numeric verification")
+        print("         the runtime venv tests will verify the export")
+
+    return True
+
+
 def check() -> bool:
     print("Identification artefacts")
     ok = True
@@ -313,19 +490,32 @@ def check() -> bool:
         print(f"         sha256 {sha256(path)}")
         if label.startswith("ImageNet"):
             ok = verify_download(path) and ok
+
+    # The breed estimator is optional: species identification works without it.
+    print("Optional breed artefacts")
+    for label, path in [
+        ("Cat-breed ONNX", BREED_ONNX),
+        ("Cat-breed labels", BREED_LABELS),
+    ]:
+        if not path.exists():
+            print(f"  [opt ] {label}: not installed ({path})")
+            continue
+        print(f"  [ok  ] {label}: {path} ({format_size(path.stat().st_size)})")
+        print(f"         sha256 {sha256(path)}")
     return ok
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--all", action="store_true", help="set up the gate and BioCLIP")
+    parser.add_argument("--all", action="store_true", help="set up the gate, BioCLIP, and the breed classifier")
     parser.add_argument("--imagenet", action="store_true", help="download the MobileNetV2 gate and labels")
     parser.add_argument("--bioclip", action="store_true", help="export BioCLIP and precompute text embeddings")
+    parser.add_argument("--breed", action="store_true", help="export the cat-breed classifier and label map")
     parser.add_argument("--check", action="store_true", help="report installed artefacts and checksums")
     parser.add_argument("--force", action="store_true", help="overwrite existing artefacts")
     args = parser.parse_args(argv)
 
-    if not any([args.all, args.imagenet, args.bioclip, args.check]):
+    if not any([args.all, args.imagenet, args.bioclip, args.breed, args.check]):
         parser.print_help()
         return 2
 
@@ -339,6 +529,8 @@ def main(argv: list[str] | None = None) -> int:
         ok = setup_imagenet(force=args.force) and ok
     if args.all or args.bioclip:
         ok = setup_bioclip(force=args.force) and ok
+    if args.all or args.breed:
+        ok = setup_breed(force=args.force) and ok
 
     print()
     if ok:

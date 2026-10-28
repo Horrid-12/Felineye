@@ -13,6 +13,8 @@ licenses. They are redistributed here at reduced resolution for testing.
 | `chihuahua.jpg` | [Chihuahua1 bvdb.jpg](https://commons.wikimedia.org/wiki/File:Chihuahua1_bvdb.jpg) | Bonnie van den Born | CC BY-SA 3.0 |
 | `crocodile.jpg` | [NileCrocodile.jpg](https://commons.wikimedia.org/wiki/File:NileCrocodile.jpg) | Dewet | CC BY-SA 2.0 |
 | `serval.jpg` | [Serval (Leptailurus serval), parque nacional de Tarangire, Tanzania, 2024-05-25, DD 54.jpg](https://commons.wikimedia.org/wiki/File:Serval_(Leptailurus_serval),_parque_nacional_de_Tarangire,_Tanzania,_2024-05-25,_DD_54.jpg) | Diego Delso | CC BY-SA 4.0 |
+| `british-shorthair.jpg` | [Jack Flash blue bicolour.jpg](https://commons.wikimedia.org/wiki/File:Jack_Flash_blue_bicolour.jpg) | Pamela Lanigan (Cuddleton) | CC BY-SA 3.0 |
+| `domestic-shorthair.jpg` | [Domestic shorthair cat.jpg](https://commons.wikimedia.org/wiki/File:Domestic_shorthair_cat.jpg) | Jaredryandloneria | CC BY 1.0 |
 | `chihuahua_with_crocodile.jpg` | Composite of `chihuahua.jpg` and `crocodile.jpg` | Composite for this test suite | CC BY-SA (inherits above) |
 
 The composite is a deliberately adversarial non-feline image: a Chihuahua and a

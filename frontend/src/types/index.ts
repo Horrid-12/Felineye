@@ -34,6 +34,22 @@ export interface CandidatePrediction {
   model_label?: string;
 }
 
+export interface BreedPrediction {
+  breed_id: string;
+  common_name: string;
+  scientific_name: string;
+  /** Breed-classifier softmax score. Not a calibrated probability. */
+  confidence_score: number;
+  score_percentage: number;
+  category: 'domestic_breed';
+  thumbnail_url: string;
+  rationale?: string;
+  score_semantics?: string;
+  model_label?: string;
+  /** Always true: a visual estimate, never pedigree verification. */
+  is_estimate?: boolean;
+}
+
 export interface FelineGateDiagnostics {
   feline_detected?: boolean;
   feline_probability?: number;
@@ -61,6 +77,12 @@ export interface IdentificationResult {
   status: IdentificationStatus;
   top_candidate?: CandidatePrediction | null;
   candidates: CandidatePrediction[];
+  /** Visual breed estimate for a domestic cat; null when not asserted. */
+  breed?: BreedPrediction | null;
+  /** Closest curated breed classes, shown for transparency. */
+  breed_candidates?: BreedPrediction[];
+  /** Why a breed was or was not asserted. Never a pedigree claim. */
+  breed_note?: string | null;
   /** Mathematical meaning of the scores, e.g. a cosine similarity. */
   score_semantics: string;
   /** Only present when a provider returns a genuine probability distribution. */

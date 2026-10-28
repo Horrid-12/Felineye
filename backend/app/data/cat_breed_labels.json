@@ -1,0 +1,296 @@
+{
+  "model": "dima806/cat_breed_image_detection",
+  "license": "Apache-2.0",
+  "score_semantics": "breed_classifier_softmax",
+  "input_size": 224,
+  "labels": [
+    {
+      "index": 0,
+      "label": "Abyssinian",
+      "breed_id": "abyssinian",
+      "kind": "breed"
+    },
+    {
+      "index": 1,
+      "label": "American Bobtail",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 2,
+      "label": "American Curl",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 3,
+      "label": "American Shorthair",
+      "breed_id": "american-shorthair",
+      "kind": "breed"
+    },
+    {
+      "index": 4,
+      "label": "Applehead Siamese",
+      "breed_id": "siamese",
+      "kind": "breed"
+    },
+    {
+      "index": 5,
+      "label": "Balinese",
+      "breed_id": "balinese",
+      "kind": "breed"
+    },
+    {
+      "index": 6,
+      "label": "Bengal",
+      "breed_id": "bengal",
+      "kind": "breed"
+    },
+    {
+      "index": 7,
+      "label": "Birman",
+      "breed_id": "birman",
+      "kind": "breed"
+    },
+    {
+      "index": 8,
+      "label": "Bombay",
+      "breed_id": "bombay",
+      "kind": "breed"
+    },
+    {
+      "index": 9,
+      "label": "British Shorthair",
+      "breed_id": "british-shorthair",
+      "kind": "breed"
+    },
+    {
+      "index": 10,
+      "label": "Burmese",
+      "breed_id": "burmese",
+      "kind": "breed"
+    },
+    {
+      "index": 11,
+      "label": "Calico",
+      "breed_id": null,
+      "kind": "generic"
+    },
+    {
+      "index": 12,
+      "label": "Cornish Rex",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 13,
+      "label": "Devon Rex",
+      "breed_id": "devon-rex",
+      "kind": "breed"
+    },
+    {
+      "index": 14,
+      "label": "Dilute Calico",
+      "breed_id": null,
+      "kind": "generic"
+    },
+    {
+      "index": 15,
+      "label": "Dilute Tortoiseshell",
+      "breed_id": null,
+      "kind": "generic"
+    },
+    {
+      "index": 16,
+      "label": "Domestic Long Hair",
+      "breed_id": null,
+      "kind": "generic"
+    },
+    {
+      "index": 17,
+      "label": "Domestic Medium Hair",
+      "breed_id": null,
+      "kind": "generic"
+    },
+    {
+      "index": 18,
+      "label": "Domestic Short Hair",
+      "breed_id": null,
+      "kind": "generic"
+    },
+    {
+      "index": 19,
+      "label": "Egyptian Mau",
+      "breed_id": "egyptian-mau",
+      "kind": "breed"
+    },
+    {
+      "index": 20,
+      "label": "Exotic Shorthair",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 21,
+      "label": "Extra-Toes Cat - Hemingway Polydactyl",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 22,
+      "label": "Havana",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 23,
+      "label": "Himalayan",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 24,
+      "label": "Japanese Bobtail",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 25,
+      "label": "Maine Coon",
+      "breed_id": "maine-coon",
+      "kind": "breed"
+    },
+    {
+      "index": 26,
+      "label": "Manx",
+      "breed_id": "manx",
+      "kind": "breed"
+    },
+    {
+      "index": 27,
+      "label": "Munchkin",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 28,
+      "label": "Nebelung",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 29,
+      "label": "Norwegian Forest",
+      "breed_id": "norwegian-forest-cat",
+      "kind": "breed"
+    },
+    {
+      "index": 30,
+      "label": "Oriental Short Hair",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 31,
+      "label": "Persian",
+      "breed_id": "persian",
+      "kind": "breed"
+    },
+    {
+      "index": 32,
+      "label": "Ragamuffin",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 33,
+      "label": "Ragdoll",
+      "breed_id": "ragdoll",
+      "kind": "breed"
+    },
+    {
+      "index": 34,
+      "label": "Russian Blue",
+      "breed_id": "russian-blue",
+      "kind": "breed"
+    },
+    {
+      "index": 35,
+      "label": "Scottish Fold",
+      "breed_id": "scottish-fold",
+      "kind": "breed"
+    },
+    {
+      "index": 36,
+      "label": "Siamese",
+      "breed_id": "siamese",
+      "kind": "breed"
+    },
+    {
+      "index": 37,
+      "label": "Siberian",
+      "breed_id": "siberian",
+      "kind": "breed"
+    },
+    {
+      "index": 38,
+      "label": "Snowshoe",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 39,
+      "label": "Sphynx",
+      "breed_id": "sphynx",
+      "kind": "breed"
+    },
+    {
+      "index": 40,
+      "label": "Tabby",
+      "breed_id": null,
+      "kind": "generic"
+    },
+    {
+      "index": 41,
+      "label": "Tiger",
+      "breed_id": null,
+      "kind": "generic"
+    },
+    {
+      "index": 42,
+      "label": "Tonkinese",
+      "breed_id": "tonkinese",
+      "kind": "breed"
+    },
+    {
+      "index": 43,
+      "label": "Torbie",
+      "breed_id": null,
+      "kind": "generic"
+    },
+    {
+      "index": 44,
+      "label": "Tortoiseshell",
+      "breed_id": null,
+      "kind": "generic"
+    },
+    {
+      "index": 45,
+      "label": "Turkish Angora",
+      "breed_id": "turkish-angora",
+      "kind": "breed"
+    },
+    {
+      "index": 46,
+      "label": "Turkish Van",
+      "breed_id": null,
+      "kind": "unmapped"
+    },
+    {
+      "index": 47,
+      "label": "Tuxedo",
+      "breed_id": null,
+      "kind": "generic"
+    }
+  ]
+}

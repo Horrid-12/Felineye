@@ -9,6 +9,10 @@ from PIL import Image
 from backend.app.main import app
 from backend.app.models.identification import IdentificationStatus
 from backend.app.services.identification.base import RawInferenceResult, RawPrediction
+from backend.app.services.identification.breed_classifier import (
+    BreedInferenceResult,
+    BreedScore,
+)
 from backend.app.services.identification.dev_provider import DevelopmentMockClassifier
 from backend.app.services.identification.pipeline import (
     IdentificationPipeline,
@@ -29,6 +33,32 @@ def _textured_image(size=(160, 160)) -> Image.Image:
     rng = np.random.default_rng(11)
     array = rng.integers(0, 256, size=(size[1], size[0], 3), dtype=np.uint8)
     return Image.fromarray(array, mode="RGB")
+
+
+class StubBreedClassifier:
+    """Deterministic breed estimator injected into the pipeline."""
+
+    is_available = True
+    model_info = {
+        "name": "stub-breed",
+        "version": "test",
+        "license": "test",
+        "available": True,
+    }
+
+    def __init__(self, scores, *, fail=False):
+        self.scores = scores
+        self.fail = fail
+
+    async def predict(self, image):
+        if self.fail:
+            raise RuntimeError("stub breed classifier failure")
+        return BreedInferenceResult(
+            scores=sorted(self.scores, key=lambda item: item.score, reverse=True),
+            model_name="stub-breed",
+            model_version="test",
+            model_license="test",
+        )
 
 
 class StubClassifier:
@@ -67,14 +97,23 @@ class StubClassifier:
         )
 
 
-def _run(predictions, *, image=None, feline_detected=True, content_conflict=False, is_mock=False):
+def _run(
+    predictions,
+    *,
+    image=None,
+    feline_detected=True,
+    content_conflict=False,
+    is_mock=False,
+    breed_classifier=None,
+):
     pipe = IdentificationPipeline(
         classifier=StubClassifier(
             predictions,
             feline_detected=feline_detected,
             content_conflict=content_conflict,
             is_mock=is_mock,
-        )
+        ),
+        breed_classifier=breed_classifier,
     )
     return asyncio.run(
         pipe.identify(
@@ -294,3 +333,191 @@ def test_content_conflict_abstains_instead_of_forcing_species():
     assert result.top_candidate is None
     assert result.is_discovery_eligible is False
     assert "disagree" in (result.uncertainty_note or "").lower()
+
+
+# ---------------------------------------------------------------------------
+# Breed estimate stage
+#
+# Breed estimation is a separate, optional stage that runs only after a
+# domestic cat has been accepted at species level. These tests pin the honesty
+# rules: no nearest-neighbour fallback, no species override, no XP change.
+# ---------------------------------------------------------------------------
+
+DOMESTIC_PREDICTIONS = [
+    _pred("felis-catus", 0.36, "Domestic Cat"),
+    _pred("leopardus-wiedii", 0.24, "Margay"),
+]
+
+
+def _breed(label, score, breed_id, kind="breed"):
+    return BreedScore(label=label, score=score, breed_id=breed_id, kind=kind)
+
+
+def test_confident_catalogue_breed_is_reported_as_an_estimate():
+    result = _run(
+        DOMESTIC_PREDICTIONS,
+        breed_classifier=StubBreedClassifier(
+            [
+                _breed("Ragdoll", 0.78, "ragdoll"),
+                _breed("Birman", 0.15, "birman"),
+                _breed("Siamese", 0.03, "siamese"),
+            ]
+        ),
+    )
+
+    assert result.status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT
+    assert result.breed is not None
+    assert result.breed.breed_id == "ragdoll"
+    assert result.breed.category == "domestic_breed"
+    assert result.breed.is_estimate is True
+    assert result.breed.score_percentage == 78
+    assert [candidate.breed_id for candidate in result.breed_candidates][:2] == [
+        "ragdoll",
+        "birman",
+    ]
+    assert "not pedigree verification" in (result.breed_note or "").lower()
+
+
+def test_british_shorthair_is_reported_when_confident():
+    result = _run(
+        DOMESTIC_PREDICTIONS,
+        breed_classifier=StubBreedClassifier(
+            [
+                _breed("British Shorthair", 0.97, "british-shorthair"),
+                _breed("Russian Blue", 0.01, "russian-blue"),
+            ]
+        ),
+    )
+
+    assert result.status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT
+    assert result.breed is not None
+    assert result.breed.breed_id == "british-shorthair"
+    assert result.breed.common_name == "British Shorthair"
+    assert result.xp_reward == 50
+    assert result.is_discovery_eligible is True
+
+
+def test_low_confidence_breed_is_not_asserted():
+    result = _run(
+        DOMESTIC_PREDICTIONS,
+        breed_classifier=StubBreedClassifier(
+            [
+                _breed("Ragdoll", 0.20, "ragdoll"),
+                _breed("Birman", 0.05, "birman"),
+            ]
+        ),
+    )
+
+    assert result.status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT
+    assert result.breed is None
+    assert "threshold" in (result.breed_note or "").lower()
+    # The domestic-cat species result and its XP are unaffected.
+    assert result.top_candidate is not None
+    assert result.top_candidate.species_id == "felis-catus"
+    assert result.xp_reward == 50
+    assert result.is_discovery_eligible is True
+
+
+def test_close_breed_margin_is_not_asserted():
+    result = _run(
+        DOMESTIC_PREDICTIONS,
+        breed_classifier=StubBreedClassifier(
+            [
+                _breed("Ragdoll", 0.50, "ragdoll"),
+                _breed("Birman", 0.47, "birman"),
+            ]
+        ),
+    )
+
+    assert result.breed is None
+    assert "too close" in (result.breed_note or "").lower()
+
+
+def test_generic_coat_class_abstains_instead_of_nearest_breed():
+    result = _run(
+        DOMESTIC_PREDICTIONS,
+        breed_classifier=StubBreedClassifier(
+            [
+                _breed("Calico", 0.90, None, kind="generic"),
+                _breed("Manx", 0.05, "manx"),
+            ]
+        ),
+    )
+
+    assert result.breed is None
+    assert "general domestic-cat class" in (result.breed_note or "").lower()
+
+
+def test_breed_outside_catalogue_abstains_instead_of_nearest_breed():
+    result = _run(
+        DOMESTIC_PREDICTIONS,
+        breed_classifier=StubBreedClassifier(
+            [
+                _breed("Exotic Shorthair", 0.90, None, kind="unmapped"),
+                _breed("Persian", 0.05, "persian"),
+            ]
+        ),
+    )
+
+    assert result.breed is None
+    assert "not in the curated" in (result.breed_note or "").lower()
+
+
+def test_wild_species_never_receives_a_breed_estimate():
+    result = _run(
+        [
+            _pred("panthera-tigris", 0.365, "Tiger"),
+            _pred("felis-chaus", 0.27, "Jungle Cat"),
+        ],
+        breed_classifier=StubBreedClassifier(
+            [_breed("Ragdoll", 0.99, "ragdoll")]
+        ),
+    )
+
+    assert result.status == IdentificationStatus.IDENTIFIED_WILD_SPECIES
+    assert result.breed is None
+    assert result.breed_candidates == []
+    assert result.breed_note is None
+    assert result.xp_reward == 350
+
+
+def test_breed_estimate_never_changes_xp_or_eligibility():
+    without_breed = _run(DOMESTIC_PREDICTIONS)
+    with_breed = _run(
+        DOMESTIC_PREDICTIONS,
+        breed_classifier=StubBreedClassifier(
+            [_breed("Ragdoll", 0.78, "ragdoll")]
+        ),
+    )
+
+    assert with_breed.breed is not None
+    assert without_breed.breed is None
+    assert with_breed.status == without_breed.status
+    assert with_breed.xp_reward == without_breed.xp_reward == 50
+    assert (
+        with_breed.is_discovery_eligible == without_breed.is_discovery_eligible is True
+    )
+
+
+def test_missing_breed_classifier_keeps_domestic_result_and_explains():
+    result = _run(DOMESTIC_PREDICTIONS, breed_classifier=None)
+
+    assert result.status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT
+    assert result.breed is None
+    assert "not installed" in (result.breed_note or "").lower()
+    assert result.xp_reward == 50
+
+
+def test_breed_classifier_failure_never_breaks_species_result():
+    result = _run(
+        DOMESTIC_PREDICTIONS,
+        breed_classifier=StubBreedClassifier([], fail=True),
+    )
+
+    assert result.status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT
+    assert result.top_candidate is not None
+    assert result.top_candidate.species_id == "felis-catus"
+    assert result.breed is None
+    assert "failed" in (result.breed_note or "").lower()
+    assert result.xp_reward == 50
+    assert result.is_discovery_eligible is True

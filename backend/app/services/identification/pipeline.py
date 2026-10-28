@@ -8,6 +8,7 @@ from PIL import Image
 
 from ...config import settings
 from ...models.identification import (
+    BreedPrediction,
     CandidatePrediction,
     IdentificationResult,
     IdentificationStatus,
@@ -15,11 +16,13 @@ from ...models.identification import (
 from ..species_service import species_service
 from .base import BaseClassifier, RawInferenceResult, RawPrediction
 from .bioclip_classifier import MODEL_SETUP_HINT, BioClipClassifier
+from .breed_classifier import BreedClassifier, BreedInferenceResult
 from .dev_provider import DevelopmentMockClassifier
 from .imagenet_gate import ImageNetFelineGate
 from .policy import (
     DOMESTIC_SPECIES_ID,
     LYNX_SPECIES_IDS,
+    decide_breed,
     decide_status,
 )
 from .quality import assess_image_quality
@@ -130,8 +133,13 @@ class ImageNetOnlyClassifier(BaseClassifier):
 
 
 class IdentificationPipeline:
-    def __init__(self, classifier: Optional[BaseClassifier] = None):
+    def __init__(
+        self,
+        classifier: Optional[BaseClassifier] = None,
+        breed_classifier: Optional[BreedClassifier] = None,
+    ):
         self._classifier: BaseClassifier = UnavailableClassifier("not initialised")
+        self._breed_classifier: Optional[BreedClassifier] = None
         self._provider_kind = "unavailable"
         self._init_note: Optional[str] = None
         if classifier is not None:
@@ -139,6 +147,7 @@ class IdentificationPipeline:
             # weights. Production always goes through _initialize_provider().
             self._classifier = classifier
             self._provider_kind = "injected"
+            self._breed_classifier = breed_classifier
         else:
             self._initialize_provider()
 
@@ -146,6 +155,10 @@ class IdentificationPipeline:
     # Provider selection
     # ------------------------------------------------------------------
     def _initialize_provider(self) -> None:
+        self._select_provider()
+        self._load_breed_classifier()
+
+    def _select_provider(self) -> None:
         preference = (settings.classifier_provider or "auto").strip().lower()
         if preference not in {"auto", "bioclip", "imagenet", "consensus", "dev_mock"}:
             self._classifier = UnavailableClassifier(
@@ -226,6 +239,25 @@ class IdentificationPipeline:
         )
         self._provider_kind = "unavailable"
 
+    def _load_breed_classifier(self) -> None:
+        """Load the breed estimator only when a real species provider is active.
+
+        The breed model is optional: a missing or broken breed model must never
+        take down species identification. Development simulation never loads it,
+        because simulated ranks must not be mixed with a real breed model.
+        """
+        if not settings.breed_classifier_enabled:
+            logger.info("Breed classifier disabled by configuration.")
+            return
+        if self.is_mock_active or not self.is_ready:
+            return
+
+        breed = BreedClassifier(settings.breed_model_path, settings.breed_labels_path)
+        if breed.is_available:
+            self._breed_classifier = breed
+        else:
+            logger.info("Breed classifier unavailable: %s", breed.load_error)
+
     # ------------------------------------------------------------------
     # Provider diagnostics
     # ------------------------------------------------------------------
@@ -250,6 +282,9 @@ class IdentificationPipeline:
         info = self._classifier.model_info
         info["provider_kind"] = self._provider_kind
         info["init_note"] = self._init_note
+        info["breed_classifier"] = (
+            self._breed_classifier.model_info if self._breed_classifier else None
+        )
         return info
 
     @property
@@ -262,10 +297,19 @@ class IdentificationPipeline:
             is_bioclip and getattr(self._classifier, "gate", None) is not None
             and self._classifier.gate.is_available  # type: ignore[union-attr]
         )
+        breed_available = bool(
+            self._breed_classifier and self._breed_classifier.is_available
+        )
         return {
             "supports_wild_species": is_bioclip,
             "supports_domestic_cat": is_bioclip or is_imagenet,
-            "supports_domestic_breed": False,
+            "supports_domestic_breed": breed_available,
+            "breed_estimate_only": True,
+            "supported_breeds": (
+                len(self._breed_classifier.supported_breeds)
+                if breed_available
+                else 0
+            ),
             "supports_hybrids": False,
             "non_feline_gate": "imagenet" if gate_installed else None,
             "discovery_eligible": not self.is_mock_active and self.is_ready,
@@ -346,6 +390,41 @@ class IdentificationPipeline:
             "Image quality is too low for a reliable species call "
             f"({flags}). The model was allowed to abstain instead of guessing."
         )
+
+    def _enrich_breed_candidates(
+        self, raw_result: BreedInferenceResult
+    ) -> List[BreedPrediction]:
+        candidates: List[BreedPrediction] = []
+        seen: set[str] = set()
+        for score in raw_result.scores:
+            if score.kind != "breed" or not score.breed_id:
+                continue
+            if score.breed_id in seen:
+                continue
+            record = species_service.get_breed_by_slug(score.breed_id)
+            if not record:
+                continue
+            seen.add(score.breed_id)
+            confidence = min(max(float(score.score), 0.0), 1.0)
+            candidates.append(
+                BreedPrediction(
+                    breed_id=record.id,
+                    common_name=record.common_name,
+                    scientific_name=record.scientific_name or "Felis catus",
+                    confidence_score=confidence,
+                    score_percentage=int(round(confidence * 100)),
+                    thumbnail_url=record.thumbnail_url or record.image_url or "",
+                    rationale=(
+                        f"Breed-classifier softmax score for '{score.label}'. "
+                        "Visual similarity only; not pedigree verification."
+                    ),
+                    score_semantics=raw_result.score_semantics,
+                    model_label=score.label,
+                )
+            )
+            if len(candidates) >= 3:
+                break
+        return candidates
 
     async def identify(
         self, image: Image.Image, image_metadata: Dict[str, Any]
@@ -471,6 +550,70 @@ class IdentificationPipeline:
                 "listed for comparison; no species is asserted."
             )
 
+        # Breed estimation is a separate, optional stage. It runs only after a
+        # domestic cat has already been accepted at species level, can never
+        # change the species status, and never affects XP.
+        breed: Optional[BreedPrediction] = None
+        breed_candidates: List[BreedPrediction] = []
+        breed_note: Optional[str] = None
+
+        if status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT:
+            if self._breed_classifier and self._breed_classifier.is_available:
+                try:
+                    breed_raw = await self._breed_classifier.predict(image)
+                    selected, breed_note = decide_breed(breed_raw.scores)
+                    breed_candidates = self._enrich_breed_candidates(breed_raw)
+                    if selected is not None:
+                        breed = next(
+                            (
+                                candidate
+                                for candidate in breed_candidates
+                                if candidate.breed_id == selected.breed_id
+                            ),
+                            None,
+                        )
+                        if breed is None:
+                            breed_note = (
+                                f"The breed classifier selected '{selected.label}', "
+                                "but no matching curated catalogue record exists. "
+                                "Breed is not asserted."
+                            )
+
+                    if breed is not None:
+                        uncertainty_note = (
+                            "Domestic cat (Felis catus) identified at species level. "
+                            "A breed estimate is shown below as visual similarity, "
+                            "not pedigree verification."
+                        )
+                    else:
+                        uncertainty_note = (
+                            "Domestic cat (Felis catus) identified at species level. "
+                            f"{breed_note}"
+                        )
+                except Exception as exc:
+                    logger.error(
+                        "Breed classifier execution error: %s", exc, exc_info=True
+                    )
+                    breed = None
+                    breed_candidates = []
+                    breed_note = (
+                        "The breed classifier failed, so no breed estimate was "
+                        "produced. The domestic-cat species result is unaffected."
+                    )
+                    uncertainty_note = (
+                        "Domestic cat (Felis catus) identified at species level. "
+                        f"{breed_note}"
+                    )
+            else:
+                breed_note = (
+                    "The breed classifier is not installed, so breed could not be "
+                    "estimated. The domestic-cat species result is unaffected."
+                )
+                uncertainty_note = (
+                    "Domestic cat (Felis catus) identified at species level. "
+                    f"{breed_note}"
+                )
+
         is_eligible = status in {
             IdentificationStatus.IDENTIFIED_WILD_SPECIES,
             IdentificationStatus.IDENTIFIED_DOMESTIC_CAT,
@@ -497,6 +640,9 @@ class IdentificationPipeline:
             status=status,
             top_candidate=output_top,
             candidates=candidates[:4],
+            breed=breed,
+            breed_candidates=breed_candidates,
+            breed_note=breed_note,
             is_discovery_eligible=is_eligible,
             xp_reward=xp_reward,
             image_fingerprint=metadata.get("image_fingerprint"),

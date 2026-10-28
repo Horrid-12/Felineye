@@ -2,9 +2,9 @@
 
 > AI-powered feline identification and wildlife discovery platform.
 >
-> **Status:** Alpha v0.1.0. Real BioCLIP + ImageNet identification is integrated with conservative abstention, and discovery rewards are server-authoritative and idempotent. Weights are gitignored and reproduced with `backend/scripts/setup_identification_models.py`.
+> **Status:** Alpha v0.1.0. Real BioCLIP + ImageNet identification is integrated with conservative abstention, and discovery rewards are server-authoritative and idempotent. Domestic cats also receive an optional, explicitly labelled breed estimate from a separate ViT classifier; it never changes the species result or XP. Weights are gitignored and reproduced with `backend/scripts/setup_identification_models.py`.
 >
-> **Last verified:** 2026-10-26 - 55 backend tests (7 of them against the real ONNX weights), 22 frontend tests, frontend build passing.
+> **Last verified:** 2026-10-28 - 69 backend tests (11 of them against the real ONNX weights, including breed regressions), 27 frontend tests, frontend build passing.
 
 ## How to Use This File
 
@@ -19,7 +19,7 @@
 
 | Horizon         | Focus                                                           | State       |
 | :-------------- | :-------------------------------------------------------------- | :---------- |
-| **Now**   | Calibration benchmark, breed support, security hardening        | In progress |
+| **Now**   | Calibration benchmark, breed-estimate hardening, security hardening | In progress |
 | **Next**  | CI, automated quality gates, accessibility, data-quality tests  | Planned     |
 | **Later** | Release readiness, deployment, deep-linkable URLs               | Planned     |
 
@@ -81,9 +81,10 @@
 - [X] Show a persistent warning when `is_mock` is true.
 - [X] Show an explicit "model unavailable" panel instead of a fake prediction, with the setup hint from the server.
 - [X] Surface the independent feline gate result and the uncalibrated-score disclosure.
+- [X] Show a separate breed-estimate panel for accepted domestic cats, with the breed score, closest curated classes, and an explicit "not pedigree verification" caveat. Breeds never receive XP.
 - [X] Award XP only from the server's `is_discovery_eligible` / `xp_reward` fields, with new-species, new-photo, and repeat-image notices.
 - [ ] Make the dropzone fully keyboard-operable and add a complete accessibility pass.
-- [ ] Add a frontend test for the full identify flow (success, uncertain, non-feline, model-unavailable, API error, reward notices). Current tests cover the card and collection store, not the page.
+- [ ] Add a frontend test for the full identify flow (success, uncertain, non-feline, model-unavailable, API error, reward notices). Current tests cover the breed panel, candidate card, and collection store, not the full page.
 
 ### Backend
 
@@ -99,10 +100,14 @@
 - [X] Integrate BioCLIP ViT-B/16 as the zero-shot species ranker and MobileNetV2-12 ImageNet as an independent feline/non-feline gate.
 - [X] Add a deterministic quality gate (Laplacian sharpness, brightness, contrast) that can abstain but never fabricates a species.
 - [X] Report candidate scores honestly: `score_semantics` is a cosine similarity, `is_calibrated: false`, and `entropy: null` because no categorical distribution is produced.
-- [X] Enforce category-aware identification: hybrids are never returned, and a breed-level cue is downgraded to the domestic cat species with an explicit breed-uncertainty note.
+- [X] Enforce category-aware identification: hybrids are never returned, and breed-labelled species candidates are downgraded to the domestic cat species. A breed estimate is produced only by the separate breed stage.
+- [X] Add a dedicated domestic-cat breed estimator (`dima806/cat_breed_image_detection`, ViT-B/16, Apache-2.0) that runs only after `identified_domestic_cat`, reports `breed`/`breed_candidates`/`breed_note`, and never changes the species status or XP.
+- [X] Map all 48 breed-model classes onto the curated catalogue; keep generic coat/type classes and non-catalogue breeds as explicit abstention classes instead of nearest-neighbour fallbacks.
+- [X] Add conservative breed thresholds (`BREED_MIN_CONFIDENCE=0.45`, `BREED_MIN_MARGIN=0.10`) and abstain on weak confidence, close margins, generic classes, or unmapped breeds.
 - [X] Add structured 4xx errors and a global safe 500 handler.
-- [X] Cover validation, status handling, and API contracts with tests, including ten named regression cases.
+- [X] Cover validation, status handling, breed abstention, and API contracts with tests, including the named regression cases.
 - [X] Add real-photo fixtures and a separate test module that exercises the actual ONNX weights (skips when the weights are absent).
+- [X] Add real breed fixtures (British Shorthair, generic domestic shorthair) and mocked breed acceptance/abstention regressions, including "wild species never gets a breed" and "breed never changes XP".
 - [X] Validate that MIME acceptance alone is insufficient: a decodable image can still be rejected as non-feline.
 - [ ] Add per-request inference timeouts.
 - [ ] Add rate limiting and a server-level upload size limit.
@@ -137,7 +142,7 @@
 - [X] Add a Domestic Cats section under the Species Atlas “Domestic Cat” filter: domestic species card, searchable CFA breed grid, hybrids, and taxonomy note. The earlier standalone page and navbar entry were removed so there is one canonical route to breeds; the home CTA opens the atlas with that filter active.
 - [X] Add separate counts on Home, Atlas, Collection, and Methodology, plus category-aware candidate badges.
 - [X] Keep the collection roster species-only; breeds are not discoverable and never inflate progress totals.
-- [X] Document the taxonomy authority, CFA registry, hybrid exclusion, and breed-uncertainty rule in `Decisions.md` and the Methodology page.
+- [X] Document the taxonomy authority, CFA registry, hybrid exclusion, and breed-estimate policy in `Decisions.md` and the Methodology page.
 - [ ] Decide whether the breed roster should expand toward the full CFA list or stay a representative subset.
 - [ ] Add a documented refresh procedure for CFA URLs and registry verification dates.
 
@@ -186,7 +191,8 @@
 - [X] Disclose the development simulation in the identification UI.
 - [X] Publish model provenance, licences (BioCLIP MIT, MobileNetV2 Apache-2.0), thresholds, limitations, and the real-vs-mocked verification record in `Documentation/Identification-Model.md` and the Methodology page.
 - [ ] Calibrate the abstention thresholds on an independent, held-out evaluation set and publish accuracy/coverage per species.
-- [ ] Add breed support only with evidence appropriate to breed-level claims (and keep abstention when evidence is weak).
+- [X] Add breed support only with evidence appropriate to breed-level claims: a separate dedicated classifier, conservative thresholds, explicit abstention classes, and a "not pedigree verification" disclosure.
+- [ ] Independently benchmark breed accuracy and coverage across all 22 catalogue breeds; the source model's ~77% figure is not a substitute.
 
 **Exit criteria:** The methodology page accurately describes the implementation, including its limits.
 
@@ -199,6 +205,8 @@
 - [X] Add preprocessing and inference smoke tests with real fixtures, plus weight-gated real-provider regression tests.
 - [X] Add out-of-domain handling for the real model path (BioCLIP non-feline prompts + independent gate + quality gate).
 - [X] Pass a real species mapping into the classifier; `species_idx_N` placeholders were removed with the old `OnnxClassifier`.
+- [X] Export the dedicated breed classifier to ONNX (`cat_breed_vit.onnx`) and generate the audited 48-class label map (`cat_breed_labels.json`); verify ONNX output against PyTorch.
+- [X] Add `--breed` and include it in `--all`/`--check`; document the separate breed export and its licence.
 - [X] Verify `/api/health` reports a non-mock provider and `/api/identify` returns `is_mock: false` with the local weights installed.
 - [X] Publish model limitations and failure modes in the Methodology page and `Documentation/Identification-Model.md`.
 - [ ] Calibrate confidence and similarity thresholds on a held-out evaluation set (current thresholds are conservative abstention settings tuned on the curated catalog plus negatives).

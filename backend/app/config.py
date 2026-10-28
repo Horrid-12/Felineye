@@ -34,6 +34,18 @@ class Settings(BaseModel):
     imagenet_labels_path: str = os.getenv(
         "IMAGENET_LABELS_PATH", str(BASE_DIR / "app" / "data" / "imagenet_classes.txt")
     )
+    breed_classifier_enabled: bool = os.getenv("BREED_CLASSIFIER_ENABLED", "true").lower() in (
+        "1",
+        "true",
+        "yes",
+        "on",
+    )
+    breed_model_path: str = os.getenv(
+        "BREED_MODEL_PATH", str(BASE_DIR / "models" / "cat_breed_vit.onnx")
+    )
+    breed_labels_path: str = os.getenv(
+        "BREED_LABELS_PATH", str(BASE_DIR / "app" / "data" / "cat_breed_labels.json")
+    )
     feline_gate_enabled: bool = os.getenv("FELINE_GATE_ENABLED", "true").lower() in (
         "1",
         "true",
@@ -58,6 +70,15 @@ class Settings(BaseModel):
         os.getenv("BIOCLIP_MIN_DOMESTIC_MARGIN", "0.015")
     )
     feline_margin_threshold: float = float(os.getenv("FELINE_MARGIN_THRESHOLD", "0.04"))
+
+    # Breed estimate thresholds. These apply only after the species pipeline has
+    # already accepted a domestic cat. A breed is reported only when the dedicated
+    # classifier's top catalogue breed is both confident and clearly separated
+    # from the next class; otherwise the breed stays explicitly undetermined.
+    # The defaults are deliberately conservative because the source model's
+    # softmax scores are not calibrated.
+    breed_min_confidence: float = float(os.getenv("BREED_MIN_CONFIDENCE", "0.45"))
+    breed_min_margin: float = float(os.getenv("BREED_MIN_MARGIN", "0.10"))
 
     # Quality gates. A poor-quality image is allowed to produce an abstention,
     # never a fabricated identification.

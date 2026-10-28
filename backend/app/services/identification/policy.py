@@ -8,10 +8,11 @@ Documentation/Identification-Model.md for the validation table and limitations.
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import List, Optional
 
 from ...config import settings
 from ...models.identification import CandidatePrediction, IdentificationStatus
+from .breed_classifier import BreedScore
 
 DOMESTIC_SPECIES_ID = "felis-catus"
 
@@ -113,8 +114,10 @@ def decide_status(
             )
         return (
             IdentificationStatus.IDENTIFIED_DOMESTIC_CAT,
-            "Domestic cat (Felis catus) identified at species level. Breed or "
-            "mixed-breed ancestry is not asserted from a single photograph.",
+            "Domestic cat (Felis catus) identified at species level. A breed "
+            "estimate is reported separately only when the dedicated breed "
+            "classifier is confident; it is visual similarity, not pedigree "
+            "verification.",
         )
 
     # Wild species
@@ -142,4 +145,53 @@ def decide_status(
     return (
         IdentificationStatus.IDENTIFIED_WILD_SPECIES,
         None,
+    )
+
+
+def decide_breed(scores: List[BreedScore]) -> tuple[Optional[BreedScore], str]:
+    """Select a breed estimate, or explain why the breed stays undetermined.
+
+    Generic coat/type classes and breeds outside the curated catalogue are
+    abstention classes: the pipeline never falls back to the nearest catalogue
+    breed just to produce an answer.
+    """
+
+    if not scores:
+        return None, (
+            "The breed classifier returned no usable classes. Breed is not asserted."
+        )
+
+    top = scores[0]
+
+    if top.kind == "generic":
+        return None, (
+            f"The image matches the general domestic-cat class '{top.label}' rather "
+            "than a specific breed. Breed is not asserted."
+        )
+
+    if top.kind == "unmapped":
+        return None, (
+            f"The closest breed class is '{top.label}', which is not in the curated "
+            "CFA catalogue. Breed is not asserted."
+        )
+
+    if top.score < settings.breed_min_confidence:
+        return None, (
+            "Breed evidence is below the conservative confidence threshold "
+            f"({top.label} at {top.score:.0%}). Breed is not asserted."
+        )
+
+    second = scores[1] if len(scores) > 1 else None
+    margin = top.score - second.score if second else top.score
+    if margin < settings.breed_min_margin:
+        runner_up = f" and '{second.label}'" if second else ""
+        return None, (
+            f"The top breed classes ('{top.label}'{runner_up}) are too close to "
+            "separate reliably. Breed is not asserted."
+        )
+
+    return top, (
+        f"Breed estimate: {top.label} ({top.score:.0%} visual similarity). This is a "
+        "dedicated breed-classifier estimate, not pedigree verification, and it does "
+        "not change the species result or award breed XP."
     )

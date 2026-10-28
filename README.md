@@ -28,7 +28,8 @@
    - Pillow-based MIME, file size (up to 15MB), format, and EXIF sanitization.
    - Local inference: BioCLIP ViT-B/16 ranks 41 species prompts, and an independent MobileNetV2-12 ImageNet gate checks feline content.
    - Ranked candidate similarities with explicit score semantics and model rationales.
-   - **Honest Abstention**: Weak margins, degraded images, or gate disagreement return `unable_to_identify` instead of guessing. Domestic breeds are reported as *Felis catus* with a breed-uncertainty note.
+   - **Domestic Breed Estimate**: accepted domestic cats may also receive a separate visual breed estimate from a dedicated ViT classifier. It is labelled as similarity, not pedigree verification, and never changes species status or XP.
+   - **Honest Abstention**: Weak margins, degraded images, gate disagreement, generic coat classes, or breed evidence below threshold all produce an explicit abstention instead of a guess. The domestic cat stays *Felis catus*.
    - **Out-of-Domain Detection**: Non-feline images (dogs, reptiles, landscapes, vehicles) are rejected without returning deceptive predictions.
    - **No Silent Mock Fallback**: If the real weights are missing, the API returns `model_unavailable`. The simulation provider requires an explicit `CLASSIFIER_PROVIDER=dev_mock` and cannot award XP.
    - See [Identification Model](Documentation/Identification-Model.md) for setup, thresholds, and limitations.
@@ -125,13 +126,16 @@ The default `CLASSIFIER_PROVIDER=auto` looks for local weights in `backend/model
 # Independent ImageNet feline gate (downloads ~13 MB)
 backend\.venv\Scripts\python.exe backend\scripts\setup_identification_models.py --imagenet
 
-# Full stack: export BioCLIP to ONNX + precompute text embeddings (~345 MB).
-# This step needs a temporary environment with torch and open_clip_torch.
+# Full stack: export BioCLIP + text embeddings + the breed classifier (~673 MB).
+# This step needs a temporary environment with torch, open_clip_torch, and transformers.
 python -m venv .model-export
 .model-export\Scripts\python.exe -m pip install --upgrade pip
 .model-export\Scripts\python.exe -m pip install torch --index-url https://download.pytorch.org/whl/cpu
 .model-export\Scripts\python.exe -m pip install -r backend\requirements-models.txt
 .model-export\Scripts\python.exe backend\scripts\setup_identification_models.py --all
+
+# Breed classifier only (optional; species identification works without it)
+.model-export\Scripts\python.exe backend\scripts\setup_identification_models.py --breed
 
 # Verify what is installed
 backend\.venv\Scripts\python.exe backend\scripts\setup_identification_models.py --check
@@ -202,8 +206,9 @@ upload → content validation → quality gate → feline relevance
 | :--- | :--- | :--- |
 | Species ranker | BioCLIP ViT-B/16 (`imageomics/bioclip`) | MIT |
 | Feline gate | MobileNetV2-12, ImageNet-1k (ONNX Model Zoo) | Apache-2.0 |
+| Breed estimator (optional) | ViT-B/16 cat breeds (`dima806/cat_breed_image_detection`) | Apache-2.0 |
 
-The runtime needs only `onnxruntime`, `numpy`, and `pillow`. BioCLIP's vision encoder is exported to ONNX and the 49 species/non-feline text prompts are precomputed, so inference is fully local.
+The runtime needs only `onnxruntime`, `numpy`, and `pillow`. BioCLIP's vision encoder is exported to ONNX and the 49 species/non-feline text prompts are precomputed, so inference is fully local. The breed estimator is a separate optional ONNX model: when it is absent, species identification still works and `breed_note` explains why no breed was estimated.
 
 ### Provider modes (`CLASSIFIER_PROVIDER`)
 
@@ -228,7 +233,7 @@ A wild species is accepted only when its similarity clears a floor **and** separ
 | Status | Meaning | Discovery XP |
 | :--- | :--- | :--- |
 | `identified_wild_species` | Wild species cleared similarity and margin | Catalog reward |
-| `identified_domestic_cat` | *Felis catus*; breed not asserted | Catalog reward |
+| `identified_domestic_cat` | *Felis catus*; an optional breed estimate may accompany it | Catalog reward |
 | `identified_domestic_breed` | Reserved; the current provider never emits it | None |
 | `non_feline_detected` | No feline content with sufficient evidence | None |
 | `unable_to_identify` | Weak, conflicting, degraded, or genus-level evidence | None |
@@ -258,7 +263,7 @@ Run all tests from the **repository root** (tests import `backend.app.*`):
 ```bash
 backend\.venv\Scripts\python.exe -m pytest backend/tests -q
 ```
-This covers image validation, all identification outcomes, taxonomy filters, and API contracts. Seven additional tests load the **real BioCLIP + ImageNet weights** from `backend/tests/fixtures/`; they skip automatically when the gitignored weights are absent, so run the model setup first to exercise them.
+This covers image validation, all identification outcomes, breed acceptance/abstention, taxonomy filters, and API contracts. Eleven additional tests load the **real BioCLIP + ImageNet + breed weights** from `backend/tests/fixtures/`; they skip automatically when the gitignored weights are absent, so run the model setup first to exercise them.
 
 ### Frontend Tests & Build
 ```bash
@@ -266,7 +271,7 @@ npm test --prefix frontend
 npm run build --prefix frontend      # tsc -b && vite build
 ```
 
-**Verified on 2026-10-26:** 55 backend tests passed (including the 7 real-weight tests), 22 frontend tests passed, and the production build succeeded.
+**Verified on 2026-10-28:** 69 backend tests passed (including the 11 real-weight tests), 27 frontend tests passed, and the production build succeeded.
 
 ---
 
@@ -283,7 +288,7 @@ npm run build --prefix frontend      # tsc -b && vite build
 
 - **Software**: MIT License
 - **Original Inspiration**: [BirdLens](https://github.com/sdprojects12/birdlens) by [sdprojects12](https://github.com/sdprojects12)
-- **Identification Models**: [BioCLIP](https://huggingface.co/imageomics/bioclip) (Imageomics Institute, MIT) and [MobileNetV2-12](https://github.com/onnx/models) (ONNX Model Zoo, Apache-2.0)
+- **Identification Models**: [BioCLIP](https://huggingface.co/imageomics/bioclip) (Imageomics Institute, MIT), [MobileNetV2-12](https://github.com/onnx/models) (ONNX Model Zoo, Apache-2.0), and [cat breed ViT](https://huggingface.co/dima806/cat_breed_image_detection) (dima806, Apache-2.0)
 - **Taxonomic Classification**: Kitchener et al. (2017) IUCN SSC Cat Specialist Group
 - **Observational Data**: [iNaturalist Network](https://www.inaturalist.org) (CC BY-NC 4.0)
 - **Taxonomic Backbone**: [GBIF](https://www.gbif.org)

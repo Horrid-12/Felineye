@@ -39,10 +39,45 @@ class CandidatePrediction(BaseModel):
     model_label: Optional[str] = None
 
 
+class BreedPrediction(BaseModel):
+    """A *visual breed estimate* for an already-identified domestic cat.
+
+    This is intentionally not a species prediction: the breed classifier can
+    never change the species status, and breeds never award discovery XP.
+    """
+
+    breed_id: str
+    common_name: str
+    scientific_name: str = "Felis catus"
+    confidence_score: float = Field(..., ge=0.0, le=1.0)
+    score_percentage: int = Field(..., ge=0, le=100)
+    category: str = "domestic_breed"
+    thumbnail_url: str = ""
+    rationale: Optional[str] = None
+    score_semantics: str = "breed_classifier_softmax"
+    model_label: Optional[str] = None
+    is_estimate: bool = True
+
+
 class IdentificationResult(BaseModel):
     status: IdentificationStatus
     top_candidate: Optional[CandidatePrediction] = None
     candidates: List[CandidatePrediction] = Field(default_factory=list)
+    breed: Optional[BreedPrediction] = Field(
+        default=None,
+        description=(
+            "Visual breed estimate for a domestic cat. Null unless the dedicated "
+            "breed classifier is confident and the top class is a curated breed."
+        ),
+    )
+    breed_candidates: List[BreedPrediction] = Field(
+        default_factory=list,
+        description="Closest curated breed classes, shown for transparency.",
+    )
+    breed_note: Optional[str] = Field(
+        default=None,
+        description="Why a breed was or was not asserted. Never a pedigree claim.",
+    )
     score_semantics: str = Field(
         default="model_score_not_calibrated",
         description=(

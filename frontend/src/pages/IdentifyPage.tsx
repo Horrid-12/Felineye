@@ -18,6 +18,7 @@ import { api } from '../services/api';
 import { ImageDropzone } from '../components/identify/ImageDropzone';
 import { ScannerEffect } from '../components/identify/ScannerEffect';
 import { CandidateCard } from '../components/identify/CandidateCard';
+import { BreedEstimatePanel } from '../components/identify/BreedEstimatePanel';
 import { SimilarCompareModal } from '../components/identify/SimilarCompareModal';
 import { useCollectionStore } from '../store/useCollectionStore';
 import { DiscoveryAwardKind } from '../store/collectionStorage';
@@ -280,8 +281,9 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
         </h1>
         <p className="text-xs sm:text-sm text-felid-muted max-w-xl mx-auto font-mono leading-relaxed">
           Upload a feline photo to rank it against 40 wild species and the domestic cat. Scores are
-          model similarities, not calibrated probabilities. When evidence is weak, conflicting, or
-          breed-level, Felineye abstains instead of forcing a species.
+          model similarities, not calibrated probabilities. Domestic cats may also receive a separate
+          visual breed estimate — similarity only, never pedigree verification. When evidence is weak
+          or conflicting, Felineye abstains instead of forcing a species.
         </p>
       </div>
 
@@ -378,8 +380,9 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
           {renderOutcomeHeader()}
 
           {/* Advisory note for identified results that still carry a caveat,
-              e.g. domestic cat identified at species level but breed left undetermined. */}
-          {isIdentified && result.uncertainty_note && (
+              e.g. domestic cat identified at species level but breed left undetermined.
+              When a breed estimate is shown, the panel carries its own caveat. */}
+          {isIdentified && result.uncertainty_note && !result.breed && (
             <div className="p-3.5 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm text-felid-muted text-xs font-mono flex items-start gap-2.5">
               <Info className="w-4 h-4 shrink-0 text-felid-accent mt-0.5" />
               <span>
@@ -387,6 +390,17 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
                 {result.uncertainty_note}
               </span>
             </div>
+          )}
+
+          {/* Breed estimate for accepted domestic cats. Separate from the species
+              result; never affects discovery eligibility or XP. */}
+          {result.status === 'identified_domestic_cat' && (
+            <BreedEstimatePanel
+              breed={result.breed}
+              candidates={result.breed_candidates}
+              note={result.breed_note}
+              onSelectBreed={onSelectSpecies}
+            />
           )}
 
           {/* Candidate Predictions List */}

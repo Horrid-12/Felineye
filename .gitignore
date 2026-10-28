@@ -52,6 +52,8 @@ pnpm-debug.log*
 /models/
 /backend/models/*
 !/backend/models/.gitkeep
+# Temporary PyTorch/open_clip export environment
+.model-export/
 
 # OS / Editors
 .DS_Store
