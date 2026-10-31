@@ -19,6 +19,7 @@
 
 **Felineye** is an immersive wildlife discovery platform and AI field guide dedicated to the entire cat family (**Felidae**). Spanning 40 wild species plus the domestic cat (*Felis catus*), 22 CFA-verified breeds, and 4 informational hybrids, the application pairs local computer vision with honest uncertainty reporting, ethical wildlife conservation protocols, and a gamified naturalist expedition journal.
 
+[![Architecture diagram of Felineye](https://gitdiagram.com/horrid-12/felineye/diagram.png)](https://gitdiagram.com/horrid-12/felineye?utm_source=readme&utm_medium=picture)
 ---
 
 ##  Key Features
