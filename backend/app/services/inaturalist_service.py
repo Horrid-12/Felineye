@@ -110,9 +110,12 @@ CURATED_FALLBACK_OBSERVATIONS: List[Dict[str, Any]] = [
 class INaturalistService:
     def __init__(self):
         self.api_base = settings.inaturalist_api_base
-        self._cache: Dict[str, Any] = {}
-        self._cache_timestamp: float = 0.0
-        self._cache_ttl: float = 600.0  # 10 minutes cache
+        self._cache: Dict[str, Dict[str, Any]] = {}
+        self._cache_ttl: float = 600.0  # 10 minutes cache per key
+
+    def clear_cache(self) -> None:
+        """Clear cached observation queries (used in testing and explicit invalidation)."""
+        self._cache.clear()
 
     async def get_feline_observations(
         self,
@@ -123,8 +126,9 @@ class INaturalistService:
         cache_key = f"{taxon_id}_{place_id}_{limit}"
         now = time.time()
 
-        if cache_key in self._cache and (now - self._cache_timestamp) < self._cache_ttl:
-            return self._cache[cache_key]
+        cached = self._cache.get(cache_key)
+        if cached and (now - cached["timestamp"]) < self._cache_ttl:
+            return cached["response"]
 
         # Felidae family taxon in iNaturalist is 41944
         target_taxon = taxon_id or 41944
@@ -175,8 +179,10 @@ class INaturalistService:
                         total=len(observations),
                         observations=observations
                     )
-                    self._cache[cache_key] = response
-                    self._cache_timestamp = now
+                    self._cache[cache_key] = {
+                        "response": response,
+                        "timestamp": now,
+                    }
                     return response
         except Exception as e:
             logger.warning("iNaturalist API request failed or timed out: %s. Using curated fallback records.", e)

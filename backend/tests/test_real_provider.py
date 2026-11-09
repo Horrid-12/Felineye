@@ -276,3 +276,20 @@ def test_real_wild_species_never_receives_a_breed_estimate(
     assert result.breed_candidates == []
     assert result.breed_note is None
     assert result.xp_reward == 350
+
+
+@requires_breed_model
+def test_real_british_shorthair_is_identified_as_domestic_cat(
+    real_breed_pipeline: IdentificationPipeline,
+):
+    result = _identify(real_breed_pipeline, "british-shorthair")
+
+    assert result.status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT
+    assert result.top_candidate is not None
+    assert result.top_candidate.species_id == "felis-catus"
+    assert result.is_discovery_eligible is True
+    assert result.xp_reward == 50
+    assert result.breed is not None
+    assert result.breed.breed_id == "british-shorthair"
+    assert result.breed.confidence_score >= 0.90
+

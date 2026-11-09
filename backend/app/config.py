@@ -94,7 +94,6 @@ class Settings(BaseModel):
 
     # External Wildlife APIs
     inaturalist_api_base: str = os.getenv("INATURALIST_API_BASE", "https://api.inaturalist.org/v1")
-    gbif_api_base: str = os.getenv("GBIF_API_BASE", "https://api.gbif.org/v1")
     request_timeout_seconds: float = 8.0
 
 

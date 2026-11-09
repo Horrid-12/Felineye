@@ -64,11 +64,20 @@ class StubBreedClassifier:
 class StubClassifier:
     """Deterministic provider that lets tests exercise pipeline decisions."""
 
-    def __init__(self, predictions, *, feline_detected=True, content_conflict=False, is_mock=False):
+    def __init__(
+        self,
+        predictions,
+        *,
+        feline_detected=True,
+        content_conflict=False,
+        is_mock=False,
+        diagnostics=None,
+    ):
         self.predictions = predictions
         self.feline_detected = feline_detected
         self.content_conflict = content_conflict
         self.is_mock = is_mock
+        self.diagnostics = diagnostics or {}
 
     @property
     def is_available(self):
@@ -94,6 +103,7 @@ class StubClassifier:
             model_name="stub",
             model_version="test",
             model_license="test",
+            diagnostics=self.diagnostics,
         )
 
 
@@ -105,6 +115,7 @@ def _run(
     content_conflict=False,
     is_mock=False,
     breed_classifier=None,
+    diagnostics=None,
 ):
     pipe = IdentificationPipeline(
         classifier=StubClassifier(
@@ -112,6 +123,7 @@ def _run(
             feline_detected=feline_detected,
             content_conflict=content_conflict,
             is_mock=is_mock,
+            diagnostics=diagnostics,
         ),
         breed_classifier=breed_classifier,
     )
@@ -551,3 +563,85 @@ def test_breed_classifier_failure_never_breaks_species_result():
     assert "failed" in (result.breed_note or "").lower()
     assert result.xp_reward == 50
     assert result.is_discovery_eligible is True
+
+
+def test_pipeline_unexpected_exception_returns_sanitized_500(monkeypatch):
+    async def mock_fail(*args, **kwargs):
+        raise RuntimeError("Secret internal database / path failure: /secret/disk/path")
+
+    monkeypatch.setattr(
+        "backend.app.routes.identify.pipeline.identify",
+        mock_fail,
+    )
+    img_bytes = _generate_image_bytes()
+    response = client.post(
+        "/api/identify",
+        files={"file": ("cat.jpg", img_bytes, "image/jpeg")},
+    )
+    assert response.status_code == 500
+    detail = response.json()["detail"]
+    assert "internal server error" in detail.lower()
+    assert "/secret/disk/path" not in detail
+    assert "Secret internal database" not in detail
+
+
+def test_gate_domestic_cat_promotes_felis_catus_over_wildcat():
+    # When ImageNet gate confirms a domestic cat (e.g. Persian cat) and BioCLIP
+    # zero-shot score places a small wildcat slightly higher, felis-catus is elevated
+    # to candidate #1 and identified as a domestic cat.
+    gate_diag = {
+        "feline_detected": True,
+        "feline_probability": 0.94,
+        "top_label": "Persian cat",
+        "top_probability": 0.87,
+        "predictions": [
+            {"species_id": "felis-catus", "label": "Persian cat", "score": 0.87},
+            {"species_id": "felis-catus", "label": "Siamese cat", "score": 0.06},
+        ],
+    }
+    result = _run(
+        [
+            _pred("felis-nigripes", 0.245),
+            _pred("felis-catus", 0.214),
+        ],
+        diagnostics={"imagenet_gate": gate_diag},
+    )
+
+    assert result.status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT
+    assert result.top_candidate is not None
+    assert result.top_candidate.species_id == "felis-catus"
+    assert result.top_candidate.category == "domestic_species"
+    assert result.is_discovery_eligible is True
+    assert result.xp_reward == 50
+    # Second candidate remains Black-footed Cat for comparison
+    assert len(result.candidates) >= 2
+    assert result.candidates[1].species_id == "felis-nigripes"
+
+
+def test_gate_domestic_confirmation_relaxes_confusable_wildcat_penalty():
+    # When ImageNet gate confirms tabby domestic cat, a margin of 0.02 over
+    # European wildcat (which would be withheld under the strict +0.015 confusable
+    # margin when unconfirmed) is accepted.
+    gate_diag = {
+        "feline_detected": True,
+        "feline_probability": 0.92,
+        "top_label": "tabby",
+        "top_probability": 0.85,
+        "predictions": [
+            {"species_id": "felis-catus", "label": "tabby", "score": 0.85},
+        ],
+    }
+    result = _run(
+        [
+            _pred("felis-catus", 0.28),
+            _pred("felis-silvestris", 0.26),  # margin = 0.02
+        ],
+        diagnostics={"imagenet_gate": gate_diag},
+    )
+
+    assert result.status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT
+    assert result.top_candidate is not None
+    assert result.top_candidate.species_id == "felis-catus"
+
+
+

@@ -1,10 +1,13 @@
 import hashlib
+import logging
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
 
 from ..models.identification import IdentificationResult
 from ..services.identification.pipeline import pipeline
 from ..services.image_validator import validate_and_process_image
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api", tags=["Identification"])
 
@@ -37,7 +40,8 @@ async def identify_feline_image(file: UploadFile = File(...)):
     except HTTPException:
         raise
     except Exception as exc:
+        logger.exception("Unexpected error during image identification: %s", exc)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An unexpected error occurred during image processing: {exc}",
+            detail="An internal server error occurred while processing the feline image.",
         )

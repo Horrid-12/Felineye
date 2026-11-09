@@ -22,7 +22,7 @@ from PIL import Image
 
 from ...config import settings
 from .base import BaseClassifier, RawInferenceResult, RawPrediction
-from .imagenet_gate import ImageNetFelineGate
+from .imagenet_gate import FELINE_IMAGENET_LABELS, ImageNetFelineGate
 
 logger = logging.getLogger(__name__)
 
@@ -221,10 +221,24 @@ class BioClipClassifier(BaseClassifier):
         if self.gate is not None and self.gate.is_available:
             gate_result = self.gate.predict_sync(image)
             diagnostics["imagenet_gate"] = gate_result.model_dump()
+            is_gate_strong_feline = (
+                gate_result.top_label in FELINE_IMAGENET_LABELS
+                or gate_result.feline_probability >= 0.40
+            )
+
             if feline_detected and gate_result.feline_detected:
                 feline_detected = True
+                diagnostics["content_conflict"] = False
             elif not feline_detected and not gate_result.feline_detected:
                 feline_detected = False
+                diagnostics["content_conflict"] = False
+            elif not feline_detected and is_gate_strong_feline and feline_evidence >= -0.05:
+                # Gate strongly recognizes a feline (e.g. domestic cat or Panthera class)
+                # and BioCLIP does not have heavy negative evidence (feline_evidence >= -0.05).
+                # Gate confirms feline presence and resolves borderline zero-shot margin.
+                feline_detected = True
+                diagnostics["content_conflict"] = False
+                diagnostics["gate_confirmed_feline"] = True
             else:
                 feline_detected = False
                 notes.append(

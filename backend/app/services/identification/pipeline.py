@@ -18,7 +18,7 @@ from .base import BaseClassifier, RawInferenceResult, RawPrediction
 from .bioclip_classifier import MODEL_SETUP_HINT, BioClipClassifier
 from .breed_classifier import BreedClassifier, BreedInferenceResult
 from .dev_provider import DevelopmentMockClassifier
-from .imagenet_gate import ImageNetFelineGate
+from .imagenet_gate import DOMESTIC_IMAGENET_LABELS, ImageNetFelineGate
 from .policy import (
     DOMESTIC_SPECIES_ID,
     LYNX_SPECIES_IDS,
@@ -377,6 +377,68 @@ class IdentificationPipeline:
             if existing is None or candidate.confidence_score > existing.confidence_score:
                 by_species[species_id] = candidate
 
+        # When the independent ImageNet gate specifically identifies a domestic cat class
+        # (tabby, tiger cat, Persian cat, Siamese cat, Egyptian cat), elevate Felis catus
+        # above wild species so small-wildcat prompt ambiguities do not overshadow it.
+        gate_diag = raw_result.diagnostics.get("imagenet_gate") or {}
+        is_gate_domestic = (
+            gate_diag.get("feline_detected", False)
+            and (
+                gate_diag.get("top_label") in DOMESTIC_IMAGENET_LABELS
+                or (
+                    gate_diag.get("feline_probability", 0.0) >= 0.40
+                    and any(
+                        p.get("label") in DOMESTIC_IMAGENET_LABELS and p.get("score", 0.0) >= 0.20
+                        for p in gate_diag.get("predictions", [])
+                    )
+                )
+            )
+        )
+
+        if is_gate_domestic:
+            if DOMESTIC_SPECIES_ID not in by_species:
+                domestic_rec = species_service.get_taxon_record(DOMESTIC_SPECIES_ID)
+                if domestic_rec:
+                    by_species[DOMESTIC_SPECIES_ID] = CandidatePrediction(
+                        species_id=DOMESTIC_SPECIES_ID,
+                        common_name=domestic_rec["common_name"],
+                        scientific_name=domestic_rec["scientific_name"],
+                        confidence_score=0.28,
+                        score_percentage=28,
+                        is_wild=False,
+                        conservation_status="DOMESTIC",
+                        thumbnail_url=domestic_rec.get("thumbnail_url") or domestic_rec.get("image_url") or "",
+                        category="domestic_species",
+                        rationale=(
+                            "Identified as domestic cat (Felis catus), supported by independent "
+                            f"ImageNet domestic-cat classification ({gate_diag.get('top_label')})."
+                        ),
+                        xp_reward=int(domestic_rec.get("xp_reward", 50)),
+                        score_semantics=raw_result.score_semantics,
+                        model_label=gate_diag.get("top_label") or "domestic cat",
+                    )
+            catus_cand = by_species.get(DOMESTIC_SPECIES_ID)
+            if catus_cand:
+                top_wild_score = max(
+                    (
+                        candidate.confidence_score
+                        for candidate in by_species.values()
+                        if candidate.species_id != DOMESTIC_SPECIES_ID
+                    ),
+                    default=0.0,
+                )
+                catus_cand.confidence_score = max(
+                    catus_cand.confidence_score,
+                    top_wild_score + 0.02,
+                    0.28,
+                )
+                catus_cand.score_percentage = int(round(catus_cand.confidence_score * 100))
+                if gate_diag.get("top_label"):
+                    catus_cand.rationale = (
+                        "Identified as domestic cat (Felis catus), supported by independent "
+                        f"ImageNet domestic-cat classification ({gate_diag.get('top_label')})."
+                    )
+
         return sorted(
             by_species.values(),
             key=lambda candidate: candidate.confidence_score,
@@ -531,8 +593,27 @@ class IdentificationPipeline:
 
         top_candidate = candidates[0]
         second_candidate = candidates[1] if len(candidates) > 1 else None
+
+        gate_diag = raw_result.diagnostics.get("imagenet_gate") or {}
+        is_gate_domestic = (
+            gate_diag.get("feline_detected", False)
+            and (
+                gate_diag.get("top_label") in DOMESTIC_IMAGENET_LABELS
+                or (
+                    gate_diag.get("feline_probability", 0.0) >= 0.40
+                    and any(
+                        p.get("label") in DOMESTIC_IMAGENET_LABELS and p.get("score", 0.0) >= 0.20
+                        for p in gate_diag.get("predictions", [])
+                    )
+                )
+            )
+        )
+
         status, status_note = decide_status(
-            top_candidate, second_candidate, is_mock=raw_result.is_mock
+            top_candidate,
+            second_candidate,
+            is_mock=raw_result.is_mock,
+            is_gate_domestic=is_gate_domestic,
         )
 
         uncertainty_note = status_note

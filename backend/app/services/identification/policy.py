@@ -64,6 +64,7 @@ def decide_status(
     second: Optional[CandidatePrediction],
     *,
     is_mock: bool,
+    is_gate_domestic: bool = False,
 ) -> tuple[IdentificationStatus, Optional[str]]:
     """Return the taxonomy-aware status and an optional explanation.
 
@@ -89,16 +90,26 @@ def decide_status(
         )
 
     if top.category == "domestic_species":
-        if top.confidence_score < settings.bioclip_min_domestic_similarity:
+        min_similarity = (
+            settings.bioclip_min_domestic_similarity - 0.05
+            if is_gate_domestic
+            else settings.bioclip_min_domestic_similarity
+        )
+        if top.confidence_score < min_similarity:
             return (
                 IdentificationStatus.UNABLE_TO_IDENTIFY,
                 "A domestic-cat candidate was found, but its similarity score is "
                 "below the conservative domestic-cat acceptance threshold.",
             )
         if second is not None and second.category == "wild_species":
+            confusable_margin = (
+                settings.bioclip_min_domestic_margin
+                if is_gate_domestic
+                else settings.bioclip_min_domestic_margin + 0.015
+            )
             if (
                 second.species_id in DOMESTIC_CONFUSABLE_WILD_IDS
-                and margin < settings.bioclip_min_domestic_margin + 0.015
+                and margin < confusable_margin
             ):
                 return (
                     IdentificationStatus.UNABLE_TO_IDENTIFY,
