@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, MapPin, Info, Menu, X } from 'lucide-react';
+import { BookOpen, MapPin, Info, Menu, X, ClipboardCheck } from 'lucide-react';
 import { ActivePage } from '../../types';
 import { useCollectionStore } from '../../store/useCollectionStore';
 
@@ -14,6 +14,7 @@ export const Navbar: React.FC<Props> = ({ activePage, setActivePage }) => {
 
   const navItems: { id: ActivePage; label: string; icon: React.ReactNode }[] = [
     { id: 'species', label: 'Species Atlas', icon: <BookOpen className="w-3.5 h-3.5" /> },
+    { id: 'dataset-review', label: 'Dataset Review', icon: <ClipboardCheck className="w-3.5 h-3.5" /> },
     { id: 'observations', label: 'Observations', icon: <MapPin className="w-3.5 h-3.5" /> },
     { id: 'methodology', label: 'Methodology', icon: <Info className="w-3.5 h-3.5" /> },
   ];

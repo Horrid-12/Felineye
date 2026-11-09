@@ -8,7 +8,10 @@ import {
   TaxonDetail,
   IdentificationResult,
   ObservationListResponse,
-  CollectionMetaResponse
+  CollectionMetaResponse,
+  DatasetCandidate,
+  DatasetReview,
+  DatasetStats
 } from '../types';
 
 const API_BASE = '/api';
@@ -152,5 +155,56 @@ export const api = {
   async getCollectionMeta(): Promise<CollectionMetaResponse> {
     const res = await fetch(`${API_BASE}/collection/species`);
     return handleResponse<CollectionMetaResponse>(res);
+  },
+
+  async datasetLogin(reviewer: string): Promise<{ reviewer: string; session: string }> {
+    const res = await fetch(`${API_BASE}/dataset-review/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reviewer }),
+    });
+    return handleResponse(res);
+  },
+
+  async getDatasetStats(session: string): Promise<DatasetStats> {
+    const res = await fetch(`${API_BASE}/dataset-review/stats`, {
+      headers: { Authorization: `Bearer ${session}` },
+    });
+    return handleResponse(res);
+  },
+
+  async getDatasetCandidates(session: string, params?: {
+    breed?: string; status?: string; source?: string; page?: number; page_size?: number;
+  }): Promise<{ total: number; page: number; page_size: number; items: DatasetCandidate[] }> {
+    const query = new URLSearchParams();
+    if (params?.breed) query.set('breed', params.breed);
+    if (params?.status) query.set('status', params.status);
+    if (params?.source) query.set('source', params.source);
+    if (params?.page) query.set('page', String(params.page));
+    if (params?.page_size) query.set('page_size', String(params.page_size));
+    const res = await fetch(`${API_BASE}/dataset-review/candidates?${query}`, {
+      headers: { Authorization: `Bearer ${session}` },
+    });
+    return handleResponse(res);
+  },
+
+  async getDatasetCandidate(session: string, id: string): Promise<{
+    candidate: Record<string, any>; status: string; reviews: DatasetReview[]; image_url: string;
+  }> {
+    const res = await fetch(`${API_BASE}/dataset-review/candidates/${encodeURIComponent(id)}`, {
+      headers: { Authorization: `Bearer ${session}` },
+    });
+    return handleResponse(res);
+  },
+
+  async submitDatasetReview(session: string, id: string, body: {
+    decision: 'approved' | 'rejected' | 'ambiguous'; reason?: string; expected_reviews: number;
+  }): Promise<{ review: DatasetReview; status: string }> {
+    const res = await fetch(`${API_BASE}/dataset-review/candidates/${encodeURIComponent(id)}/review`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session}` },
+      body: JSON.stringify(body),
+    });
+    return handleResponse(res);
   }
 };

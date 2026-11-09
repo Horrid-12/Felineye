@@ -9,6 +9,7 @@ import { SpeciesDetailPage } from './pages/SpeciesDetailPage';
 import { CollectionPage } from './pages/CollectionPage';
 import { ObservationsPage } from './pages/ObservationsPage';
 import { MethodologyPage } from './pages/MethodologyPage';
+import { DatasetReviewPage } from './pages/DatasetReviewPage';
 
 const BACK_LABELS: Partial<Record<ActivePage, string>> = {
   home: 'Back to Home',
@@ -101,6 +102,8 @@ export function App() {
         )}
 
         {activePage === 'observations' && <ObservationsPage />}
+
+        {activePage === 'dataset-review' && <DatasetReviewPage />}
 
         {activePage === 'methodology' && <MethodologyPage />}
       </main>

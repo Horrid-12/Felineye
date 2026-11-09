@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from .config import settings
-from .routes import health, identify, species, breeds, catalog, taxa, observations, collection
+from .routes import health, identify, species, breeds, catalog, taxa, observations, collection, dataset_review
 
 logging.basicConfig(
     level=logging.INFO,
@@ -47,6 +47,7 @@ app.include_router(catalog.router)
 app.include_router(taxa.router)
 app.include_router(observations.router)
 app.include_router(collection.router)
+app.include_router(dataset_review.router)
 
 @app.get("/", tags=["Root"])
 async def root_index():

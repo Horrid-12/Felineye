@@ -83,6 +83,10 @@ export interface IdentificationResult {
   breed_candidates?: BreedPrediction[];
   /** Why a breed was or was not asserted. Never a pedigree claim. */
   breed_note?: string | null;
+  /** Confusable visual-breed group when no single breed can be asserted. */
+  breed_group_name?: string | null;
+  /** Individual breeds inside the uncertain group, with similarity scores. */
+  breed_group_candidates?: BreedPrediction[];
   /** Mathematical meaning of the scores, e.g. a cosine similarity. */
   score_semantics: string;
   /** Only present when a provider returns a genuine probability distribution. */
@@ -307,6 +311,42 @@ export interface DiscoveryRecord {
   last_seen_at?: string;
 }
 
+export interface DatasetCandidate {
+  id: string;
+  breed_id: string;
+  status: 'pending' | 'verified' | 'rejected' | 'ambiguous' | 'contested';
+  title?: string;
+  author?: string;
+  license?: string;
+  source?: string;
+  width?: number;
+  height?: number;
+  bytes?: number;
+  sha256?: string;
+  special_check?: string;
+  image_url?: string;
+}
+
+export interface DatasetReview {
+  image_id: string;
+  breed_id: string;
+  reviewer: string;
+  decision: 'approved' | 'rejected' | 'ambiguous';
+  reason: string;
+  timestamp: string;
+}
+
+export interface DatasetStats {
+  total: number;
+  total_verified: number;
+  per_breed: Record<string, {
+    total: number; verified: number; rejected: number; ambiguous: number;
+    contested: number; pending: number;
+    approval_rate: number; rejection_rate: number; ambiguity_rate: number;
+  }>;
+  special_checks: Record<string, string>;
+}
+
 export type ActivePage =
   | 'home'
   | 'identify'
@@ -314,4 +354,5 @@ export type ActivePage =
   | 'species-detail'
   | 'collection'
   | 'observations'
-  | 'methodology';
+  | 'methodology'
+  | 'dataset-review';
