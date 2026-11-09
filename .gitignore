@@ -58,6 +58,16 @@ pnpm-debug.log*
 # Breed validation sample images (manifest is tracked for provenance)
 backend/tests/fixtures/breed-validation/images/
 backend/tests/fixtures/breed-validation/report.json
+# Breed dataset candidates (images gitignored; manifest tracked for provenance)
+backend/datasets/breed-v1/images/
+backend/datasets/breed-v1/progress.json
+backend/datasets/breed-v1/pilot_summary.json
+backend/datasets/breed-v1/review_gallery*.html
+backend/datasets/breed-v1/review_report.json
+# Breed benchmark outputs (regenerable results; report narrative stays in Documentation/)
+backend/tests/fixtures/breed-validation/benchmark_*.json
+backend/tests/fixtures/breed-validation/ferdifdi_*
+backend/tests/fixtures/breed-validation/dataset_audit.json
 
 # OS / Editors
 .DS_Store
@@ -71,3 +81,4 @@ Documentation/Decisions.md
 *graphify-out/
 *graphify/
 CODEBASE_GUIDE.md
+Documentation/Breed-Model-Benchmark.md
