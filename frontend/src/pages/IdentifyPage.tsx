@@ -399,6 +399,8 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
               breed={result.breed}
               candidates={result.breed_candidates}
               note={result.breed_note}
+              groupName={result.breed_group_name}
+              groupCandidates={result.breed_group_candidates}
               onSelectBreed={onSelectSpecies}
             />
           )}

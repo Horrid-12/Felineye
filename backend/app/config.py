@@ -83,6 +83,10 @@ class Settings(BaseModel):
     # Documentation/Breed-Validation.md.
     breed_min_confidence: float = float(os.getenv("BREED_MIN_CONFIDENCE", "0.80"))
     breed_min_margin: float = float(os.getenv("BREED_MIN_MARGIN", "0.10"))
+    # Within a confusable group a wider margin is required because colourpoint
+    # pairs (Tonkinese/Siamese/Balinese…) share coat features the frozen softmax
+    # cannot separate; scores are NOT calibrated probabilities.
+    breed_confusable_margin: float = float(os.getenv("BREED_CONFUSABLE_MARGIN", "0.20"))
     # Test-time augmentation for the breed stage: average the classifier's
     # probabilities over the full image, two centre crops, and a flipped copy.
     # The full-image view keeps off-centre cats visible; the crops act as an
@@ -94,6 +98,16 @@ class Settings(BaseModel):
         "yes",
         "on",
     )
+
+    # Dataset review workspace (Phase 4). Images are served only through
+    # authenticated routes; paths never reach the browser.
+    dataset_root: str = os.getenv(
+        "DATASET_ROOT", str(BASE_DIR / "datasets" / "breed-v1")
+    )
+    # Shared secret for reviewer sessions. Empty disables login entirely.
+    reviewer_session_secret: str = os.getenv("REVIEWER_SESSION_SECRET", "")
+    # Comma-separated allow-list of reviewer handles for login.
+    reviewer_names: str = os.getenv("REVIEWER_NAMES", "reviewer-a,reviewer-b,reviewer-c")
 
     # Quality gates. A poor-quality image is allowed to produce an abstention,
     # never a fabricated identification.

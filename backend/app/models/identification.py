@@ -78,6 +78,14 @@ class IdentificationResult(BaseModel):
         default=None,
         description="Why a breed was or was not asserted. Never a pedigree claim.",
     )
+    breed_group_name: Optional[str] = Field(
+        default=None,
+        description="Confusable visual-breed group when the evidence cannot separate members.",
+    )
+    breed_group_candidates: List[BreedPrediction] = Field(
+        default_factory=list,
+        description="Individual breeds inside the uncertain confusable group, with similarity scores.",
+    )
     score_semantics: str = Field(
         default="model_score_not_calibrated",
         description=(

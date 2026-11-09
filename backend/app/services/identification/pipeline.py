@@ -22,6 +22,7 @@ from .imagenet_gate import DOMESTIC_IMAGENET_LABELS, ImageNetFelineGate
 from .policy import (
     DOMESTIC_SPECIES_ID,
     LYNX_SPECIES_IDS,
+    confusable_group_for,
     decide_breed,
     decide_status,
 )
@@ -641,6 +642,8 @@ class IdentificationPipeline:
         breed: Optional[BreedPrediction] = None
         breed_candidates: List[BreedPrediction] = []
         breed_note: Optional[str] = None
+        breed_group_name: Optional[str] = None
+        breed_group_candidates: List[BreedPrediction] = []
 
         if status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT:
             if self._breed_classifier and self._breed_classifier.is_available:
@@ -648,6 +651,24 @@ class IdentificationPipeline:
                     breed_raw = await self._breed_classifier.predict(image)
                     selected, breed_note = decide_breed(breed_raw.scores)
                     breed_candidates = self._enrich_breed_candidates(breed_raw)
+                    raw_scores = breed_raw.scores
+                    if selected is None and raw_scores:
+                        # Confusable-group surfacing: surface the group name and
+                        # its members with similarity scores when the pipeline
+                        # withholds a single breed inside one group.
+                        group_name = confusable_group_for(raw_scores[0])
+                        if group_name:
+                            members = [
+                                s for s in raw_scores
+                                if confusable_group_for(s) == group_name
+                                and (s.kind == "breed" or s.kind == "unmapped")
+                            ]
+                            if len(members) >= 2:
+                                breed_group_name = group_name
+                                by_id = {c.breed_id: c for c in breed_candidates}
+                                breed_group_candidates = [
+                                    by_id[m.breed_id] for m in members if m.breed_id in by_id
+                                ]
                     if selected is not None:
                         breed = next(
                             (
@@ -728,6 +749,8 @@ class IdentificationPipeline:
             breed=breed,
             breed_candidates=breed_candidates,
             breed_note=breed_note,
+            breed_group_name=breed_group_name,
+            breed_group_candidates=breed_group_candidates,
             is_discovery_eligible=is_eligible,
             xp_reward=xp_reward,
             image_fingerprint=metadata.get("image_fingerprint"),

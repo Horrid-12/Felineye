@@ -6,6 +6,9 @@ interface Props {
   breed?: BreedPrediction | null;
   candidates?: BreedPrediction[];
   note?: string | null;
+  /** Confusable group — rendered distinctly from a confirmed breed. */
+  groupName?: string | null;
+  groupCandidates?: BreedPrediction[];
   onSelectBreed: (slug: string) => void;
 }
 
@@ -17,18 +20,27 @@ export const BreedEstimatePanel: React.FC<Props> = ({
   breed,
   candidates = [],
   note,
+  groupName,
+  groupCandidates = [],
   onSelectBreed,
 }) => {
+  const uncertain = !breed && (groupCandidates.length > 0 || !!groupName);
   const alternatives = candidates.filter((candidate) => candidate.breed_id !== breed?.breed_id);
 
-  if (!breed && alternatives.length === 0) return null;
+  if (!breed && alternatives.length === 0 && groupCandidates.length === 0) return null;
 
   return (
     <section className="bg-[#141218] border-2 border-black shadow-brutal p-5 space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm text-[10px] font-mono font-black uppercase tracking-wider text-felid-accent">
           {breed ? <Cat className="w-3.5 h-3.5" /> : <ShieldQuestion className="w-3.5 h-3.5" />}
-          <span>{breed ? 'CLOSEST VISUAL MATCH' : 'BREED NOT ASSERTED'}</span>
+          <span>
+            {breed
+              ? 'CLOSEST VISUAL MATCH'
+              : uncertain
+                ? 'BREED GROUP — UNCERTAIN'
+                : 'BREED NOT ASSERTED'}
+          </span>
         </div>
         <span className="text-[10px] font-mono font-bold uppercase text-felid-muted">
           VISUAL SIMILARITY // NOT PEDIGREE VERIFICATION
@@ -83,6 +95,39 @@ export const BreedEstimatePanel: React.FC<Props> = ({
           {note || CAVEAT}
         </p>
       </div>
+
+      {uncertain && groupName && (
+        <div className="space-y-2">
+          <span className="text-[10px] font-mono font-black uppercase tracking-wider text-felid-muted block">
+            POSSIBLE BREED GROUP — CANNOT DISTINGUISH RELIABLY
+          </span>
+          <p className="text-xs text-felid-muted font-serif italic">{groupName}</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {groupCandidates.map((candidate) => (
+              <button
+                key={candidate.breed_id}
+                type="button"
+                onClick={() => onSelectBreed(candidate.breed_id)}
+                className="flex items-center justify-between gap-2 px-3 py-2 bg-[#1d1922] hover:bg-[#26222d] text-left border-2 border-black shadow-brutal-sm brutal-press"
+              >
+                <span className="min-w-0">
+                  <span className="block font-display font-black text-xs text-felid-ivory uppercase truncate">
+                    {candidate.common_name}
+                  </span>
+                  <span className="block text-[10px] font-mono text-felid-muted">
+                    {candidate.score_percentage}% visual similarity
+                  </span>
+                </span>
+                <ShieldQuestion className="w-3.5 h-3.5 shrink-0 text-felid-accent" />
+              </button>
+            ))}
+          </div>
+          <p className="text-[10px] font-mono text-felid-muted leading-relaxed">
+            Visual appearance cannot establish pedigree. Scores are visual
+            similarity, not calibrated probabilities.
+          </p>
+        </div>
+      )}
 
       {alternatives.length > 0 && (
         <div className="space-y-2">

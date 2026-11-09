@@ -159,6 +159,61 @@ def decide_status(
     )
 
 
+#: Visually confusable domestic-breed groups. These are *visual-confusion*
+#: groups only — not taxonomic classes, not pedigrees. When the top breed
+#: predictions compete within one group and the margin is inside
+#: ``breed_confusable_margin``, Felineye reports the group as uncertain
+#: rather than forcing a single breed. ``labels`` cover unmapped ranks
+#: (Himalayan is a model class with no CFA record).
+CONFUSABLE_BREED_GROUPS: tuple[dict, ...] = (
+    {
+        "name": "Colourpoint group (Tonkinese / Siamese / Balinese)",
+        "breed_ids": ("tonkinese", "siamese", "balinese"),
+        "labels": ("Tonkinese", "Siamese", "Applehead Siamese", "Balinese"),
+    },
+    {
+        "name": "Long-haired colourpoint group (Ragdoll / Birman)",
+        "breed_ids": ("ragdoll", "birman"),
+        "labels": ("Ragdoll", "Birman"),
+    },
+    {
+        "name": "Persian / Himalayan group",
+        "breed_ids": ("persian",),
+        "labels": ("Persian", "Himalayan", "Exotic Shorthair"),
+    },
+    {
+        "name": "Large forest-cat group (Maine Coon / Norwegian Forest / Siberian)",
+        "breed_ids": ("maine-coon", "norwegian-forest-cat", "siberian"),
+        "labels": ("Maine Coon", "Norwegian Forest", "Siberian"),
+    },
+)
+
+
+def confusable_group_for(score: "BreedScore") -> Optional[str]:
+    """Return the confusable-group name for a breed score, if any."""
+    for group in CONFUSABLE_BREED_GROUPS:
+        if score.breed_id and score.breed_id in group["breed_ids"]:
+            return group["name"]
+        if score.label in group["labels"]:
+            return group["name"]
+    return None
+
+
+def group_competitors(
+    scores: List["BreedScore"], top: "BreedScore", group_name: str, top_k: int = 5
+) -> List["BreedScore"]:
+    """Top-k catalogue-breed scores in the same group as ``top``."""
+    out = []
+    for s in scores:
+        if s is top:
+            continue
+        if confusable_group_for(s) == group_name and (s.kind == "breed" or s.kind == "unmapped"):
+            out.append(s)
+        if len(out) >= top_k:
+            break
+    return out
+
+
 def decide_breed(scores: List[BreedScore]) -> tuple[Optional[BreedScore], str]:
     """Select a breed estimate, or explain why the breed stays undetermined.
 
@@ -200,6 +255,25 @@ def decide_breed(scores: List[BreedScore]) -> tuple[Optional[BreedScore], str]:
             f"The top breed classes ('{top.label}'{runner_up}) are too close to "
             "separate reliably. Breed is not asserted."
         )
+
+    # Confusable-group guard: a clear overall margin is not enough when a
+    # visually similar rival sits inside the wider group margin. Scores are
+    # uncalibrated softmax outputs, never probabilities.
+    group_name = confusable_group_for(top)
+    if group_name:
+        rivals = group_competitors(scores, top, group_name)
+        if rivals:
+            nearest = rivals[0]
+            group_margin = settings.breed_confusable_margin
+            if top.score - nearest.score < group_margin:
+                return None, (
+                    f"The image is a {group_name} candidate: '{top.label}' "
+                    f"({top.score:.0%} similarity) cannot be reliably separated from "
+                    f"'{nearest.label}' ({nearest.score:.0%} similarity). Breed is not "
+                    "asserted; visual appearance alone cannot establish pedigree. "
+                    "The closest group members are listed for comparison; scores are "
+                    "visual similarity, not calibrated probabilities."
+                )
 
     return top, (
         f"Closest visual match: {top.label} ({top.score:.0%} similarity). This is a "

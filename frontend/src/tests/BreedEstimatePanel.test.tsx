@@ -111,6 +111,44 @@ describe('BreedEstimatePanel Component', () => {
     expect(handleSelect).toHaveBeenCalledWith('ragdoll');
   });
 
+  it('shows a breed group as uncertain and never as a confirmed breed', () => {
+    const tonkinese: BreedPrediction = {
+      ...britishShorthair,
+      breed_id: 'tonkinese',
+      common_name: 'Tonkinese',
+      score_percentage: 72,
+      confidence_score: 0.72,
+      model_label: 'Tonkinese',
+    };
+    const siamese: BreedPrediction = {
+      ...britishShorthair,
+      breed_id: 'siamese',
+      common_name: 'Siamese',
+      score_percentage: 84,
+      confidence_score: 0.84,
+      model_label: 'Siamese',
+    };
+    render(
+      <BreedEstimatePanel
+        breed={null}
+        candidates={[siamese, tonkinese]}
+        note="Cannot be reliably separated; visual appearance cannot establish pedigree."
+        groupName="Colourpoint group (Tonkinese / Siamese / Balinese)"
+        groupCandidates={[siamese, tonkinese]}
+        onSelectBreed={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('BREED GROUP — UNCERTAIN')).toBeDefined();
+    expect(screen.getByText('POSSIBLE BREED GROUP — CANNOT DISTINGUISH RELIABLY')).toBeDefined();
+    expect(screen.getAllByText('Tonkinese').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Siamese').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('72% visual similarity').length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/visual appearance cannot establish pedigree/i).length).toBeGreaterThan(0);
+    expect(screen.queryByText('CLOSEST VISUAL MATCH')).toBeNull();
+    expect(screen.queryByText('Breed Profile')).toBeNull();
+  });
+
   it('renders nothing when there is no breed evidence at all', () => {
     const { container } = render(
       <BreedEstimatePanel breed={null} candidates={[]} onSelectBreed={vi.fn()} />
