@@ -353,12 +353,12 @@ def _breed(label, score, breed_id, kind="breed"):
     return BreedScore(label=label, score=score, breed_id=breed_id, kind=kind)
 
 
-def test_confident_catalogue_breed_is_reported_as_an_estimate():
+def test_confident_catalogue_breed_is_reported_as_a_closest_match():
     result = _run(
         DOMESTIC_PREDICTIONS,
         breed_classifier=StubBreedClassifier(
             [
-                _breed("Ragdoll", 0.78, "ragdoll"),
+                _breed("Ragdoll", 0.92, "ragdoll"),
                 _breed("Birman", 0.15, "birman"),
                 _breed("Siamese", 0.03, "siamese"),
             ]
@@ -370,11 +370,12 @@ def test_confident_catalogue_breed_is_reported_as_an_estimate():
     assert result.breed.breed_id == "ragdoll"
     assert result.breed.category == "domestic_breed"
     assert result.breed.is_estimate is True
-    assert result.breed.score_percentage == 78
+    assert result.breed.score_percentage == 92
     assert [candidate.breed_id for candidate in result.breed_candidates][:2] == [
         "ragdoll",
         "birman",
     ]
+    assert "closest visual match" in (result.breed_note or "").lower()
     assert "not pedigree verification" in (result.breed_note or "").lower()
 
 
@@ -423,14 +424,43 @@ def test_close_breed_margin_is_not_asserted():
         DOMESTIC_PREDICTIONS,
         breed_classifier=StubBreedClassifier(
             [
-                _breed("Ragdoll", 0.50, "ragdoll"),
-                _breed("Birman", 0.47, "birman"),
+                _breed("Ragdoll", 0.95, "ragdoll"),
+                _breed("Birman", 0.90, "birman"),
             ]
         ),
     )
 
     assert result.breed is None
     assert "too close" in (result.breed_note or "").lower()
+
+
+def test_breed_below_090_confidence_is_listed_but_not_asserted():
+    """The 0.90 floor was chosen from real-photo validation.
+
+    A 0.78 Ragdoll is the exact kind of plausible-but-unproven match the old
+    0.45 floor would have asserted; it must stay visible as a candidate without
+    being presented as the breed.
+    """
+
+    result = _run(
+        DOMESTIC_PREDICTIONS,
+        breed_classifier=StubBreedClassifier(
+            [
+                _breed("Ragdoll", 0.78, "ragdoll"),
+                _breed("Birman", 0.15, "birman"),
+            ]
+        ),
+    )
+
+    assert result.status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT
+    assert result.breed is None
+    assert "threshold" in (result.breed_note or "").lower()
+    assert [candidate.breed_id for candidate in result.breed_candidates] == [
+        "ragdoll",
+        "birman",
+    ]
+    assert result.xp_reward == 50
+    assert result.is_discovery_eligible is True
 
 
 def test_generic_coat_class_abstains_instead_of_nearest_breed():
@@ -486,7 +516,7 @@ def test_breed_estimate_never_changes_xp_or_eligibility():
     with_breed = _run(
         DOMESTIC_PREDICTIONS,
         breed_classifier=StubBreedClassifier(
-            [_breed("Ragdoll", 0.78, "ragdoll")]
+            [_breed("Ragdoll", 0.92, "ragdoll")]
         ),
     )
 

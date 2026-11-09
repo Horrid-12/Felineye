@@ -76,8 +76,11 @@ class Settings(BaseModel):
     # classifier's top catalogue breed is both confident and clearly separated
     # from the next class; otherwise the breed stays explicitly undetermined.
     # The defaults are deliberately conservative because the source model's
-    # softmax scores are not calibrated.
-    breed_min_confidence: float = float(os.getenv("BREED_MIN_CONFIDENCE", "0.45"))
+    # softmax scores are not calibrated. Real-photo validation showed that a
+    # 0.45 floor asserted too many wrong close-breed matches; 0.90 keeps
+    # precision near 90% while still surfacing the closest matches below it.
+    # See Documentation/Breed-Validation.md.
+    breed_min_confidence: float = float(os.getenv("BREED_MIN_CONFIDENCE", "0.90"))
     breed_min_margin: float = float(os.getenv("BREED_MIN_MARGIN", "0.10"))
 
     # Quality gates. A poor-quality image is allowed to produce an abstention,

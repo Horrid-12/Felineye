@@ -55,6 +55,10 @@ pnpm-debug.log*
 # Temporary PyTorch/open_clip export environment
 .model-export/
 
+# Breed validation sample images (manifest is tracked for provenance)
+backend/tests/fixtures/breed-validation/images/
+backend/tests/fixtures/breed-validation/report.json
+
 # OS / Editors
 .DS_Store
 Thumbs.db

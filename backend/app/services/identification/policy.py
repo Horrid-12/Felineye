@@ -114,9 +114,9 @@ def decide_status(
             )
         return (
             IdentificationStatus.IDENTIFIED_DOMESTIC_CAT,
-            "Domestic cat (Felis catus) identified at species level. A breed "
-            "estimate is reported separately only when the dedicated breed "
-            "classifier is confident; it is visual similarity, not pedigree "
+            "Domestic cat (Felis catus) identified at species level. A closest "
+            "visual breed match is reported separately when the dedicated breed "
+            "classifier supports it; it is visual similarity, not pedigree "
             "verification.",
         )
 
@@ -191,7 +191,7 @@ def decide_breed(scores: List[BreedScore]) -> tuple[Optional[BreedScore], str]:
         )
 
     return top, (
-        f"Breed estimate: {top.label} ({top.score:.0%} visual similarity). This is a "
-        "dedicated breed-classifier estimate, not pedigree verification, and it does "
+        f"Closest visual match: {top.label} ({top.score:.0%} similarity). This is a "
+        "dedicated breed-classifier match, not pedigree verification, and it does "
         "not change the species result or award breed XP."
     )

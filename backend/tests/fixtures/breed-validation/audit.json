@@ -1,0 +1,34 @@
+{
+  "reviewed": "2026-11-03",
+  "method": "Visual review of every asserted-wrong sample; excluded only images that are not a clean single-cat photo of the labelled breed.",
+  "excluded": [
+    {
+      "file": "images/siamese/commons_708b5cba598d.jpg",
+      "reason": "Museum specimen: preserved Siamese liver/biliary tract in a jar, not a live cat."
+    },
+    {
+      "file": "images/siamese/commons_a877337dddaa.jpg",
+      "reason": "Mislabelled category: the photo is a hairless Sphynx, not a Siamese."
+    },
+    {
+      "file": "images/siamese/commons_1ecfd930c2fe.jpg",
+      "reason": "Multi-subject scene: two Siamese cats plus a dog; not a clean single-breed portrait."
+    },
+    {
+      "file": "images/balinese/commons_3ef36b32bea2.jpg",
+      "reason": "Mislabelled category: the photo shows a Birman (white gloves), not a Balinese."
+    },
+    {
+      "file": "images/british-shorthair/commons_50aa5438824a.jpg",
+      "reason": "Multi-subject scene: the main cat is a British Shorthair but a Scottish Fold is visible in the background."
+    },
+    {
+      "file": "images/manx/commons_f800c1740f6e.jpg",
+      "reason": "Ambiguous label: a solid blue cat that could be a Russian Blue; the Manx tail is not visible."
+    },
+    {
+      "file": "images/tonkinese/commons_7abc94387478.jpg",
+      "reason": "Kitten held in a hand, not a clean adult breed portrait."
+    }
+  ]
+}

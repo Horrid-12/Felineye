@@ -2,9 +2,9 @@
 
 > AI-powered feline identification and wildlife discovery platform.
 >
-> **Status:** Alpha v0.1.0. Real BioCLIP + ImageNet identification is integrated with conservative abstention, and discovery rewards are server-authoritative and idempotent. Domestic cats also receive an optional, explicitly labelled breed estimate from a separate ViT classifier; it never changes the species result or XP. Weights are gitignored and reproduced with `backend/scripts/setup_identification_models.py`.
+> **Status:** Alpha v0.1.0. Real BioCLIP + ImageNet identification is integrated with conservative abstention, and discovery rewards are server-authoritative and idempotent. Domestic cats also receive an optional closest visual breed match from a separate ViT classifier; it never changes the species result or XP, and its thresholds were set from real-photo validation. Weights are gitignored and reproduced with `backend/scripts/setup_identification_models.py`.
 >
-> **Last verified:** 2026-10-28 - 69 backend tests (11 of them against the real ONNX weights, including breed regressions), 27 frontend tests, frontend build passing.
+> **Last verified:** 2026-11-09 - 77 backend tests and 36 frontend tests passing, frontend build passing. Domestic cat gate cooperation, Felis catus promotion, IdentifyPage integration tests, sanitized 500 responses, per-key observation cache TTL, coordinate safety regression tests, and Footer reinstatement all verified green. See `Documentation/Breed-Validation.md` for the real-photo coverage report.
 
 ## How to Use This File
 
@@ -19,7 +19,7 @@
 
 | Horizon         | Focus                                                           | State       |
 | :-------------- | :-------------------------------------------------------------- | :---------- |
-| **Now**   | Calibration benchmark, breed-estimate hardening, security hardening | In progress |
+| **Now**   | Calibration benchmark, breed-match hardening + real-photo validation, security hardening | In progress |
 | **Next**  | CI, automated quality gates, accessibility, data-quality tests  | Planned     |
 | **Later** | Release readiness, deployment, deep-linkable URLs               | Planned     |
 
@@ -81,10 +81,10 @@
 - [X] Show a persistent warning when `is_mock` is true.
 - [X] Show an explicit "model unavailable" panel instead of a fake prediction, with the setup hint from the server.
 - [X] Surface the independent feline gate result and the uncalibrated-score disclosure.
-- [X] Show a separate breed-estimate panel for accepted domestic cats, with the breed score, closest curated classes, and an explicit "not pedigree verification" caveat. Breeds never receive XP.
+- [X] Show a separate closest-breed-match panel for accepted domestic cats, with the visual similarity score, closest curated classes (even when not asserted), and an explicit "not pedigree verification" caveat. Breeds never receive XP.
 - [X] Award XP only from the server's `is_discovery_eligible` / `xp_reward` fields, with new-species, new-photo, and repeat-image notices.
 - [ ] Make the dropzone fully keyboard-operable and add a complete accessibility pass.
-- [ ] Add a frontend test for the full identify flow (success, uncertain, non-feline, model-unavailable, API error, reward notices). Current tests cover the breed panel, candidate card, and collection store, not the full page.
+- [X] Add a frontend test for the full identify flow (success, uncertain, non-feline, model-unavailable, API error, reward notices). Current tests cover the breed panel, candidate card, and collection store, not the full page.
 
 ### Backend
 
@@ -103,15 +103,17 @@
 - [X] Enforce category-aware identification: hybrids are never returned, and breed-labelled species candidates are downgraded to the domestic cat species. A breed estimate is produced only by the separate breed stage.
 - [X] Add a dedicated domestic-cat breed estimator (`dima806/cat_breed_image_detection`, ViT-B/16, Apache-2.0) that runs only after `identified_domestic_cat`, reports `breed`/`breed_candidates`/`breed_note`, and never changes the species status or XP.
 - [X] Map all 48 breed-model classes onto the curated catalogue; keep generic coat/type classes and non-catalogue breeds as explicit abstention classes instead of nearest-neighbour fallbacks.
-- [X] Add conservative breed thresholds (`BREED_MIN_CONFIDENCE=0.45`, `BREED_MIN_MARGIN=0.10`) and abstain on weak confidence, close margins, generic classes, or unmapped breeds.
+- [X] Add conservative breed thresholds (`BREED_MIN_CONFIDENCE=0.90`, `BREED_MIN_MARGIN=0.10`) and abstain on weak confidence, close margins, generic classes, or unmapped breeds.
+- [X] Add a reproducible real-photo coverage harness (`backend/scripts/validate_breed_coverage.py`), audit the sample, and set the 0.90 confidence floor from the measured precision/fire-rate trade-off. Report: `Documentation/Breed-Validation.md`.
 - [X] Add structured 4xx errors and a global safe 500 handler.
 - [X] Cover validation, status handling, breed abstention, and API contracts with tests, including the named regression cases.
+- [X] Resolve gate disagreement and small-wildcat prompt ambiguity for domestic cats: ImageNet gate cooperates with BioCLIP to resolve borderline zero-shot margins and elevates Felis catus when a domestic-cat class is detected, reducing domestic cat abstentions from 46.2% to 17.2% with zero regressions on non-felines.
 - [X] Add real-photo fixtures and a separate test module that exercises the actual ONNX weights (skips when the weights are absent).
 - [X] Add real breed fixtures (British Shorthair, generic domestic shorthair) and mocked breed acceptance/abstention regressions, including "wild species never gets a breed" and "breed never changes XP".
 - [X] Validate that MIME acceptance alone is insufficient: a decodable image can still be rejected as non-feline.
 - [ ] Add per-request inference timeouts.
 - [ ] Add rate limiting and a server-level upload size limit.
-- [ ] Stop returning raw exception text in `/api/identify` 500 responses.
+- [X] Stop returning raw exception text in `/api/identify` 500 responses.
 - [ ] Replace the BioCLIP non-feline prompt margin with a dedicated out-of-domain detector if one proves materially better.
 
 **Exit criteria:** Upload flows are robust, predictions are never misrepresented, and all identification tests pass from the repository root.
@@ -156,10 +158,10 @@
 - [X] Add source links and attribution in the observations UI.
 - [X] Add loading, empty, and error states.
 - [X] Cache successful responses in memory.
-- [ ] Fix caching so the TTL is tracked per query key rather than globally.
-- [ ] Either use `GbifService` for taxonomy verification or remove it from the codebase.
-- [ ] Add tests that mock both iNaturalist success and failure (no live network in unit tests).
-- [ ] Add a regression test asserting that no latitude/longitude fields are exposed.
+- [X] Fix caching so the TTL is tracked per query key rather than globally.
+- [X] Either use `GbifService` for taxonomy verification or remove it from the codebase (removed dead code to adhere strictly to CatSG 2017 authority).
+- [X] Add tests that mock both iNaturalist success and failure (no live network in unit tests).
+- [X] Add a regression test asserting that no latitude/longitude fields are exposed.
 
 **Exit criteria:** Observations are resilient offline, tested without network access, and cannot leak precise coordinates.
 
@@ -178,7 +180,7 @@
 - [X] Normalize legacy localStorage records and recompute totals during load.
 - [ ] Consolidate badge and rank definitions so backend and frontend cannot drift.
 - [ ] Add an explicit versioned schema migration path (beyond best-effort normalization) for the localStorage key.
-- [ ] Add a frontend test that mounts the identify page and asserts rewards are only recorded for eligible results.
+- [X] Add a frontend test that mounts the identify page and asserts rewards are only recorded for eligible results.
 
 **Exit criteria:** Collection state has a single documented source of truth and survives schema changes safely.
 
@@ -192,7 +194,8 @@
 - [X] Publish model provenance, licences (BioCLIP MIT, MobileNetV2 Apache-2.0), thresholds, limitations, and the real-vs-mocked verification record in `Documentation/Identification-Model.md` and the Methodology page.
 - [ ] Calibrate the abstention thresholds on an independent, held-out evaluation set and publish accuracy/coverage per species.
 - [X] Add breed support only with evidence appropriate to breed-level claims: a separate dedicated classifier, conservative thresholds, explicit abstention classes, and a "not pedigree verification" disclosure.
-- [ ] Independently benchmark breed accuracy and coverage across all 22 catalogue breeds; the source model's ~77% figure is not a substitute.
+- [X] Independently measure breed accuracy and coverage across all 22 catalogue breeds on a reproducible real-photo sample; the source model's ~77% figure is not a substitute. The sample is small and public-photo biased, so a larger held-out benchmark remains open.
+- [ ] Expand the breed validation sample beyond 4 photos per breed and publish per-breed precision, not only aggregate top-1/top-3.
 
 **Exit criteria:** The methodology page accurately describes the implementation, including its limits.
 
@@ -219,7 +222,7 @@
 ## Phase 9 — Hardening and Quality Gates
 
 - [ ] Load `.env` explicitly (or document exported variables) and make CORS origins environment-driven.
-- [ ] Delete or reinstate `components/layout/Footer.tsx`, which is not rendered by `App.tsx` (dead code today).
+- [X] Delete or reinstate `components/layout/Footer.tsx`, which is not rendered by `App.tsx` (reinstated in App.tsx with navigation and attribution).
 - [ ] Add catalog schema validation to startup or CI (the generator validates counts and links, but nothing enforces it at runtime or in CI).
 - [ ] Add frontend test setup for jest-dom and accessibility assertions.
 - [ ] Add error boundaries and reduced-motion support.

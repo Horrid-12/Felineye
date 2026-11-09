@@ -84,11 +84,13 @@ export const MethodologyPage: React.FC = () => {
             to <em>Felis catus</em>; breed is never a species-level answer.
           </li>
           <li>
-            <strong className="text-felid-ivory uppercase">Separate Breed Estimate:</strong>{' '}
+            <strong className="text-felid-ivory uppercase">Closest Breed Match:</strong>{' '}
             Only after a domestic cat is accepted at species level, a dedicated ViT breed classifier
-            may add a visual breed estimate. It must clear a confidence floor and a margin over the
-            next class; generic coat classes and non-catalogue breeds abstain. The estimate never
-            changes the species result or awards XP, and it is not pedigree verification.
+            may add a closest visual breed match. It must clear a confidence floor and a margin over
+            the next class; generic coat classes and non-catalogue breeds abstain. When it does not
+            clear the floor, the top curated classes are still listed as closest matches rather than
+            forcing a breed. The match never changes the species result or awards XP, and it is not
+            pedigree verification.
           </li>
           <li>
             <strong className="text-felid-ivory uppercase">Conservative Acceptance / Abstention:</strong>{' '}
@@ -233,10 +235,11 @@ export const MethodologyPage: React.FC = () => {
               species cannot be separated reliably.
             </li>
             <li>
-              Breed estimates are visual only. The dedicated classifier reports ~77% on its own
-              dataset, is not calibrated, and confuses some breed pairs (Maine Coon / Norwegian
-              Forest, Ragdoll / Birman / Siamese). Weak, generic, or non-catalogue evidence abstains
-              instead of forcing a breed.
+              Breed matches are visual only. The dedicated classifier is not calibrated, and it
+              confuses close breed pairs (Maine Coon / Norwegian Forest, Ragdoll / Birman / Siamese).
+              Real-photo validation put top-1 accuracy near 52% and the precision of asserted matches
+              near 90% at the current floor; weak, generic, or non-catalogue evidence abstains instead
+              of forcing a breed, and the closest curated classes are listed for comparison.
             </li>
             <li>
               Hybrids are excluded from the model vocabulary and can never be returned.

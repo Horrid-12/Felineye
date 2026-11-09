@@ -213,23 +213,32 @@ def test_real_british_shorthair_receives_a_breed_estimate(
     assert result.breed.breed_id == "british-shorthair"
     assert result.breed.category == "domestic_breed"
     assert result.breed.is_estimate is True
-    assert result.breed.score_percentage >= 45
+    # The shipped 0.90 floor is cleared by this fixture (~97%).
+    assert result.breed.score_percentage >= 90
     assert "not pedigree verification" in (result.breed_note or "").lower()
-    # A breed estimate never changes the species reward.
+    # A breed match never changes the species reward.
     assert result.is_discovery_eligible is True
     assert result.xp_reward == 50
 
 
 @requires_breed_model
-def test_real_ragdoll_receives_a_breed_estimate(
+def test_real_ragdoll_lists_closest_breed_without_asserting_it(
     real_breed_pipeline: IdentificationPipeline,
 ):
+    """The real Ragdoll fixture scores ~78%, below the 0.90 floor.
+
+    It must remain visible as a closest-match candidate without being presented
+    as the breed, and the domestic-cat result and XP must be unaffected.
+    """
+
     result = _identify(real_breed_pipeline, "ragdoll")
 
     assert result.status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT
-    assert result.breed is not None
-    assert result.breed.breed_id == "ragdoll"
-    assert result.breed.score_percentage >= 45
+    assert result.breed is None
+    assert result.breed_candidates
+    assert result.breed_candidates[0].breed_id == "ragdoll"
+    assert result.breed_candidates[0].score_percentage >= 45
+    assert "threshold" in (result.breed_note or "").lower()
     assert result.is_discovery_eligible is True
     assert result.xp_reward == 50
 

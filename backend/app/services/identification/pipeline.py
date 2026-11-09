@@ -582,8 +582,8 @@ class IdentificationPipeline:
                     if breed is not None:
                         uncertainty_note = (
                             "Domestic cat (Felis catus) identified at species level. "
-                            "A breed estimate is shown below as visual similarity, "
-                            "not pedigree verification."
+                            "The closest visual breed match is shown below as "
+                            "similarity, not pedigree verification."
                         )
                     else:
                         uncertainty_note = (

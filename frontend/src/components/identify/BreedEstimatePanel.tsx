@@ -10,8 +10,8 @@ interface Props {
 }
 
 const CAVEAT =
-  'Visual breed estimate from a dedicated classifier. It is not pedigree verification, ' +
-  'does not change the species result, and does not award breed XP.';
+  'Closest visual breed match from a dedicated classifier. It is not pedigree ' +
+  'verification, does not change the species result, and does not award breed XP.';
 
 export const BreedEstimatePanel: React.FC<Props> = ({
   breed,
@@ -28,7 +28,7 @@ export const BreedEstimatePanel: React.FC<Props> = ({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm text-[10px] font-mono font-black uppercase tracking-wider text-felid-accent">
           {breed ? <Cat className="w-3.5 h-3.5" /> : <ShieldQuestion className="w-3.5 h-3.5" />}
-          <span>{breed ? 'BREED ESTIMATE' : 'BREED NOT ASSERTED'}</span>
+          <span>{breed ? 'CLOSEST VISUAL MATCH' : 'BREED NOT ASSERTED'}</span>
         </div>
         <span className="text-[10px] font-mono font-bold uppercase text-felid-muted">
           VISUAL SIMILARITY // NOT PEDIGREE VERIFICATION
@@ -55,13 +55,13 @@ export const BreedEstimatePanel: React.FC<Props> = ({
                 {breed.scientific_name}
               </p>
               <span className="inline-block mt-1 px-1.5 py-0.5 text-[9px] font-mono font-black uppercase tracking-wider border border-black bg-felid-accent text-black">
-                DOMESTIC BREED // ESTIMATE
+                DOMESTIC BREED // CLOSEST MATCH
               </span>
             </div>
 
             <div>
               <div className="flex items-center justify-between text-xs mb-1 font-mono">
-                <span className="text-felid-muted text-[11px]">BREED-CLASSIFIER SCORE</span>
+                <span className="text-felid-muted text-[11px]">VISUAL SIMILARITY SCORE</span>
                 <span className="font-bold text-felid-accent">
                   {breed.score_percentage}%
                 </span>

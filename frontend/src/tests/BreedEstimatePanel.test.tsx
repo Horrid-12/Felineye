@@ -28,20 +28,21 @@ const ragdoll: BreedPrediction = {
 };
 
 describe('BreedEstimatePanel Component', () => {
-  it('renders the breed estimate as an estimate, not a pedigree claim', () => {
+  it('renders the breed as a closest visual match, not a pedigree claim', () => {
     render(
       <BreedEstimatePanel
         breed={britishShorthair}
         candidates={[britishShorthair, ragdoll]}
-        note="Breed estimate: British Shorthair (97% visual similarity). This is not pedigree verification."
+        note="Closest visual match: British Shorthair (97% similarity). This is not pedigree verification."
         onSelectBreed={vi.fn()}
       />
     );
 
     expect(screen.getByText('British Shorthair')).toBeDefined();
     expect(screen.getByText('97%')).toBeDefined();
-    expect(screen.getByText('BREED ESTIMATE')).toBeDefined();
-    expect(screen.getByText('DOMESTIC BREED // ESTIMATE')).toBeDefined();
+    expect(screen.getByText('CLOSEST VISUAL MATCH')).toBeDefined();
+    expect(screen.getByText('DOMESTIC BREED // CLOSEST MATCH')).toBeDefined();
+    expect(screen.getByText('VISUAL SIMILARITY SCORE')).toBeDefined();
     expect(screen.getAllByText(/not pedigree verification/i).length).toBeGreaterThan(0);
     expect(screen.queryByText(/PEDIGREE VERIFIED/i)).toBeNull();
   });
@@ -90,6 +91,24 @@ describe('BreedEstimatePanel Component', () => {
     expect(screen.getByText('BREED NOT ASSERTED')).toBeDefined();
     expect(screen.getByText(/general domestic-cat class/i)).toBeDefined();
     expect(screen.queryByText('Breed Profile')).toBeNull();
+  });
+
+  it('still lists the closest curated classes when no breed is asserted', () => {
+    const handleSelect = vi.fn();
+    render(
+      <BreedEstimatePanel
+        breed={null}
+        candidates={[ragdoll]}
+        note="Breed evidence is below the conservative confidence threshold (Ragdoll at 78%). Breed is not asserted."
+        onSelectBreed={handleSelect}
+      />
+    );
+
+    expect(screen.getByText('CLOSEST CURATED BREED CLASSES')).toBeDefined();
+    expect(screen.getByText('15% visual similarity')).toBeDefined();
+
+    fireEvent.click(screen.getByText('Ragdoll'));
+    expect(handleSelect).toHaveBeenCalledWith('ragdoll');
   });
 
   it('renders nothing when there is no breed evidence at all', () => {

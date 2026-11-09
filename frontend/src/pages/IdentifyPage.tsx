@@ -282,8 +282,8 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
         <p className="text-xs sm:text-sm text-felid-muted max-w-xl mx-auto font-mono leading-relaxed">
           Upload a feline photo to rank it against 40 wild species and the domestic cat. Scores are
           model similarities, not calibrated probabilities. Domestic cats may also receive a separate
-          visual breed estimate — similarity only, never pedigree verification. When evidence is weak
-          or conflicting, Felineye abstains instead of forcing a species.
+          closest visual breed match — similarity only, never pedigree verification. When evidence is
+          weak or conflicting, Felineye abstains instead of forcing a species.
         </p>
       </div>
 
