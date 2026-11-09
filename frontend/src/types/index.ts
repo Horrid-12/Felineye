@@ -323,6 +323,9 @@ export interface DatasetCandidate {
   height?: number;
   bytes?: number;
   sha256?: string;
+  asset_type?: string;
+  training_eligible?: boolean;
+  exclusion_reason?: string | null;
   special_check?: string;
   image_url?: string;
 }

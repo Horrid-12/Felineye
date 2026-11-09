@@ -44,23 +44,31 @@ def _reviews() -> List[Dict[str, Any]]:
     return load_reviews(_root() / "reviews.jsonl")
 
 
-def _allowed_reviewers() -> List[str]:
-    return [r.strip() for r in settings.reviewer_names.split(",") if r.strip()]
+def _secret() -> str:
+    """Live env first (config is read at import; a backend restart is fragile).
+    Reads os.environ at request time so re-exported variables take effect."""
+    import os
+    return os.getenv("REVIEWER_SESSION_SECRET") or settings.reviewer_session_secret
+
+
+def _names() -> List[str]:
+    import os
+    raw = os.getenv("REVIEWER_NAMES") or settings.reviewer_names
+    return [r.strip() for r in raw.split(",") if r.strip()]
 
 
 def _sign(reviewer: str) -> str:
-    return hmac.new(settings.reviewer_session_secret.encode(), reviewer.encode(),
-                    hashlib.sha256).hexdigest()
+    return hmac.new(_secret().encode(), reviewer.encode(), hashlib.sha256).hexdigest()
 
 
 def verify_session(authorization: Optional[str] = Header(None)) -> str:
     """Return the reviewer handle for a valid Bearer session, else 401."""
-    if not settings.reviewer_session_secret:
+    if not _secret():
         raise HTTPException(503, "Reviewer sessions are not configured.")
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(401, "Reviewer session required.")
     token = authorization[7:].strip()
-    for name in _allowed_reviewers():
+    for name in _names():
         if hmac.compare_digest(_sign(name), token):
             return name
     raise HTTPException(401, "Invalid reviewer session.")
@@ -73,15 +81,16 @@ class LoginBody(BaseModel):
 class ReviewBody(BaseModel):
     decision: str = Field(pattern="^(approved|rejected|ambiguous)$")
     reason: str = ""
+    asset_type: Optional[str] = Field(default=None)
     expected_reviews: int = 0
 
 
 @router.post("/login")
 def login(body: LoginBody):
-    if not settings.reviewer_session_secret:
+    if not _secret():
         raise HTTPException(503, "Reviewer sessions are not configured.")
     name = body.reviewer.strip()
-    if name not in _allowed_reviewers():
+    if name not in _names():
         raise HTTPException(403, "Reviewer not on allow-list.")
     return {"reviewer": name, "session": _sign(name)}
 
@@ -119,12 +128,16 @@ def candidates(
             continue
         if search and search.lower() not in (r.get("title", "") + " " + r.get("author", "")).lower():
             continue
+        from ..services.breed_review import training_eligibility
+        eligible, exclusion = training_eligibility(r.get("asset_type", "unknown"), st)
         items.append({
             "id": r["id"], "breed_id": r["breed_id"], "status": st,
             "title": r.get("title"), "author": r.get("author"),
             "license": r.get("license"), "source": r.get("source"),
             "width": r.get("width"), "height": r.get("height"),
             "bytes": r.get("bytes"), "sha256": r.get("sha256"),
+            "asset_type": r.get("asset_type", "unknown"),
+            "training_eligible": eligible, "exclusion_reason": exclusion,
             "special_check": SPECIAL_CHECKS.get(r["breed_id"], ""),
             "image_url": f"/api/dataset-review/candidates/{r['id'][:16]}/image",
         })
@@ -173,8 +186,18 @@ def submit_review(image_ref: str, body: ReviewBody, reviewer: str = Depends(veri
             raise HTTPException(409, "Candidate changed since fetch; reload before deciding.")
         try:
             saved = append_review(_root() / "reviews.jsonl", row["id"], row["breed_id"],
-                                  reviewer, body.decision, body.reason)
+                                  reviewer, body.decision, body.reason, body.asset_type)
         except ValueError as exc:
             raise HTTPException(409, str(exc))
+        # Persist reviewer-set asset type + eligibility on the manifest row.
+        from ..services.breed_review import sync_manifest, training_eligibility
+        if body.asset_type:
+            rows = _manifest()
+            for r in rows:
+                if r["id"] == row["id"]:
+                    r["asset_type"] = body.asset_type
+            (_root() / "manifest.jsonl").write_text(
+                "".join(json.dumps(r, ensure_ascii=True) + "\n" for r in rows), encoding="utf-8")
+        sync_manifest(_root())
         status = image_status(_reviews(), row["id"])
     return {"review": saved, "status": status}

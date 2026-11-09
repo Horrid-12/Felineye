@@ -7,6 +7,29 @@ from pydantic import BaseModel
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def _load_dotenv() -> None:
+    """Load backend/.env (manual parse; no new dependency).
+
+    Precedence: existing process environment wins; .env fills the rest.
+    Tolerates `KEY = value`, quotes, comments. Best-effort only.
+    """
+    env_path = BASE_DIR / ".env"
+    if not env_path.exists():
+        return
+    for line in env_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+_load_dotenv()
+
+
 class Settings(BaseModel):
     environment: str = os.getenv("ENVIRONMENT", "development")
     host: str = os.getenv("HOST", "127.0.0.1")

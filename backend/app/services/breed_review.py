@@ -16,6 +16,14 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 DECISIONS = ("approved", "rejected", "ambiguous")
+# Re-exported from breed_dataset for a single vocabulary.
+ASSET_TYPES = (
+    "animal_photograph", "historical_photograph", "scientific_illustration",
+    "book_illustration", "painting_or_artwork", "sculpture_or_artefact",
+    "diagram_or_infographic", "ai_generated", "unknown",
+)
+TRAINING_ELIGIBLE_ASSET_TYPES = ("animal_photograph", "historical_photograph")
+EXCLUSION_REASON_NON_PHOTOGRAPHIC = "non_photographic_asset"
 # Per-breed reviewer prompts (special checks).
 SPECIAL_CHECKS = {
     "manx": "TAIL MUST BE VISIBLE (rump/tail). Tail-invisible = ambiguous, never approved.",
@@ -33,13 +41,15 @@ def load_reviews(path: Path) -> List[Dict[str, Any]]:
 
 
 def append_review(path: Path, image_id: str, breed_id: str, reviewer: str,
-                  decision: str, reason: str = "") -> Dict[str, Any]:
+                  decision: str, reason: str = "", asset_type: str | None = None) -> Dict[str, Any]:
     """Record one reviewer's decision. Enforces: valid decision, non-empty reviewer,
     no duplicate reviewer per image, reason required unless approved."""
     if decision not in DECISIONS:
         raise ValueError(f"invalid decision {decision!r}")
     if not reviewer.strip():
         raise ValueError("reviewer must be non-empty")
+    if asset_type is not None and asset_type not in ASSET_TYPES:
+        raise ValueError(f"invalid asset_type {asset_type!r}")
     for r in load_reviews(path):
         if r["image_id"] == image_id and r["reviewer"].strip().lower() == reviewer.strip().lower():
             raise ValueError(f"duplicate review by {reviewer} for {image_id}")
@@ -47,6 +57,7 @@ def append_review(path: Path, image_id: str, breed_id: str, reviewer: str,
         raise ValueError(f"reason required for {decision}")
     row = {"image_id": image_id, "breed_id": breed_id, "reviewer": reviewer.strip(),
            "decision": decision, "reason": reason.strip(),
+           "asset_type": asset_type,
            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as fh:
@@ -72,6 +83,30 @@ def image_status(reviews: List[Dict[str, Any]], image_id: str) -> str:
     return "pending"
 
 
+def training_eligibility(asset_type: str, review_status: str) -> tuple[bool, str | None]:
+    """Training only needs verified photographic assets. Unknown stays
+    unverified; non-photographic types keep metadata with an exclusion reason."""
+    asset_type = (asset_type or "unknown").strip().lower()
+    if asset_type not in ASSET_TYPES:
+        asset_type = "unknown"
+    if asset_type not in TRAINING_ELIGIBLE_ASSET_TYPES:
+        return False, EXCLUSION_REASON_NON_PHOTOGRAPHIC
+    if review_status != "verified":
+        return False, "not_yet_verified"
+    return True, None
+
+
+def training_export_rows(rows: List[Dict[str, Any]], reviews: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Rows eligible for a training export. Excluded assets never appear."""
+    out = []
+    for r in rows:
+        st = image_status(reviews, r["id"])
+        eligible, _ = training_eligibility(r.get("asset_type", "unknown"), st)
+        if eligible:
+            out.append(r)
+    return out
+
+
 def sync_manifest(dataset_root: Path) -> int:
     """Rewrite manifest rows' status fields from reviews.jsonl. Returns verified count.
 
@@ -86,6 +121,13 @@ def sync_manifest(dataset_root: Path) -> int:
         r["review_status"] = st
         r["label_confidence"] = "verified" if st == "verified" else "unverified"
         r["reviewers"] = sorted({x["reviewer"] for x in reviews if x["image_id"] == r["id"]})
+        asset_type = (r.get("asset_type") or "unknown").strip().lower()
+        if asset_type not in ASSET_TYPES:
+            asset_type = "unknown"
+        r["asset_type"] = asset_type
+        eligible, reason = training_eligibility(asset_type, st)
+        r["training_eligible"] = eligible
+        r["exclusion_reason"] = reason
         if st == "verified":
             verified += 1
     tmp = dataset_root / "manifest.jsonl.tmp"

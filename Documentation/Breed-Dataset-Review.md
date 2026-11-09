@@ -50,6 +50,14 @@ Labels are never changed; candidate images stay under `images/candidates/`.
 `sync` rewrites manifest `review_status`/`label_confidence`/`reviewers` only —
 `split` is never touched here, so nothing reaches train/val/test from review.
 
+## Asset types
+
+Fields: `asset_type` (9 values incl. `unknown`), `training_eligible`, `exclusion_reason` (`non_photographic_asset` | `not_yet_verified`). Only `animal_photograph` + `historical_photograph` meeting two-review verification enter a training export (`training_export_rows` filters). Collector guesses conservatively from titles (real photos stay `unknown`); reviewers set the type manually via the workspace select. Pilot audit (125): `unknown` ×120, `diagram_or_infographic` ×2, `book_illustration` ×2, `painting_or_artwork` ×1 — the 5 non-photographic rows are **retained with metadata** for a historical/cultural archive, never deleted, never trained on.
+
+## Backend
+
+`POST /api/dataset-review/candidates/{id}/review` accepts `asset_type` and persists it on the manifest row (synced immediately).
+
 ## Reports
 
 ```powershell

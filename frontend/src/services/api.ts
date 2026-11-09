@@ -198,7 +198,7 @@ export const api = {
   },
 
   async submitDatasetReview(session: string, id: string, body: {
-    decision: 'approved' | 'rejected' | 'ambiguous'; reason?: string; expected_reviews: number;
+    decision: 'approved' | 'rejected' | 'ambiguous'; reason?: string; asset_type?: string; expected_reviews: number;
   }): Promise<{ review: DatasetReview; status: string }> {
     const res = await fetch(`${API_BASE}/dataset-review/candidates/${encodeURIComponent(id)}/review`, {
       method: 'POST',

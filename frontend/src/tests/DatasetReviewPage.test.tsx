@@ -29,6 +29,22 @@ it('login unlocks dashboard with stats and breed filter', async () => {
   expect(api.datasetLogin).toHaveBeenCalledWith('reviewer-a');
 });
 
+it('image loads through an authenticated fetch (not a bare img src)', async () => {
+  const blobUrl: string[] = [];
+  vi.stubGlobal('URL', { ...URL, createObjectURL: vi.fn((b: Blob) => { const u = 'blob:mock'; blobUrl.push(u); return u; }), revokeObjectURL: vi.fn() });
+  const fetchSpy = vi.spyOn(window, 'fetch').mockResolvedValue(new Response(new Blob(['x']), { status: 200 }) as any);
+  render(<DatasetReviewPage />);
+  await act(async () => { fireEvent.change(screen.getByTestId('reviewer-input'), { target: { value: 'reviewer-a' } }); });
+  await act(async () => { fireEvent.click(screen.getByText('Sign in')); });
+  await act(async () => { fireEvent.click(screen.getByText('Review workspace')); });
+  const img = await screen.findByAltText('File:siamese 1');
+  expect((img as HTMLImageElement).src).toBe('blob:mock');
+  expect(fetchSpy).toHaveBeenCalledWith(expect.stringContaining('/api/dataset-review/candidates/'), expect.objectContaining({
+    headers: { Authorization: 'Bearer sess' },
+  }));
+  vi.unstubAllGlobals();
+});
+
 it('review workspace navigates and submits with keyboard + button', async () => {
   render(<DatasetReviewPage />);
   await act(async () => { fireEvent.change(screen.getByTestId('reviewer-input'), { target: { value: 'reviewer-a' } }); });
