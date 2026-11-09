@@ -174,7 +174,9 @@ working and `breed_note` explains that the breed could not be estimated.
    plus special handling for lynx species and domestic-vs-small-wildcat
    conflicts.
 7. **Closest breed match (separate, optional)** — only when the accepted status
-   is `identified_domestic_cat`. The dedicated breed classifier scores 48 classes;
+   is `identified_domestic_cat`. The dedicated breed classifier scores 48 classes
+   with test-time augmentation (`BREED_TTA_ENABLED`): probabilities are averaged
+   over the full image, two centre crops, and a flipped copy by averaging logits.
    `decide_breed()` presents a closest visual match only if the top class is a
    curated breed, clears the confidence floor, and is clearly separated from the
    next class. When it does not clear the floor, the top curated classes are still
@@ -193,8 +195,9 @@ Configured in `backend/app/config.py` and overridable by environment variables:
 | `BIOCLIP_MIN_DOMESTIC_SIMILARITY` | `0.30` | Minimum similarity for the domestic cat |
 | `BIOCLIP_MIN_DOMESTIC_MARGIN` | `0.015` | Minimum lead for the domestic cat |
 | `FELINE_MARGIN_THRESHOLD` | `0.04` | BioCLIP cat-vs-non-cat prompt margin |
-| `BREED_MIN_CONFIDENCE` | `0.90` | Minimum top breed-classifier softmax score |
+| `BREED_MIN_CONFIDENCE` | `0.80` | Minimum top breed-classifier softmax score (TTA-averaged) |
 | `BREED_MIN_MARGIN` | `0.10` | Minimum lead over the next breed class |
+| `BREED_TTA_ENABLED` | `true` | Average breed scores over full image + centre crops + flipped copy |
 | `QUALITY_BLUR_THRESHOLD` | `12.0` | Laplacian variance floor |
 | `QUALITY_BRIGHTNESS_MIN/MAX` | `18 / 238` | Mean luminance bounds |
 | `QUALITY_CONTRAST_MIN` | `8.0` | Grayscale standard-deviation floor |
@@ -209,9 +212,13 @@ The breed thresholds are separate and deliberately conservative. The source
 model's softmax scores are not calibrated, and its known confusions include
 Maine Coon ↔ Norwegian Forest and Ragdoll/Birman/Siamese. Real-photo validation
 (86 audited Wikimedia Commons photos) showed that a 0.45 floor asserted too many
-wrong close-breed matches: 49 asserted, 11 wrong (77.6% precision). A 0.90 floor
-with the same 0.10 margin asserted 29, with 3 wrong (89.7% precision) and a 33.7%
-fire rate. Below the floor the closest curated classes are still listed, so the
+wrong close-breed matches: 49 asserted, 11 wrong (77.6% precision). With
+test-time augmentation (top-1 53.5%, top-3 75.6%), a 0.80 floor with the same
+0.10 margin asserted 32, with 4 wrong (87.5% precision) and a 37.2% fire rate;
+at 0.90 the same scores are 18 asserted, 0 wrong. The shipped 0.80 floor accepts
+slightly lower sample precision for coverage — with 86 images that gap is about
+one image — while keeping mid-confidence breeds (e.g. Ragdoll at ~85% with TTA)
+assertable. Below the floor the closest curated classes are still listed, so the
 result stays useful without overclaiming. See `Documentation/Breed-Validation.md`.
 
 ## 5. Response contract
@@ -285,13 +292,13 @@ catalogue image. The two accepted fixtures live in `backend/tests/fixtures/`:
 | Fixture | Species status | Closest breed match | Score | XP |
 | --- | --- | --- | --- | --- |
 | `british-shorthair.jpg` | `identified_domestic_cat` | British Shorthair (asserted) | 97% | 50 |
-| `ragdoll.jpg` | `identified_domestic_cat` | Ragdoll listed as closest match, **not asserted** | 78% | 50 |
+| `ragdoll.jpg` | `identified_domestic_cat` | Ragdoll (asserted with TTA) | 85% | 50 |
 | `domestic-shorthair.jpg` (generic cat) | abstained or domestic | **not asserted** | — | 0 or 50 |
 | `tiger.jpg` | `identified_wild_species` | **not asserted** | — | 350 |
 
-The Ragdoll fixture is the regression for the 0.90 floor: it is a plausible
-match at 78%, so it stays visible in `breed_candidates` but must not be
-presented as the breed.
+The Ragdoll fixture is the regression for test-time augmentation: it scores
+~78% single-view but ~85% once crop/flip views are averaged, clearing the 0.80
+floor while the species result and XP stay unchanged.
 
 Manual probes during implementation also checked that:
 
@@ -354,11 +361,11 @@ and breed never changing XP. Mocked tests prove pipeline behaviour; they do
 - **Lynx genus** — the pipeline refuses to choose among Eurasian, Canada,
   Iberian, and bobcat when the top two candidates are both lynx.
 - **Domestic breeds** — a breed is never asserted from the species ranker. The
-  separate breed classifier can present a closest visual match only above 0.90
-  confidence and 0.10 margin; otherwise the breed stays undetermined while the
-  top curated classes remain visible as candidates. It is a visual match, not a
-  pedigree claim. Known confusions include Maine Coon ↔ Norwegian Forest and
-  Ragdoll/Birman/Siamese.
+  separate breed classifier (with test-time augmentation) can present a closest
+  visual match only above 0.80 confidence and 0.10 margin; otherwise the breed
+  stays undetermined while the top curated classes remain visible as candidates.
+  It is a visual match, not a pedigree claim. Known confusions include Maine
+  Coon ↔ Norwegian Forest and Ragdoll/Birman/Siamese.
 - **Generic coat classes** — the breed model has explicit `Calico`, `Tabby`,
   `Tuxedo`, `Tortoiseshell`, `Domestic Short/Long/Medium Hair`, and similar
   classes. These are abstention classes, never mapped to the nearest breed.
@@ -378,7 +385,7 @@ and breed never changing XP. Mocked tests prove pipeline behaviour; they do
 | `model_unavailable` | Run `setup_identification_models.py --check`; confirm paths in `backend/app/config.py` or the `BIOCLIP_*`/`IMAGENET_*` env vars. |
 | `provider_kind: "imagenet"` under `auto` | BioCLIP ONNX or embeddings are missing. Re-run the BioCLIP export. |
 | `supports_domestic_breed: false` | Breed ONNX or label map is missing, or `BREED_CLASSIFIER_ENABLED=false`. Run `setup_identification_models.py --breed --check`. |
-| Domestic cat has no `breed` but a `breed_note` | Expected when the top class is generic/unmapped, confidence is below 0.90, or the margin is below 0.10. Inspect `breed_candidates` for the closest curated classes. |
+| Domestic cat has no `breed` but a `breed_note` | Expected when the top class is generic/unmapped, confidence is below 0.80, or the margin is below 0.10. Inspect `breed_candidates` for the closest curated classes. |
 | Every image is `unable_to_identify` | Check the gate is installed; inspect `feline_gate` and `quality` in the response. |
 | `is_mock: true` | `CLASSIFIER_PROVIDER=dev_mock` is set. Unset it for real inference. |
 | Health says `degraded` | No real provider is available. This is the intended honest state. |

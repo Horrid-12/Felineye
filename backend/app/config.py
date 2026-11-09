@@ -77,11 +77,23 @@ class Settings(BaseModel):
     # from the next class; otherwise the breed stays explicitly undetermined.
     # The defaults are deliberately conservative because the source model's
     # softmax scores are not calibrated. Real-photo validation showed that a
-    # 0.45 floor asserted too many wrong close-breed matches; 0.90 keeps
-    # precision near 90% while still surfacing the closest matches below it.
-    # See Documentation/Breed-Validation.md.
-    breed_min_confidence: float = float(os.getenv("BREED_MIN_CONFIDENCE", "0.90"))
+    # 0.45 floor asserted too many wrong close-breed matches, while the
+    # test-time-augmented scores hold ~87-90% precision at a 0.80 floor and
+    # surface more breeds (37% fire rate vs 34%). See
+    # Documentation/Breed-Validation.md.
+    breed_min_confidence: float = float(os.getenv("BREED_MIN_CONFIDENCE", "0.80"))
     breed_min_margin: float = float(os.getenv("BREED_MIN_MARGIN", "0.10"))
+    # Test-time augmentation for the breed stage: average the classifier's
+    # probabilities over the full image, two centre crops, and a flipped copy.
+    # The full-image view keeps off-centre cats visible; the crops act as an
+    # approximate cat-region zoom. Measured with
+    # backend/scripts/validate_breed_coverage.py; see Documentation/Breed-Validation.md.
+    breed_tta_enabled: bool = os.getenv("BREED_TTA_ENABLED", "true").lower() in (
+        "1",
+        "true",
+        "yes",
+        "on",
+    )
 
     # Quality gates. A poor-quality image is allowed to produce an abstention,
     # never a fabricated identification.

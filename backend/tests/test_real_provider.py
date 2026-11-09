@@ -222,23 +222,23 @@ def test_real_british_shorthair_receives_a_breed_estimate(
 
 
 @requires_breed_model
-def test_real_ragdoll_lists_closest_breed_without_asserting_it(
+def test_real_ragdoll_receives_a_breed_match_with_tta(
     real_breed_pipeline: IdentificationPipeline,
 ):
-    """The real Ragdoll fixture scores ~78%, below the 0.90 floor.
+    """Test-time augmentation lifts the Ragdoll fixture across the 0.80 floor.
 
-    It must remain visible as a closest-match candidate without being presented
-    as the breed, and the domestic-cat result and XP must be unaffected.
+    Single-view scoring put this fixture at ~78%; averaged crop/flip views put
+    it at ~85%, so the shipped pipeline asserts it as the closest visual match
+    while the species result and XP stay unchanged.
     """
 
     result = _identify(real_breed_pipeline, "ragdoll")
 
     assert result.status == IdentificationStatus.IDENTIFIED_DOMESTIC_CAT
-    assert result.breed is None
-    assert result.breed_candidates
-    assert result.breed_candidates[0].breed_id == "ragdoll"
-    assert result.breed_candidates[0].score_percentage >= 45
-    assert "threshold" in (result.breed_note or "").lower()
+    assert result.breed is not None
+    assert result.breed.breed_id == "ragdoll"
+    assert result.breed.score_percentage >= 80
+    assert "not pedigree verification" in (result.breed_note or "").lower()
     assert result.is_discovery_eligible is True
     assert result.xp_reward == 50
 

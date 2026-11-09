@@ -63,9 +63,12 @@ class BreedClassifier:
     model_license = "Apache-2.0"
     score_semantics = "breed_classifier_softmax"
 
-    def __init__(self, model_path: str, labels_path: str):
+    def __init__(
+        self, model_path: str, labels_path: str, *, tta_enabled: bool = True
+    ):
         self.model_path = Path(model_path)
         self.labels_path = Path(labels_path)
+        self.tta_enabled = tta_enabled
         self.session = None
         self.input_name = ""
         self.output_name = ""
@@ -142,6 +145,7 @@ class BreedClassifier:
             "version": self.model_version,
             "license": self.model_license,
             "available": self.is_available,
+            "tta_enabled": self.tta_enabled,
             "path": str(self.model_path),
             "labels_path": str(self.labels_path),
             "error": self._load_error,
@@ -161,17 +165,59 @@ class BreedClassifier:
         arr = (arr - _MEAN) / _STD
         return np.transpose(arr, (2, 0, 1))[None, ...]
 
+    @staticmethod
+    def _center_crop(image: Image.Image, fraction: float) -> Image.Image:
+        width, height = image.size
+        side = max(8, int(round(min(width, height) * fraction)))
+        left = (width - side) // 2
+        top = (height - side) // 2
+        return image.crop((left, top, left + side, top + side))
+
+    @classmethod
+    def _views(cls, image: Image.Image, *, tta_enabled: bool) -> List[Any]:
+        """Return ``(name, view)`` pairs for test-time augmentation.
+
+        The full-image view is always present so off-centre cats stay visible;
+        the centre crops approximate a cat-region zoom and the flipped copy
+        reduces left/right bias.
+        """
+        views = [("full", image)]
+        if tta_enabled:
+            views.append(("center_075", cls._center_crop(image, 0.75)))
+            views.append(("center_050", cls._center_crop(image, 0.50)))
+            views.append(("flip_full", image.transpose(Image.Transpose.FLIP_LEFT_RIGHT)))
+        return views
+
+    def _logits(self, image: Image.Image) -> np.ndarray:
+        logits = self.session.run(
+            [self.output_name], {self.input_name: self._preprocess(image)}
+        )[0][0]
+        return np.asarray(logits, dtype=np.float64)
+
+    @staticmethod
+    def _softmax(logits: np.ndarray) -> np.ndarray:
+        shifted = logits - logits.max()
+        probabilities = np.exp(shifted)
+        return probabilities / probabilities.sum()
+
     def predict_sync(self, image: Image.Image) -> BreedInferenceResult:
         if not self.is_available:
             raise RuntimeError(self._load_error or "Breed classifier is unavailable")
 
-        logits = self.session.run(
-            [self.output_name], {self.input_name: self._preprocess(image)}
-        )[0][0]
-        logits = np.asarray(logits, dtype=np.float64)
-        shifted = logits - logits.max()
-        probabilities = np.exp(shifted)
-        probabilities = probabilities / probabilities.sum()
+        views = self._views(image, tta_enabled=self.tta_enabled)
+        # Average the logits (geometric mean of the per-view probabilities):
+        # averaging probabilities directly pulls confident scores toward the
+        # mean and suppresses the assertion rate, while logit averaging keeps
+        # the distribution sharp when the views agree.
+        per_view_logits: List[np.ndarray] = [
+            self._logits(view) for _name, view in views
+        ]
+        if len(per_view_logits) > 1:
+            probabilities = self._softmax(
+                np.mean(per_view_logits, axis=0)
+            )
+        else:
+            probabilities = self._softmax(per_view_logits[0])
 
         scores = [
             BreedScore(
@@ -184,6 +230,16 @@ class BreedClassifier:
         ]
         scores.sort(key=lambda item: item.score, reverse=True)
 
+        def _view_top(index: int) -> Dict[str, Any]:
+            probs = self._softmax(per_view_logits[index])
+            top_index = int(np.argmax(probs))
+            label = self.labels[top_index]["label"] if self.labels else None
+            return {
+                "view": views[index][0],
+                "label": label,
+                "score": round(float(probs[top_index]), 6),
+            }
+
         return BreedInferenceResult(
             scores=scores,
             model_name=self.model_name,
@@ -193,6 +249,9 @@ class BreedClassifier:
             diagnostics={
                 "classes": len(self.labels),
                 "supported_breeds": len(self.supported_breeds),
+                "tta_enabled": self.tta_enabled,
+                "tta_views": [name for name, _view in views],
+                "views_top": [_view_top(i) for i in range(len(views))],
                 "top_label": scores[0].label if scores else None,
                 "top_kind": scores[0].kind if scores else None,
             },

@@ -252,7 +252,11 @@ class IdentificationPipeline:
         if self.is_mock_active or not self.is_ready:
             return
 
-        breed = BreedClassifier(settings.breed_model_path, settings.breed_labels_path)
+        breed = BreedClassifier(
+            settings.breed_model_path,
+            settings.breed_labels_path,
+            tta_enabled=settings.breed_tta_enabled,
+        )
         if breed.is_available:
             self._breed_classifier = breed
         else:

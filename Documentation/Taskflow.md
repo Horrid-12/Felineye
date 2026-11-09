@@ -4,7 +4,7 @@
 >
 > **Status:** Alpha v0.1.0. Real BioCLIP + ImageNet identification is integrated with conservative abstention, and discovery rewards are server-authoritative and idempotent. Domestic cats also receive an optional closest visual breed match from a separate ViT classifier; it never changes the species result or XP, and its thresholds were set from real-photo validation. Weights are gitignored and reproduced with `backend/scripts/setup_identification_models.py`.
 >
-> **Last verified:** 2026-11-09 - 77 backend tests and 36 frontend tests passing, frontend build passing. Domestic cat gate cooperation, Felis catus promotion, IdentifyPage integration tests, sanitized 500 responses, per-key observation cache TTL, coordinate safety regression tests, and Footer reinstatement all verified green. See `Documentation/Breed-Validation.md` for the real-photo coverage report.
+> **Last verified:** 2026-11-09 - 78 backend tests and 36 frontend tests passing, frontend build passing. Domestic cat gate cooperation, Felis catus promotion, IdentifyPage integration tests, breed test-time augmentation, sanitized 500 responses, per-key observation cache TTL, coordinate safety regression tests, and Footer reinstatement all verified green. See `Documentation/Breed-Validation.md` for the real-photo coverage report.
 
 ## How to Use This File
 
@@ -103,8 +103,9 @@
 - [X] Enforce category-aware identification: hybrids are never returned, and breed-labelled species candidates are downgraded to the domestic cat species. A breed estimate is produced only by the separate breed stage.
 - [X] Add a dedicated domestic-cat breed estimator (`dima806/cat_breed_image_detection`, ViT-B/16, Apache-2.0) that runs only after `identified_domestic_cat`, reports `breed`/`breed_candidates`/`breed_note`, and never changes the species status or XP.
 - [X] Map all 48 breed-model classes onto the curated catalogue; keep generic coat/type classes and non-catalogue breeds as explicit abstention classes instead of nearest-neighbour fallbacks.
-- [X] Add conservative breed thresholds (`BREED_MIN_CONFIDENCE=0.90`, `BREED_MIN_MARGIN=0.10`) and abstain on weak confidence, close margins, generic classes, or unmapped breeds.
-- [X] Add a reproducible real-photo coverage harness (`backend/scripts/validate_breed_coverage.py`), audit the sample, and set the 0.90 confidence floor from the measured precision/fire-rate trade-off. Report: `Documentation/Breed-Validation.md`.
+- [X] Add conservative breed thresholds (`BREED_MIN_CONFIDENCE=0.80`, `BREED_MIN_MARGIN=0.10`) and abstain on weak confidence, close margins, generic classes, or unmapped breeds.
+- [X] Add a reproducible real-photo coverage harness (`backend/scripts/validate_breed_coverage.py`), audit the sample, and set the confidence floor from the measured precision/fire-rate trade-off. Report: `Documentation/Breed-Validation.md`.
+- [X] Add breed-stage test-time augmentation (full image + centre crops + flipped copy, logits averaged): top-1 53.5%, top-3 75.6%, and Ragdoll lifts from ~78% to ~85% single-shot, so the 0.80 floor asserts 32/86 at 87.5% precision (18/18 at 0.90).
 - [X] Add structured 4xx errors and a global safe 500 handler.
 - [X] Cover validation, status handling, breed abstention, and API contracts with tests, including the named regression cases.
 - [X] Resolve gate disagreement and small-wildcat prompt ambiguity for domestic cats: ImageNet gate cooperates with BioCLIP to resolve borderline zero-shot margins and elevates Felis catus when a domestic-cat class is detected, reducing domestic cat abstentions from 46.2% to 17.2% with zero regressions on non-felines.

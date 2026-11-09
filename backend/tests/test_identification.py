@@ -10,6 +10,7 @@ from backend.app.main import app
 from backend.app.models.identification import IdentificationStatus
 from backend.app.services.identification.base import RawInferenceResult, RawPrediction
 from backend.app.services.identification.breed_classifier import (
+    BreedClassifier,
     BreedInferenceResult,
     BreedScore,
 )
@@ -365,6 +366,24 @@ def _breed(label, score, breed_id, kind="breed"):
     return BreedScore(label=label, score=score, breed_id=breed_id, kind=kind)
 
 
+def test_breed_tta_views_include_full_image_and_centre_crops():
+    image = _textured_image(size=(200, 160))
+
+    views = BreedClassifier._views(image, tta_enabled=True)
+    names = [name for name, _view in views]
+    assert names == ["full", "center_075", "center_050", "flip_full"]
+    size_by_name = {name: view.size for name, view in views}
+    assert size_by_name["full"] == (200, 160)
+    # Centre crops are square, scaled from the shortest side.
+    assert size_by_name["center_075"] == (120, 120)
+    assert size_by_name["center_050"] == (80, 80)
+    assert size_by_name["flip_full"] == (200, 160)
+
+    # Without TTA only the full-image view is scored.
+    views_off = BreedClassifier._views(image, tta_enabled=False)
+    assert [name for name, _view in views_off] == ["full"]
+
+
 def test_confident_catalogue_breed_is_reported_as_a_closest_match():
     result = _run(
         DOMESTIC_PREDICTIONS,
@@ -446,12 +465,11 @@ def test_close_breed_margin_is_not_asserted():
     assert "too close" in (result.breed_note or "").lower()
 
 
-def test_breed_below_090_confidence_is_listed_but_not_asserted():
-    """The 0.90 floor was chosen from real-photo validation.
+def test_breed_below_080_confidence_is_listed_but_not_asserted():
+    """The 0.80 floor (with TTA) was chosen from real-photo validation.
 
-    A 0.78 Ragdoll is the exact kind of plausible-but-unproven match the old
-    0.45 floor would have asserted; it must stay visible as a candidate without
-    being presented as the breed.
+    A 0.78 Ragdoll is below the shipped floor; it must stay visible as a
+    candidate without being presented as the breed.
     """
 
     result = _run(

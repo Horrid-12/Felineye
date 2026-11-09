@@ -237,9 +237,10 @@ export const MethodologyPage: React.FC = () => {
             <li>
               Breed matches are visual only. The dedicated classifier is not calibrated, and it
               confuses close breed pairs (Maine Coon / Norwegian Forest, Ragdoll / Birman / Siamese).
-              Real-photo validation put top-1 accuracy near 52% and the precision of asserted matches
-              near 90% at the current floor; weak, generic, or non-catalogue evidence abstains instead
-              of forcing a breed, and the closest curated classes are listed for comparison.
+              It averages crop/flip views of the photo (test-time augmentation); real-photo validation
+              put top-1 accuracy near 53%, top-3 near 76%, and the precision of asserted matches near
+              88% at the current floor. Weak, generic, or non-catalogue evidence abstains instead of
+              forcing a breed, and the closest curated classes are listed for comparison.
             </li>
             <li>
               Hybrids are excluded from the model vocabulary and can never be returned.
