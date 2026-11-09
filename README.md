@@ -1,7 +1,7 @@
 # Felineye 
 ### AI-Powered Feline Identification & Wildlife Discovery Platform
 
-[![Status: Alpha](https://img.shields.io/badge/Status-Alpha%20(v0.1.0)-f472b6.svg)](https://github.com/Horrid-12/Felineye)
+[![Status: Alpha](https://img.shields.io/badge/Status-Alpha-f472b6.svg)](https://github.com/Horrid-12/Felineye)
 [![License: MIT](https://img.shields.io/badge/License-MIT-pink.svg)](https://opensource.org/licenses/MIT)
 [![Backend: FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
 [![Frontend: React-18](https://img.shields.io/badge/Frontend-React%2018%20+%20Vite-61DAFB.svg)](https://vitejs.dev/)
@@ -9,7 +9,7 @@
 
 > [!IMPORTANT]
 > **Alpha Release Notice:**
-> Felineye is currently in **Alpha** (v0.1.0-alpha). Features, neural inference models, and taxonomic mappings are in active development. Identification runs a local BioCLIP + ImageNet stack and reports visual-similarity estimates — **not calibrated probabilities**. Weak or conflicting evidence produces an explicit abstention rather than a forced species.
+> Felineye is currently in **Alpha**. Features, neural inference models, and taxonomic mappings are in active development. Identification runs a local BioCLIP + ImageNet stack and reports visual-similarity estimates — **not calibrated probabilities**. Weak or conflicting evidence produces an explicit abstention rather than a forced species.
 
 > [!NOTE]
 > **Original Concept & Attribution:**
@@ -18,6 +18,8 @@
 ---
 
 **Felineye** is an immersive wildlife discovery platform and AI field guide dedicated to the entire cat family (**Felidae**). Spanning 40 wild species plus the domestic cat (*Felis catus*), 22 CFA-verified breeds, and 4 informational hybrids, the application pairs local computer vision with honest uncertainty reporting, ethical wildlife conservation protocols, and a gamified naturalist expedition journal.
+
+[![Architecture diagram of Felineye](https://gitdiagram.com/horrid-12/felineye/diagram.png)](https://gitdiagram.com/horrid-12/felineye?utm_source=readme&utm_medium=picture)
 
 ---
 
@@ -28,7 +30,7 @@
    - Pillow-based MIME, file size (up to 15MB), format, and EXIF sanitization.
    - Local inference: BioCLIP ViT-B/16 ranks 41 species prompts, and an independent MobileNetV2-12 ImageNet gate checks feline content.
    - Ranked candidate similarities with explicit score semantics and model rationales.
-   - **Domestic Breed Estimate**: accepted domestic cats may also receive a separate visual breed estimate from a dedicated ViT classifier. It is labelled as similarity, not pedigree verification, and never changes species status or XP.
+   - **Closest Breed Match**: accepted domestic cats may also receive a separate closest visual breed match from a dedicated ViT classifier. It is labelled as similarity, not pedigree verification, never changes species status or XP, and lists the closest curated classes when the evidence does not clear the confidence floor. See [Breed Validation](Documentation/Breed-Validation.md).
    - **Honest Abstention**: Weak margins, degraded images, gate disagreement, generic coat classes, or breed evidence below threshold all produce an explicit abstention instead of a guess. The domestic cat stays *Felis catus*.
    - **Out-of-Domain Detection**: Non-feline images (dogs, reptiles, landscapes, vehicles) are rejected without returning deceptive predictions.
    - **No Silent Mock Fallback**: If the real weights are missing, the API returns `model_unavailable`. The simulation provider requires an explicit `CLASSIFIER_PROVIDER=dev_mock` and cannot award XP.
@@ -39,7 +41,7 @@
 
 3. **Curated Felidae Species Atlas**:
    - 40 wild felids plus the domestic cat cataloged with peer-reviewed data based on Kitchener et al. (IUCN Cat Specialist Group), alongside 22 CFA breeds and 4 hybrids.
-   - Filterable by subfamily (*Pantherinae* / *Felinae*), ecology (wild vs. domestic), and IUCN Red List status (CR, EN, VU, NT, LC, Domesticated).
+   - Filterable by subfamily (*Pantherinae* / *Felinae*), category (*wild_species* / *domestic_species*), ecology (wild vs. domestic), habitat, and IUCN Red List status (CR, EN, VU, NT, LC, DOMESTIC), with pagination.
    - Detailed species profiles with morphometrics, size, weight, diet, behavior, range, habitats, and links to iNaturalist and GBIF.
 
 4. **Expedition Journal & Gamification**:
@@ -115,8 +117,10 @@ cd backend
 .venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
+> Paths above (`backend\.venv\Scripts\...`) are Windows PowerShell. On Linux/macOS use `backend/.venv/bin/python` in their place.
+
 > [!IMPORTANT]
-> **Configuration is read from OS environment variables at import time.** `.env` is **not** loaded automatically (no `python-dotenv`, no `--env-file`), and CORS origins are currently hardcoded. Export variables in your shell or pass uvicorn flags. See `.env.example` for the available names.
+> **Configuration is read from OS environment variables at import time.** `.env` is **not** loaded automatically (no `python-dotenv`, no `--env-file`), and CORS origins are currently hardcoded. Export variables in your shell or pass uvicorn flags. See `backend/.env.example` for the available names.
 
 #### Install the identification weights
 
@@ -125,6 +129,9 @@ The default `CLASSIFIER_PROVIDER=auto` looks for local weights in `backend/model
 ```powershell
 # Independent ImageNet feline gate (downloads ~13 MB)
 backend\.venv\Scripts\python.exe backend\scripts\setup_identification_models.py --imagenet
+
+# BioCLIP species ranker only (needs the .model-export environment below)
+.model-export\Scripts\python.exe backend\scripts\setup_identification_models.py --bioclip
 
 # Full stack: export BioCLIP + text embeddings + the breed classifier (~673 MB).
 # This step needs a temporary environment with torch, open_clip_torch, and transformers.
@@ -179,7 +186,7 @@ Vite is preconfigured to reverse-proxy `/api` requests directly to `http://127.0
 | :--- | :--- | :--- |
 | `GET` | `/api/health` | Service health, active provider, model availability, and indexed species count |
 | `POST` | `/api/identify` | Multipart image upload with validation, feline gating, ranking, and abstention |
-| `GET` | `/api/species` | Search and filter Felidae species (subfamily, lineage, IUCN, wild/domestic) |
+| `GET` | `/api/species` | Search and filter Felidae species (subfamily, lineage, IUCN, wild/domestic, category, habitat, pagination) |
 | `GET` | `/api/species/featured/today` | Daily featured iconic felid species |
 | `GET` | `/api/species/{slug}` | Comprehensive species profile, traits, diet, and similar taxa |
 | `GET` | `/api/breeds` | CFA breed catalogue (never counted as species) |
@@ -263,7 +270,7 @@ Run all tests from the **repository root** (tests import `backend.app.*`):
 ```bash
 backend\.venv\Scripts\python.exe -m pytest backend/tests -q
 ```
-This covers image validation, all identification outcomes, breed acceptance/abstention, taxonomy filters, and API contracts. Eleven additional tests load the **real BioCLIP + ImageNet + breed weights** from `backend/tests/fixtures/`; they skip automatically when the gitignored weights are absent, so run the model setup first to exercise them.
+This covers image validation, all identification outcomes, breed acceptance/abstention, taxonomy filters, and API contracts. Twelve additional tests load the **real BioCLIP + ImageNet + breed weights** from `backend/tests/fixtures/`; they skip automatically when the gitignored weights are absent, so run the model setup first to exercise them.
 
 ### Frontend Tests & Build
 ```bash
@@ -271,16 +278,16 @@ npm test --prefix frontend
 npm run build --prefix frontend      # tsc -b && vite build
 ```
 
-**Verified on 2026-10-28:** 69 backend tests passed (including the 11 real-weight tests), 27 frontend tests passed, and the production build succeeded.
+**Verified on 2026-11-09:** 77 backend tests passed (including the 12 real-weight tests), 36 frontend tests passed, and the production build succeeded.
 
 ---
 
 ##  Project Documentation
 
 - [Taskflow](Documentation/Taskflow.md) — living roadmap with phase status, completed work, and next priorities.
-- [Architecture Decisions](Documentation/Decisions.md) — decision log and the constraints each decision creates.
 - [Identification Model](Documentation/Identification-Model.md) — real model setup, response contract, verification record, and limitations.
-- [Agent Instructions](AGENTS.md) — repo-specific guidance for coding agents.
+- [Breed Validation](Documentation/Breed-Validation.md) — real-photo breed coverage report behind the `BREED_MIN_CONFIDENCE` / `BREED_MIN_MARGIN` thresholds.
+- `Documentation/Decisions.md` and `AGENTS.md` — decision log and repo-specific guidance for coding agents. These files are gitignored and local-only; they are not published to GitHub.
 
 ---
 
