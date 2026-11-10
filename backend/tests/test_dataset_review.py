@@ -91,8 +91,8 @@ def test_stats_filter_pagination(dataset_root):
 
 
 def test_stats_report_single_review_progress(dataset_root):
-    """One recorded review must move *progress* counters even though the
-    verdict stays pending (two-reviewer rule). This is what the dashboard reads."""
+    """One reviewer decides by default, and the progress counters must move
+    immediately (this is what the dashboard reads)."""
     from backend.app.routes import dataset_review
     dataset_review.settings.reviewer_session_secret = SECRET
     dataset_review.settings.reviewer_names = "reviewer-a,reviewer-b"
@@ -101,12 +101,13 @@ def test_stats_report_single_review_progress(dataset_root):
     client.post(f"/api/dataset-review/candidates/{item['id'][:16]}/review", headers=_h(),
                 json={"decision": "approved", "expected_reviews": 0})
     stats = client.get("/api/dataset-review/stats", headers=_h()).json()
+    assert stats["required_reviewers"] == 1
     assert stats["total"] == 3
     assert stats["total_reviewed"] == 1 and stats["total_unreviewed"] == 2
-    assert stats["total_awaiting_second"] == 1 and stats["total_mine"] == 1
-    assert stats["total_verified"] == 0  # single approval is not verification
+    assert stats["total_awaiting_second"] == 0
+    assert stats["total_mine"] == 1 and stats["total_verified"] == 1
     after = client.get("/api/dataset-review/candidates", headers=_h()).json()["items"][0]
-    assert after["status"] == "pending" and after["review_count"] == 1
+    assert after["status"] == "verified" and after["review_count"] == 1
     assert after["my_decision"] == "approved" and after["reviewers"] == [REV]
     mine = client.get("/api/dataset-review/candidates?review_state=mine", headers=_h()).json()
     assert mine["total"] == 1
@@ -114,7 +115,22 @@ def test_stats_report_single_review_progress(dataset_root):
     assert un["total"] == 2
 
 
-def test_two_reviewer_verification_and_duplicate_guard(dataset_root):
+def test_two_reviewer_mode_keeps_rows_pending(dataset_root, monkeypatch):
+    monkeypatch.setenv("REVIEW_APPROVALS_REQUIRED", "2")
+    from backend.app.routes import dataset_review
+    dataset_review.settings.reviewer_session_secret = SECRET
+    dataset_review.settings.reviewer_names = "reviewer-a,reviewer-b"
+    item = client.get("/api/dataset-review/candidates", headers=_h()).json()["items"][0]
+    r = client.post(f"/api/dataset-review/candidates/{item['id'][:16]}/review", headers=_h(),
+                    json={"decision": "approved", "expected_reviews": 0})
+    assert r.status_code == 200 and r.json()["status"] == "pending"
+    stats = client.get("/api/dataset-review/stats", headers=_h()).json()
+    assert stats["required_reviewers"] == 2
+    assert stats["total_awaiting_second"] == 1 and stats["total_verified"] == 0
+
+
+def test_two_reviewer_verification_and_duplicate_guard(dataset_root, monkeypatch):
+    monkeypatch.setenv("REVIEW_APPROVALS_REQUIRED", "2")
     from backend.app.routes import dataset_review
     dataset_review.settings.reviewer_session_secret = SECRET
     dataset_review.settings.reviewer_names = "reviewer-a,reviewer-b"

@@ -353,6 +353,8 @@ export interface DatasetStats {
   total_awaiting_second?: number;
   total_mine?: number;
   reviewer?: string | null;
+  /** Distinct reviewers required for a verdict (1 = single reviewer decides). */
+  required_reviewers?: number;
   per_breed: Record<string, {
     total: number; verified: number; rejected: number; ambiguous: number;
     contested: number; pending: number;

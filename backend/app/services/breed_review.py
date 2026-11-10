@@ -1,21 +1,39 @@
-"""Two-reviewer verification for breed-v1 candidates (Phase 3B).
+"""Reviewer verification for breed-v1 candidates.
 
 Storage: reviews.jsonl (one row per decision) beside manifest.jsonl.
-An image becomes verified only when two DISTINCT reviewers both approve.
-Anything else (reject, ambiguous, disagreement, single approve) stays
-``candidates``/``unverified``/``pending`` — never silently relabelled,
-never moved into train/val/test, never auto-approved.
+``REVIEW_APPROVALS_REQUIRED`` (default 1) sets how many distinct reviewers
+must agree before a verdict is recorded. With the default, one reviewer's
+decision is final; conflicting decisions from different reviewers stay
+``contested``. Nothing is auto-approved, and no review ever changes a split.
 
 Pure stdlib; no production inference imports.
 """
 from __future__ import annotations
 
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any, Dict, List
 
 DECISIONS = ("approved", "rejected", "ambiguous")
+# How many distinct reviewers must agree before a verdict is recorded.
+# 1 = a single reviewer decides (current default); 2 = two-reviewer mode.
+DEFAULT_REQUIRED_REVIEWERS = 1
+MIN_REQUIRED_REVIEWERS = 1
+MAX_REQUIRED_REVIEWERS = 3
+
+
+def required_reviewers() -> int:
+    """Read ``REVIEW_APPROVALS_REQUIRED`` at call time (default 1, clamped 1–3)."""
+    raw = os.getenv("REVIEW_APPROVALS_REQUIRED", str(DEFAULT_REQUIRED_REVIEWERS)).strip()
+    try:
+        value = int(raw)
+    except ValueError:
+        value = DEFAULT_REQUIRED_REVIEWERS
+    return max(MIN_REQUIRED_REVIEWERS, min(MAX_REQUIRED_REVIEWERS, value))
+
+
 # Re-exported from breed_dataset for a single vocabulary.
 ASSET_TYPES = (
     "animal_photograph", "historical_photograph", "scientific_illustration",
@@ -65,22 +83,27 @@ def append_review(path: Path, image_id: str, breed_id: str, reviewer: str,
     return row
 
 
-def image_status(reviews: List[Dict[str, Any]], image_id: str) -> str:
-    """verified | rejected | ambiguous | contested | pending (disagreement never resolves alone)."""
+def image_status(reviews: List[Dict[str, Any]], image_id: str,
+                 required: int | None = None) -> str:
+    """verified | rejected | ambiguous | contested | pending.
+
+    A verdict needs ``required`` distinct reviewers agreeing (default from
+    ``REVIEW_APPROVALS_REQUIRED``, 1 = single reviewer decides). Conflicting
+    decisions stay ``contested`` and are never auto-resolved.
+    """
+    need = required if required is not None else required_reviewers()
     mine = [r for r in reviews if r["image_id"] == image_id]
     decisions = {r["decision"] for r in mine}
     reviewers = {r["reviewer"].strip().lower() for r in mine}
-    if len(reviewers) >= 2 and len(decisions) == 1:
-        if "approved" in decisions:
-            return "verified"
-        if "rejected" in decisions:
-            return "rejected"
-        return "ambiguous"
     if len(decisions) > 1:
         return "contested"
-    if len(reviewers) >= 2:
-        return next(iter(decisions))  # both same non-verified decision handled above
-    return "pending"
+    if not decisions:
+        return "pending"
+    if len(reviewers) < need:
+        return "pending"
+    verdict = next(iter(decisions))
+    return {"approved": "verified", "rejected": "rejected",
+            "ambiguous": "ambiguous"}.get(verdict, "pending")
 
 
 def review_progress(reviews: List[Dict[str, Any]], image_id: str,
@@ -195,6 +218,7 @@ def review_report(dataset_root: Path, reviewer: str | None = None) -> Dict[str, 
         v["reviewed_rate"] = round(v["reviewed"] / n, 4)
     return {"generated": time.strftime("%Y-%m-%d"),
             "reviewer": reviewer,
+            "required_reviewers": required_reviewers(),
             "total": len(rows), "total_verified": sum(v["verified"] for v in per.values()),
             "total_reviewed": sum(v["reviewed"] for v in per.values()),
             "total_unreviewed": sum(v["unreviewed"] for v in per.values()),

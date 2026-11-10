@@ -88,13 +88,14 @@ export const DatasetDashboard: React.FC<StatsProps> = ({ stats, session, onStats
   const cards: Array<[string, number | undefined, string]> = [
     ['TOTAL', stats?.total, 'text-felid-ivory'],
     ['UNREVIEWED', totals?.unreviewed, 'text-felid-ivory'],
-    ['AWAITING 2nd', totals?.awaiting_second, 'text-felid-accent'],
+    ['AWAITING REVIEW', totals?.awaiting_second, 'text-felid-accent'],
     ['YOUR DECISIONS', totals?.mine, 'text-felid-ivory'],
     ['VERIFIED', totals?.verified, 'text-felid-success'],
     ['REJECTED', totals?.rejected, 'text-felid-danger'],
     ['AMBIGUOUS', totals?.ambiguous, 'text-felid-warning'],
     ['CONTESTED', totals?.contested, 'text-felid-accent'],
   ];
+  const required = stats?.required_reviewers ?? 1;
 
   return (
     <section aria-label="Review dashboard" className="space-y-4">
@@ -110,10 +111,20 @@ export const DatasetDashboard: React.FC<StatsProps> = ({ stats, session, onStats
       <div className="flex items-start gap-2 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm p-3">
         <AlertTriangle className="w-4 h-4 shrink-0 text-felid-accent mt-0.5" />
         <p className="text-[11px] font-mono text-felid-muted">
-          One decision never resolves an image. A row moves to <b className="text-felid-ivory">verified</b>,
-          <b className="text-felid-ivory"> rejected</b> or <b className="text-felid-ivory">ambiguous</b> only when a
-          second, distinct reviewer agrees. Until then it stays <b className="text-felid-ivory">pending</b> — your
-          reviews appear under <b className="text-felid-ivory">awaiting 2nd</b> / <b className="text-felid-ivory">your decisions</b>.
+          {required === 1 ? (
+            <>
+              One reviewer decides. Approval records <b className="text-felid-ivory">verified</b>, rejection
+              <b className="text-felid-ivory"> rejected</b>, ambiguity <b className="text-felid-ivory">ambiguous</b>.
+              If a different reviewer later disagrees, the row becomes <b className="text-felid-ivory">contested</b>
+              — never auto-resolved.
+            </>
+          ) : (
+            <>
+              A verdict needs <b className="text-felid-ivory">{required} distinct reviewers</b> to agree. Until then the
+              row stays <b className="text-felid-ivory">pending</b> and appears under
+              <b className="text-felid-ivory"> awaiting review</b> / <b className="text-felid-ivory">your decisions</b>.
+            </>
+          )}
         </p>
       </div>
 
@@ -160,7 +171,7 @@ export const DatasetDashboard: React.FC<StatsProps> = ({ stats, session, onStats
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="font-display font-black text-xs text-felid-ivory uppercase w-44">{breed.replace(/-/g, ' ')}</span>
                     <span className="text-xs font-mono text-felid-muted ml-auto">
-                      {reviewed}/{v.total} reviewed · {awaiting} awaiting 2nd · {v.verified} verified · {v.pending} pending
+                      {reviewed}/{v.total} reviewed · {awaiting} awaiting review · {v.verified} verified · {v.pending} pending
                     </span>
                   </div>
                   <div className="relative h-2.5 bg-[#1d1922] border border-black overflow-hidden">
@@ -198,6 +209,9 @@ export const DatasetDashboard: React.FC<StatsProps> = ({ stats, session, onStats
                 <span className="text-xs font-mono text-felid-ivory truncate max-w-[22rem]">{c.title}</span>
                 <span className="text-[10px] font-mono text-felid-muted uppercase">{c.breed_id.replace(/-/g, ' ')}</span>
                 <span className="text-[10px] font-mono text-felid-muted">{c.asset_type}</span>
+                <span className={`text-[10px] font-mono ${c.training_eligible ? 'text-felid-success' : 'text-felid-muted'}`}>
+                  {c.training_eligible ? 'training-eligible' : (c.exclusion_reason || 'not eligible')}
+                </span>
                 {c.my_decision && (
                   <span className="text-[10px] font-mono text-felid-accent">you: {c.my_decision}</span>
                 )}
@@ -221,10 +235,11 @@ interface WorkspaceProps {
   session: string;
   reviewer: string;
   breed: string;
+  required: number;
   onDecided?: () => void;
 }
 
-export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({ session, reviewer, breed, onDecided }) => {
+export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({ session, reviewer, breed, required, onDecided }) => {
   const [allItems, setAllItems] = useState<DatasetCandidate[]>([]);
   const [index, setIndex] = useState(0);
   const [scale, setScale] = useState(1);
@@ -288,16 +303,12 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({ session, revi
     }
     setSubmitting(true);
     try {
-      await api.submitDatasetReview(session, current.id.slice(0, 16), {
+      const result = await api.submitDatasetReview(session, current.id.slice(0, 16), {
         decision, reason: reason.trim(), asset_type: assetType,
         expected_reviews: current.review_count ?? 0,
       });
       setReason('');
-      setMessage(
-        decision === 'approved'
-          ? 'Recorded approval. Waiting for a second reviewer to verify.'
-          : `Recorded ${decision}. Waiting for a second reviewer.`,
-      );
+      setMessage(`Recorded ${decision} → ${result.status}.`);
       onDecided?.();  // refresh dashboard stats live
       const r = await api.getDatasetCandidates(session, { breed, page: 1, page_size: 100 });
       setAllItems(r.items);
@@ -353,7 +364,7 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({ session, revi
           </span>
           <div className="flex flex-wrap items-center gap-2">
             <StatusPill status={current.status} />
-            <span className="text-[10px] font-mono text-felid-muted">{current.review_count ?? 0}/2 reviews</span>
+            <span className="text-[10px] font-mono text-felid-muted">{current.review_count ?? 0}/{required} reviews</span>
             {current.my_decision && (
               <span className="text-[10px] font-mono text-felid-accent">you: {current.my_decision}</span>
             )}
@@ -405,6 +416,11 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({ session, revi
               {current.training_eligible ? 'training-eligible' : 'not training-eligible'}
             </span>
             {current.exclusion_reason && <span className="block text-felid-danger">{current.exclusion_reason}</span>}
+            {current.status === 'verified' && assetType === 'unknown' && (
+              <span className="block text-[10px] font-mono text-felid-warning">
+                Verified label, but not training-eligible — classify the asset as animal_photograph or historical_photograph.
+              </span>
+            )}
           </dd></div>
           <div><dt className={`${LABEL} text-felid-muted`}>Special check</dt><dd className="text-felid-accent">{current.special_check}</dd></div>
           <div><dt className={`${LABEL} text-felid-muted`}>Reviewing as</dt><dd>{reviewer}</dd></div>
@@ -420,7 +436,11 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({ session, revi
             <button type="button" disabled={submitting} onClick={() => submit('ambiguous')} className="inline-flex items-center gap-1 px-3 py-2 bg-felid-warning hover:bg-[#fdba74] text-black font-mono font-bold text-xs border-2 border-black shadow-brutal-sm brutal-press disabled:opacity-50"><HelpCircle className="w-3.5 h-3.5" /> Ambiguous (U)</button>
           </div>
           {message && <p className="text-xs font-mono text-felid-muted" role="status">{message}</p>}
-          <p className="text-[10px] font-mono text-felid-muted">Two distinct approvals verify. Mixed decisions stay contested.</p>
+          <p className="text-[10px] font-mono text-felid-muted">
+            {required === 1
+              ? 'One reviewer decides. A conflicting second decision makes the row contested.'
+              : `${required} distinct reviewers must agree. Mixed decisions stay contested.`}
+          </p>
         </div>
       </div>
     </section>
@@ -457,7 +477,11 @@ export const DatasetReviewPage: React.FC = () => {
       <div>
         <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-felid-accent">BREED-V1 · HUMAN REVIEW</p>
         <h1 className="font-display font-black text-3xl uppercase text-felid-ivory">Dataset Review</h1>
-        <p className="text-xs font-mono text-felid-muted mt-1">Two reviewers verify. One can dispute. Nothing auto-approves.</p>
+        <p className="text-xs font-mono text-felid-muted mt-1">
+          {(stats?.required_reviewers ?? 1) === 1
+            ? 'One reviewer decides. Nothing auto-approves.'
+            : `${stats?.required_reviewers} reviewers must agree. Nothing auto-approves.`}
+        </p>
       </div>
       {!session ? (
         <div className="flex flex-wrap gap-3 items-end bg-[#141218] border-2 border-black shadow-brutal p-4 max-w-lg">
@@ -483,7 +507,7 @@ export const DatasetReviewPage: React.FC = () => {
           </div>
           {tab === 'dashboard'
             ? <DatasetDashboard stats={stats} session={session} onStats={setStats} />
-            : <DatasetReviewWorkspace session={session} reviewer={reviewer} breed={breed} onDecided={refreshStats} />}
+            : <DatasetReviewWorkspace session={session} reviewer={reviewer} breed={breed} required={stats?.required_reviewers ?? 1} onDecided={refreshStats} />}
         </>
       )}
     </div>

@@ -8,7 +8,7 @@ const candidates = [
   { id: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', breed_id: 'siamese', status: 'pending', title: 'File:siamese 1', author: 'Jane', license: 'CC BY-SA 4.0', source: 'wikimedia-commons', width: 600, height: 600, bytes: 1000, sha256: 'a'.repeat(64), special_check: 'point-colour', image_url: '/api/dataset-review/candidates/aaaa/image' },
   { id: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', breed_id: 'siamese', status: 'pending', title: 'File:siamese 2', author: 'Jane', license: 'CC BY-SA 4.0', source: 'wikimedia-commons', width: 600, height: 600, bytes: 1000, sha256: 'b'.repeat(64), special_check: 'point-colour', image_url: '/api/dataset-review/candidates/bbbb/image' },
 ];
-const stats = { total: 2, total_verified: 0, per_breed: { siamese: { total: 2, verified: 0, rejected: 0, ambiguous: 0, contested: 0, pending: 2, approval_rate: 0, rejection_rate: 0, ambiguity_rate: 0 } }, special_checks: {} };
+const stats = { total: 2, total_verified: 0, required_reviewers: 1, per_breed: { siamese: { total: 2, verified: 0, rejected: 0, ambiguous: 0, contested: 0, pending: 2, reviewed: 0, unreviewed: 2, awaiting_second: 0, mine: 0, approval_rate: 0, rejection_rate: 0, ambiguity_rate: 0 } }, special_checks: {} };
 
 beforeEach(() => {
   [api.datasetLogin, api.getDatasetStats, api.getDatasetCandidates, api.submitDatasetReview]
@@ -67,6 +67,7 @@ it('review workspace navigates and submits with keyboard + button', async () => 
 it('dashboard counts single reviews instead of only showing 125 pending', async () => {
   const progressed = {
     ...stats,
+    required_reviewers: 2,
     total_reviewed: 1, total_unreviewed: 1, total_awaiting_second: 1, total_mine: 1,
     per_breed: {
       siamese: {
@@ -79,7 +80,7 @@ it('dashboard counts single reviews instead of only showing 125 pending', async 
   render(<DatasetReviewPage />);
   await act(async () => { fireEvent.change(screen.getByTestId('reviewer-input'), { target: { value: 'reviewer-a' } }); });
   await act(async () => { fireEvent.click(screen.getByText('Sign in')); });
-  const awaiting = await screen.findByText('AWAITING 2nd');
+  const awaiting = await screen.findByText('AWAITING REVIEW');
   expect(awaiting.parentElement?.textContent).toContain('1');
   const mine = screen.getByText('YOUR DECISIONS');
   expect(mine.parentElement?.textContent).toContain('1');

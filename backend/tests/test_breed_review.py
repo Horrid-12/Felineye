@@ -1,4 +1,4 @@
-"""Tests for the two-reviewer verification workflow (offline, no network)."""
+"""Tests for the reviewer verification workflow (offline, no network)."""
 import json
 from pathlib import Path
 
@@ -26,7 +26,21 @@ def _row(i, breed="siamese"):
             "label_confidence": "unverified", "reviewers": [], "audit_reason": None}
 
 
-def test_verified_requires_two_distinct_approvers(tmp_path):
+def test_single_reviewer_resolves_by_default(tmp_path):
+    reviews = tmp_path / "reviews.jsonl"
+    append_review(reviews, "a" * 64, "siamese", "alice", "approved")
+    assert image_status(load_reviews(reviews), "a" * 64) == "verified"
+    append_review(reviews, "b" * 64, "manx", "alice", "rejected", "tail not visible")
+    assert image_status(load_reviews(reviews), "b" * 64) == "rejected"
+    append_review(reviews, "c" * 64, "siamese", "alice", "ambiguous", "too dark")
+    assert image_status(load_reviews(reviews), "c" * 64) == "ambiguous"
+    # A conflicting decision from anyone still turns the row contested.
+    append_review(reviews, "a" * 64, "siamese", "bob", "rejected", "not a siamese")
+    assert image_status(load_reviews(reviews), "a" * 64) == "contested"
+
+
+def test_two_reviewer_mode_via_env(tmp_path, monkeypatch):
+    monkeypatch.setenv("REVIEW_APPROVALS_REQUIRED", "2")
     reviews = tmp_path / "reviews.jsonl"
     append_review(reviews, "a" * 64, "siamese", "alice", "approved")
     assert image_status(load_reviews(reviews), "a" * 64) == "pending"
@@ -34,7 +48,17 @@ def test_verified_requires_two_distinct_approvers(tmp_path):
     assert image_status(load_reviews(reviews), "a" * 64) == "verified"
 
 
-def test_rejection_and_ambiguous_need_two_and_a_reason(tmp_path):
+def test_verified_requires_two_distinct_approvers(tmp_path, monkeypatch):
+    monkeypatch.setenv("REVIEW_APPROVALS_REQUIRED", "2")
+    reviews = tmp_path / "reviews.jsonl"
+    append_review(reviews, "a" * 64, "siamese", "alice", "approved")
+    assert image_status(load_reviews(reviews), "a" * 64) == "pending"
+    append_review(reviews, "a" * 64, "siamese", "bob", "approved")
+    assert image_status(load_reviews(reviews), "a" * 64) == "verified"
+
+
+def test_rejection_and_ambiguous_need_two_and_a_reason(tmp_path, monkeypatch):
+    monkeypatch.setenv("REVIEW_APPROVALS_REQUIRED", "2")
     reviews = tmp_path / "reviews.jsonl"
     with pytest.raises(ValueError):
         append_review(reviews, "b" * 64, "manx", "alice", "rejected")  # no reason
@@ -55,7 +79,6 @@ def test_disagreement_stays_contested_until_reconciled(tmp_path):
     # this function — reconciliation is a human step outside status logic.
     append_review(reviews, "d" * 64, "siberian", "carol", "approved")
     assert image_status(load_reviews(reviews), "d" * 64) == "contested"
-
 
 def test_duplicate_reviewer_and_bad_decision_rejected(tmp_path):
     reviews = tmp_path / "reviews.jsonl"
