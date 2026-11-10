@@ -152,6 +152,74 @@ def training_export_rows(rows: List[Dict[str, Any]], reviews: List[Dict[str, Any
     return out
 
 
+ASSET_TYPE_LOG = "asset_types.jsonl"
+
+
+def load_asset_type_overrides(path: Path) -> Dict[str, str]:
+    """Latest explicit asset classification per image (append-only log)."""
+    if not path.exists():
+        return {}
+    latest: Dict[str, str] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        if row.get("image_id") and row.get("asset_type"):
+            latest[row["image_id"]] = row["asset_type"]
+    return latest
+
+
+def classify_assets(dataset_root: Path, reviewer: str, asset_type: str,
+                    status: str | None = "verified", only_unknown: bool = True,
+                    breed: str | None = None, apply: bool = False) -> Dict[str, Any]:
+    """Record an explicit, auditable asset classification for a set of rows.
+
+    Writes to ``asset_types.jsonl`` (never edits history) and re-syncs the
+    manifest. ``apply=False`` is a dry run. Filtering by review status only
+    selects rows; it never changes a decision.
+    """
+    reviewer = (reviewer or "").strip()
+    if not reviewer:
+        raise ValueError("reviewer must be non-empty")
+    asset_type = (asset_type or "").strip().lower()
+    if asset_type not in ASSET_TYPES:
+        raise ValueError(f"invalid asset_type {asset_type!r}")
+    manifest_path = dataset_root / "manifest.jsonl"
+    rows = [json.loads(l) for l in manifest_path.read_text(encoding="utf-8").splitlines() if l.strip()]
+    reviews = load_reviews(dataset_root / "reviews.jsonl")
+    overrides = load_asset_type_overrides(dataset_root / ASSET_TYPE_LOG)
+    targets = []
+    for r in rows:
+        st = image_status(reviews, r["id"])
+        current = (overrides.get(r["id"]) or r.get("asset_type") or "unknown").strip().lower()
+        if status and st != status:
+            continue
+        if breed and r["breed_id"] != breed:
+            continue
+        if only_unknown and current != "unknown":
+            continue
+        targets.append(r)
+    if apply and targets:
+        log_path = dataset_root / ASSET_TYPE_LOG
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        with log_path.open("a", encoding="utf-8") as fh:
+            for r in targets:
+                fh.write(json.dumps({
+                    "image_id": r["id"], "breed_id": r["breed_id"],
+                    "asset_type": asset_type,
+                    "previous_asset_type": (r.get("asset_type") or "unknown"),
+                    "reviewer": reviewer, "scope": "bulk",
+                    "reason": f"bulk classification of {status or 'all'} rows"
+                              + (" with unknown asset type" if only_unknown else ""),
+                    "timestamp": stamp,
+                }, ensure_ascii=True) + "\n")
+        sync_manifest(dataset_root)
+    return {"matched": len(targets), "applied": bool(apply and targets),
+            "asset_type": asset_type, "reviewer": reviewer,
+            "ids": [r["id"] for r in targets]}
+
+
 def sync_manifest(dataset_root: Path) -> int:
     """Rewrite manifest rows' status fields from reviews.jsonl. Returns verified count.
 
@@ -160,19 +228,21 @@ def sync_manifest(dataset_root: Path) -> int:
     manifest_path = dataset_root / "manifest.jsonl"
     reviews = load_reviews(dataset_root / "reviews.jsonl")
     rows = [json.loads(l) for l in manifest_path.read_text(encoding="utf-8").splitlines() if l.strip()]
-    # A reviewer-set asset type in reviews.jsonl wins over the collector's guess,
-    # so a re-sync can never undo a manual classification.
+    # Precedence for asset type: explicit classification log > review-time
+    # classification > collector guess. A re-sync can never undo a manual one.
     reviewed_asset: Dict[str, str] = {}
     for rev in reviews:
         if rev.get("asset_type"):
             reviewed_asset[rev["image_id"]] = rev["asset_type"]
+    overrides = load_asset_type_overrides(dataset_root / ASSET_TYPE_LOG)
     verified = 0
     for r in rows:
         st = image_status(reviews, r["id"])
         r["review_status"] = st
         r["label_confidence"] = "verified" if st == "verified" else "unverified"
         r["reviewers"] = sorted({x["reviewer"] for x in reviews if x["image_id"] == r["id"]})
-        asset_type = (reviewed_asset.get(r["id"]) or r.get("asset_type") or "unknown").strip().lower()
+        asset_type = (overrides.get(r["id"]) or reviewed_asset.get(r["id"])
+                      or r.get("asset_type") or "unknown").strip().lower()
         if asset_type not in ASSET_TYPES:
             asset_type = "unknown"
         r["asset_type"] = asset_type
