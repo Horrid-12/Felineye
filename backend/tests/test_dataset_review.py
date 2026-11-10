@@ -90,6 +90,27 @@ def test_stats_filter_pagination(dataset_root):
     assert page2["total"] == 3 and len(page2["items"]) == 1
 
 
+def test_gap_route_is_authenticated_and_reports_remaining(dataset_root):
+    from backend.app.routes import dataset_review
+    dataset_review.settings.reviewer_session_secret = SECRET
+    dataset_review.settings.reviewer_names = "reviewer-a,reviewer-b"
+    assert client.get("/api/dataset-review/gaps").status_code == 401
+
+    item = client.get("/api/dataset-review/candidates", headers=_h()).json()["items"][0]
+    client.post(f"/api/dataset-review/candidates/{item['id'][:16]}/review", headers=_h(),
+                json={"decision": "approved", "asset_type": "animal_photograph",
+                      "expected_reviews": 0})
+    gaps = client.get("/api/dataset-review/gaps?target=5", headers=_h()).json()
+    assert gaps["target_per_breed"] == 5
+    assert gaps["priority_order"][0] == "siamese"
+    siamese = gaps["per_breed"]["siamese"]
+    assert siamese["eligible"] == 1 and siamese["remaining"] == 4
+    assert siamese["pending"] == 1 and siamese["excluded_unknown"] == 1
+    assert siamese["estimated_candidates_needed"] == 4  # ceil(4 / (1/1))
+    assert client.get("/api/dataset-review/gaps?breeds=not-a-breed",
+                      headers=_h()).status_code == 400
+
+
 def test_stats_report_single_review_progress(dataset_root):
     """One reviewer decides by default, and the progress counters must move
     immediately (this is what the dashboard reads)."""

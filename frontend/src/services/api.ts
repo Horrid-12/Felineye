@@ -11,7 +11,8 @@ import {
   CollectionMetaResponse,
   DatasetCandidate,
   DatasetReview,
-  DatasetStats
+  DatasetStats,
+  DatasetGaps
 } from '../types';
 
 const API_BASE = '/api';
@@ -168,6 +169,15 @@ export const api = {
 
   async getDatasetStats(session: string): Promise<DatasetStats> {
     const res = await fetch(`${API_BASE}/dataset-review/stats`, {
+      headers: { Authorization: `Bearer ${session}` },
+    });
+    return handleResponse(res);
+  },
+
+  async getDatasetGaps(session: string, target?: number): Promise<DatasetGaps> {
+    const query = new URLSearchParams();
+    if (target) query.set('target', String(target));
+    const res = await fetch(`${API_BASE}/dataset-review/gaps?${query}`, {
       headers: { Authorization: `Bearer ${session}` },
     });
     return handleResponse(res);

@@ -365,6 +365,46 @@ export interface DatasetStats {
   special_checks: Record<string, string>;
 }
 
+export interface DatasetGapBreed {
+  breed_id: string;
+  category?: string;
+  /** Position in the round-2 priority list (1 = first). */
+  priority?: number | null;
+  /** 1 = Siamese/Manx, 2 = Norwegian Forest/Tonkinese, 3 = top-up. */
+  priority_tier?: number | null;
+  collected: number;
+  reviewed: number;
+  decided: number;
+  verified: number;
+  rejected: number;
+  ambiguous: number;
+  contested: number;
+  pending: number;
+  /** Verified + photographic assets only. Never includes excluded rows. */
+  eligible: number;
+  remaining: number;
+  target: number;
+  completion_pct: number;
+  /** Eligible photos per decided candidate from the completed pilot. */
+  yield_rate: number | null;
+  estimated_candidates_needed: number | null;
+  ineligible_verified: number;
+  excluded_unknown: number;
+  excluded_non_photographic: number;
+  asset_types: Record<string, number>;
+}
+
+export interface DatasetGaps {
+  generated: string;
+  target_per_breed: number;
+  priority_order: string[];
+  priority_tiers?: Record<string, number>;
+  total_eligible: number;
+  total_remaining: number;
+  estimated_candidates_needed?: number | null;
+  per_breed: Record<string, DatasetGapBreed>;
+}
+
 export type ActivePage =
   | 'home'
   | 'identify'

@@ -64,6 +64,28 @@ Bulk classification: `backend/scripts/classify_assets.py --reviewer <handle> --a
 
 Pilot audit (125, complete): 71 verified, 49 rejected, 5 ambiguous. Asset types after the audited bulk pass: 70 `animal_photograph`, 28 `unknown` (all rejected/ambiguous), 13 `book_illustration`, 5 `diagram_or_infographic`, 4 `painting_or_artwork`, 3 `historical_photograph`, 2 `sculpture_or_artefact`. Training-eligible: **70** (manx 9, Norwegian Forest 16, siamese 4, siberian 24, tonkinese 17). One verified `painting_or_artwork` is retained but excluded. Non-photographic rows keep metadata for a historical/cultural archive — never deleted, never trained on.
 
+## Round 2 — collection gap
+
+Target: **30 training-eligible photographs per breed** (`COLLECTION_TARGET_PER_BREED`, default 30, overridable with `--gap-target` or the API's `target` query). Priority order: `siamese`, `manx` (tier 1), `norwegian-forest-cat`, `tonkinese` (tier 2), `siberian` (tier 3 top-up).
+
+```powershell
+backend\.venv\Scripts\python.exe backend\scripts\collect_breed_dataset.py --gaps
+```
+
+Writes `backend/datasets/breed-v1/collection_gap.json` and prints it. Per breed: `collected`, `reviewed`, `decided`, verified/rejected/ambiguous/contested/pending, `eligible`, `remaining`, `target`, `completion_pct`, `yield_rate`, `estimated_candidates_needed`, plus asset-type and exclusion counts. `eligible` is derived with `training_eligibility(asset_type, review_status)` — never `label_confidence` — so only verified `animal_photograph`/`historical_photograph` rows count; rejected, ambiguous, pending and non-photographic assets are excluded. The estimate is `ceil(remaining / yield_rate)`, where the yield comes from the completed pilot sample (blank until something is decided).
+
+Current report (2026-11-10): **70 eligible / 80 remaining**, estimates 163 siamese, 59 manx, 22 Norwegian Forest, 20 Tonkinese, 7 Siberian (~271 new candidates).
+
+Authenticated `GET /api/dataset-review/gaps?target=30&breeds=siamese,manx` returns the same shape. The dashboard renders priority chips, eligible/target bars and remaining counts, refreshing with the review stats.
+
+Second-round collection:
+
+```powershell
+backend\.venv\Scripts\python.exe backend\scripts\collect_breed_dataset.py --breeds siamese,manx --per-breed 20
+```
+
+`--per-breed` is **new candidates this run**, not the breed total. Re-collection is blocked by exact SHA-256, the frozen legacy test hashes, existing Commons titles, and dHash-64 near-duplicates (hamming ≤5) against the whole manifest. New rows stay `split=candidates`, `label_confidence=unverified`, `review_status=pending`, `training_eligible=false`; nothing is promoted or trained.
+
 ## Backend
 
 `POST /api/dataset-review/candidates/{id}/review` accepts `asset_type` and persists it on the manifest row (synced immediately).
@@ -77,4 +99,4 @@ backend\.venv\Scripts\python.exe backend\scripts\review_breed_candidates.py repo
 
 `review_report.json` (gitignored): per-breed totals + verified/rejected/ambiguous/contested/pending + `reviewed`/`unreviewed`/`awaiting_second`/`mine` + rates. Initial state: **0 verified, 125 pending** — honest emptiness, not a missed deadline. Verified only moves with a second distinct reviewer.
 
-**Tests:** `backend/tests/test_breed_review.py` (9, incl. single-reviewer default and `REVIEW_APPROVALS_REQUIRED=2` mode) + `backend/tests/test_dataset_review.py` (8, incl. progress counters, `review_state` filters, dual-mode pending and asset-type persistence) + `backend/tests/test_asset_types.py` (9, incl. bulk classification, dry run and overrides) + `frontend/src/tests/DatasetReviewPage.test.tsx` (5: login→dashboard, authenticated image blob, navigation/keyboard A/R, progress cards, decision advance + reason guard). Backend **120 passed**, frontend **43 passed**, build OK.
+**Tests:** `backend/tests/test_breed_review.py` (9, incl. single-reviewer default and `REVIEW_APPROVALS_REQUIRED=2` mode) + `backend/tests/test_dataset_review.py` (9, incl. progress counters, `review_state` filters, dual-mode pending, asset-type persistence and the authenticated gaps route) + `backend/tests/test_asset_types.py` (9, incl. bulk classification, dry run and overrides) + `backend/tests/test_collection_gap.py` (6, incl. eligibility exclusions, priority order, target override and round-2 dedupe/per-run semantics) + `frontend/src/tests/DatasetReviewPage.test.tsx` (6: login→dashboard, authenticated image blob, navigation/keyboard A/R, progress cards, collection-gap bars, decision advance + reason guard). Backend **127 passed**, frontend **44 passed**, build OK.

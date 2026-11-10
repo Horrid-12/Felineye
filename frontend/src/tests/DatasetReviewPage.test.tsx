@@ -10,11 +10,23 @@ const candidates = [
 ];
 const stats = { total: 2, total_verified: 0, required_reviewers: 1, per_breed: { siamese: { total: 2, verified: 0, rejected: 0, ambiguous: 0, contested: 0, pending: 2, reviewed: 0, unreviewed: 2, awaiting_second: 0, mine: 0, approval_rate: 0, rejection_rate: 0, ambiguity_rate: 0 } }, special_checks: {} };
 
+const gaps = {
+  generated: '2026-11-10', target_per_breed: 30,
+  priority_order: ['siamese', 'manx'],
+  priority_tiers: { siamese: 1, manx: 1 },
+  total_eligible: 13, total_remaining: 47, estimated_candidates_needed: 222,
+  per_breed: {
+    siamese: { breed_id: 'siamese', priority: 1, priority_tier: 1, collected: 25, reviewed: 25, decided: 25, verified: 4, rejected: 20, ambiguous: 1, contested: 0, pending: 0, eligible: 4, remaining: 26, target: 30, completion_pct: 13.3, yield_rate: 0.16, estimated_candidates_needed: 163, ineligible_verified: 0, excluded_unknown: 7, excluded_non_photographic: 11, asset_types: { animal_photograph: 4 } },
+    manx: { breed_id: 'manx', priority: 2, priority_tier: 1, collected: 25, reviewed: 25, decided: 25, verified: 9, rejected: 15, ambiguous: 1, contested: 0, pending: 0, eligible: 9, remaining: 21, target: 30, completion_pct: 30, yield_rate: 0.36, estimated_candidates_needed: 59, ineligible_verified: 0, excluded_unknown: 0, excluded_non_photographic: 0, asset_types: { animal_photograph: 9 } },
+  },
+};
+
 beforeEach(() => {
-  [api.datasetLogin, api.getDatasetStats, api.getDatasetCandidates, api.submitDatasetReview]
+  [api.datasetLogin, api.getDatasetStats, api.getDatasetCandidates, api.submitDatasetReview, api.getDatasetGaps]
     .forEach((fn) => { if (typeof (fn as any).mockClear === 'function') (fn as any).mockClear(); });
   vi.spyOn(api, 'datasetLogin').mockResolvedValue({ reviewer: 'reviewer-a', session: 'sess' } as any);
   vi.spyOn(api, 'getDatasetStats').mockResolvedValue(stats as any);
+  vi.spyOn(api, 'getDatasetGaps').mockResolvedValue(gaps as any);
   vi.spyOn(api, 'getDatasetCandidates').mockResolvedValue({ total: 2, page: 1, page_size: 100, items: candidates } as any);
   vi.spyOn(api, 'submitDatasetReview').mockResolvedValue({ review: {} as any, status: 'pending' } as any);
 });
@@ -104,6 +116,22 @@ it('a decision advances to the next unreviewed image and drops the decided row',
   expect(await screen.findByText(/Image 1 of 1/)).toBeTruthy();
   expect(screen.getByText(/File:siamese 2/)).toBeTruthy();
   expect(api.submitDatasetReview).toHaveBeenCalledWith('sess', expect.any(String), expect.objectContaining({ expected_reviews: 0 }));
+});
+
+it('dashboard shows the round-2 collection gap by priority', async () => {
+  render(<DatasetReviewPage />);
+  await act(async () => { fireEvent.change(screen.getByTestId('reviewer-input'), { target: { value: 'reviewer-a' } }); });
+  await act(async () => { fireEvent.click(screen.getByText('Sign in')); });
+  const gap = await screen.findByTestId('collection-gap');
+  expect(gap.textContent).toContain('target 30 eligible / breed');
+  expect(gap.textContent).toContain('47 still needed');
+  const siamese = screen.getByTestId('gap-siamese');
+  expect(siamese.textContent).toContain('4/30 eligible');
+  expect(siamese.textContent).toContain('26 to go');
+  expect(siamese.textContent).toContain('~163 new candidates');
+  expect(siamese.textContent).toContain('priority');
+  expect(screen.getByTestId('gap-manx').textContent).toContain('21 to go');
+  expect(api.getDatasetGaps).toHaveBeenCalledWith('sess');
 });
 
 it('reason is required before reject/ambiguous can succeed client-side', async () => {

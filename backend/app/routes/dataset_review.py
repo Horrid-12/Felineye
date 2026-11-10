@@ -106,6 +106,24 @@ def stats(reviewer: str = Depends(verify_session)):
     return review_report(_root(), reviewer)
 
 
+@router.get("/gaps")
+def gaps(
+    target: Optional[int] = Query(None, ge=1, le=10000),
+    breeds: Optional[str] = Query(None),
+    reviewer: str = Depends(verify_session),
+):
+    """Round-2 collection gap per breed (eligible photos vs target).
+
+    Read-only: it never collects, reviews or promotes anything.
+    """
+    from ..services.collection_gap import collection_gap
+    selected = [b.strip() for b in breeds.split(",") if b.strip()] if breeds else None
+    try:
+        return collection_gap(_root(), target=target, breeds=selected)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+
+
 @router.get("/candidates")
 def candidates(
     breed: Optional[str] = Query(None),

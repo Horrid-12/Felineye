@@ -64,6 +64,7 @@ backend/datasets/breed-v1/progress.json
 backend/datasets/breed-v1/pilot_summary.json
 backend/datasets/breed-v1/review_gallery*.html
 backend/datasets/breed-v1/review_report.json
+backend/datasets/breed-v1/collection_gap.json
 # Breed benchmark outputs (regenerable results; report narrative stays in Documentation/)
 backend/tests/fixtures/breed-validation/benchmark_*.json
 backend/tests/fixtures/breed-validation/ferdifdi_*

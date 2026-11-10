@@ -225,7 +225,7 @@ def _category_pages(client: CommonsClient, category: str, limit: int, gcmtype: s
                     cont: str | None = None) -> dict:
     params: Dict[str, Any] = {
         "action": "query", "generator": "categorymembers", "gcmtitle": f"Category:{category}",
-        "gcmtype": gcmtype, "gcmlimit": max(limit, 50), "prop": "imageinfo",
+        "gcmtype": gcmtype, "gcmlimit": min(500, max(limit, 50)), "prop": "imageinfo",
         "iiprop": "url|mime|size|extmetadata", "iiurlwidth": 960, "format": "json"}
     if cont:
         params["gcmcontinue"] = cont
@@ -279,7 +279,7 @@ def list_category_files(client: CommonsClient, category: str, limit: int) -> Lis
     if len(rows) < limit:
         data = client.api({
             "action": "query", "generator": "search", "gsrsearch": f"{category} filetype:bitmap",
-            "gsrnamespace": 6, "gsrlimit": max(limit * 3, 50), "prop": "imageinfo",
+            "gsrnamespace": 6, "gsrlimit": min(500, max(limit * 3, 50)), "prop": "imageinfo",
             "iiprop": "url|mime|size|extmetadata", "iiurlwidth": 960, "format": "json"})
         add_pages(data)
     return rows[:limit]
@@ -311,20 +311,36 @@ def append_manifest(path: Path, row: Dict[str, Any]) -> None:
 def collect_breed(
     breed_id: str, category: str, per_breed: int, client: CommonsClient,
     dataset_root: Path, legacy_hashes: Set[str], known_sha: Set[str],
-    known_ph: List[int], existing_count: int = 0,
+    known_ph: List[int],
 ) -> Dict[str, int]:
-    """Download candidates for one breed. Returns counters; writes <= per_breed rows."""
+    """Download up to ``per_breed`` *new* candidates for one breed.
+
+    ``per_breed`` is the number of new rows this run, not the breed total: the
+    second collection round tops up thin breeds and must not be blocked just
+    because the breed already has rows (rejected ones included). Every file is
+    checked against the exact SHA-256, the frozen legacy test set, the existing
+    Commons titles and the perceptual (dhash) near-duplicate set, so already
+    collected images and their re-encodes cannot be collected again.
+    """
     manifest = dataset_root / "manifest.jsonl"
     counts = {"listed": 0, "downloaded": 0, "written": 0, "rejected_license": 0,
               "rejected_title": 0, "rejected_resolution": 0, "exact_dupe": 0,
-              "near_dupe": 0, "legacy_overlap": 0, "integrity_fail": 0}
-    if existing_count >= per_breed:
+              "near_dupe": 0, "legacy_overlap": 0, "already_collected": 0,
+              "integrity_fail": 0}
+    if per_breed <= 0:
         return counts
-    files = list_category_files(client, category, max(per_breed * 3, per_breed))
+    # Snapshot once instead of re-reading the manifest inside the loop; titles
+    # guard against the same Commons file being re-downloaded at a new thumb size.
+    existing = load_manifest(manifest)
+    known_titles = {r["title"] for r in existing if r.get("title")}
+    files = list_category_files(client, category, max(per_breed * 10, 100))
     counts["listed"] = len(files)
     for f in files:
-        if sum(1 for _ in load_manifest(manifest) if _.get("breed_id") == breed_id) >= per_breed:
+        if counts["written"] >= per_breed:
             break
+        if f["title"] in known_titles:
+            counts["already_collected"] += 1
+            continue
         ok, reason = license_decision(f["author"], f["license"])
         if not ok:
             counts["rejected_license"] += 1
@@ -365,6 +381,7 @@ def collect_breed(
         tmp.unlink(missing_ok=True)
         known_sha.add(digest)
         known_ph.append(ph)
+        known_titles.add(f["title"])
         counts["downloaded"] += 1
         counts["written"] += 1
         append_manifest(manifest, {
@@ -376,6 +393,7 @@ def collect_breed(
             "license_url": f["license_url"],
             "attribution_required": True, "width": f["width"], "height": f["height"],
             "bytes": len(data), "label_confidence": "unverified", "reviewers": [],
+            "review_status": "pending",
             "audit_reason": None, "collected_at": time.strftime("%Y-%m-%d"),
             "category_hint": category,
             "asset_type": guess_asset_type(f["title"]),

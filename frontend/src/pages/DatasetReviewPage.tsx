@@ -4,7 +4,7 @@ import {
   RefreshCw, AlertTriangle, CircleDot,
 } from 'lucide-react';
 import { api } from '../services/api';
-import { DatasetCandidate, DatasetStats } from '../types';
+import { DatasetCandidate, DatasetStats, DatasetGaps } from '../types';
 
 const SELECT_CLS =
   'ml-1 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm px-2 py-1 text-xs font-mono text-felid-ivory focus:outline-none';
@@ -42,10 +42,14 @@ export const DatasetDashboard: React.FC<StatsProps> = ({ stats, session, onStats
   const [items, setItems] = useState<DatasetCandidate[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [gaps, setGaps] = useState<DatasetGaps | null>(null);
 
   const refreshStats = useCallback(() => {
     api.getDatasetStats(session)
       .then((s) => { onStats(s); setBreeds(Object.keys(s.per_breed)); })
+      .catch(() => undefined);
+    api.getDatasetGaps(session)
+      .then((g) => setGaps(g))
       .catch(() => undefined);
   }, [session, onStats]);
 
@@ -188,6 +192,62 @@ export const DatasetDashboard: React.FC<StatsProps> = ({ stats, session, onStats
               );
             })}
           </div>
+        </div>
+      )}
+
+      {gaps && (
+        <div className="bg-[#0c0a0e] border-2 border-black shadow-brutal-sm p-4" data-testid="collection-gap">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <h3 className={`${LABEL} text-felid-muted`}>COLLECTION GAP · ROUND 2</h3>
+            <span className="text-[10px] font-mono text-felid-muted">
+              target {gaps.target_per_breed} eligible / breed · {gaps.total_remaining} still needed
+            </span>
+          </div>
+          <div className="space-y-3">
+            {gaps.priority_order.map((breed) => {
+              const g = gaps.per_breed[breed];
+              if (!g) return null;
+              const pct = Math.min(100, Math.round((g.eligible / Math.max(1, g.target)) * 100));
+              const topPriority = g.priority_tier === 1;
+              return (
+                <div key={breed} className="space-y-1" data-testid={`gap-${breed}`}>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-display font-black text-xs text-felid-ivory uppercase w-44">{breed.replace(/-/g, ' ')}</span>
+                    <span className={`px-1.5 py-0.5 border font-mono text-[10px] font-bold uppercase ${topPriority ? 'bg-felid-accent/15 text-felid-accent border-felid-accent/50' : 'bg-[#1d1922] text-felid-muted border-felid-border'}`}>
+                      {topPriority ? 'priority' : `tier ${g.priority_tier ?? '—'}`}
+                    </span>
+                    <span className="text-xs font-mono text-felid-muted ml-auto">
+                      {g.eligible}/{g.target} eligible ·{' '}
+                      <b className={g.remaining ? 'text-felid-accent' : 'text-felid-success'}>
+                        {g.remaining ? `${g.remaining} to go` : 'target met'}
+                      </b>
+                    </span>
+                  </div>
+                  <div className="relative h-2.5 bg-[#1d1922] border border-black overflow-hidden">
+                    <div className={`absolute inset-y-0 left-0 ${g.remaining ? 'bg-felid-accent/70' : 'bg-felid-success'}`} style={{ width: `${pct}%` }} />
+                  </div>
+                  <div className="flex flex-wrap gap-3 text-[10px] font-mono text-felid-muted">
+                    <span>{g.collected} collected</span>
+                    <span>{g.verified} verified</span>
+                    <span>{g.rejected} rejected</span>
+                    <span>{g.ambiguous} ambiguous</span>
+                    <span>{g.pending} pending</span>
+                    <span>{g.excluded_non_photographic} non-photo excluded</span>
+                    <span className="text-felid-accent">
+                      {g.estimated_candidates_needed == null
+                        ? 'yield unknown — collect a sample'
+                        : `~${g.estimated_candidates_needed} new candidates`}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-[10px] font-mono text-felid-muted">
+            Eligible = verified animal/historical photograph. Rejected, ambiguous, pending and
+            non-photographic assets are excluded. Estimates use the pilot yield
+            ({gaps.total_eligible} eligible from {Object.values(gaps.per_breed).reduce((n, b) => n + b.decided, 0)} decided).
+          </p>
         </div>
       )}
 
