@@ -174,11 +174,12 @@ export const api = {
   },
 
   async getDatasetCandidates(session: string, params?: {
-    breed?: string; status?: string; source?: string; page?: number; page_size?: number;
+    breed?: string; status?: string; review_state?: string; source?: string; page?: number; page_size?: number;
   }): Promise<{ total: number; page: number; page_size: number; items: DatasetCandidate[] }> {
     const query = new URLSearchParams();
     if (params?.breed) query.set('breed', params.breed);
     if (params?.status) query.set('status', params.status);
+    if (params?.review_state) query.set('review_state', params.review_state);
     if (params?.source) query.set('source', params.source);
     if (params?.page) query.set('page', String(params.page));
     if (params?.page_size) query.set('page_size', String(params.page_size));

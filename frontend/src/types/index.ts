@@ -326,6 +326,11 @@ export interface DatasetCandidate {
   asset_type?: string;
   training_eligible?: boolean;
   exclusion_reason?: string | null;
+  /** How many decisions are recorded (0 = untouched). */
+  review_count?: number;
+  reviewers?: string[];
+  /** This reviewer's own decision, if any. Never implies verification. */
+  my_decision?: 'approved' | 'rejected' | 'ambiguous' | null;
   special_check?: string;
   image_url?: string;
 }
@@ -342,10 +347,18 @@ export interface DatasetReview {
 export interface DatasetStats {
   total: number;
   total_verified: number;
+  /** Images with at least one recorded decision (not the same as verified). */
+  total_reviewed?: number;
+  total_unreviewed?: number;
+  total_awaiting_second?: number;
+  total_mine?: number;
+  reviewer?: string | null;
   per_breed: Record<string, {
     total: number; verified: number; rejected: number; ambiguous: number;
     contested: number; pending: number;
+    reviewed?: number; unreviewed?: number; awaiting_second?: number; mine?: number;
     approval_rate: number; rejection_rate: number; ambiguity_rate: number;
+    reviewed_rate?: number;
   }>;
   special_checks: Record<string, string>;
 }

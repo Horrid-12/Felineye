@@ -21,7 +21,8 @@ from pydantic import BaseModel, Field
 
 from ..config import settings
 from ..services.breed_review import (
-    SPECIAL_CHECKS, append_review, image_status, load_reviews, review_report,
+    SPECIAL_CHECKS, append_review, image_status, load_reviews, review_progress,
+    review_report,
 )
 
 router = APIRouter(prefix="/api/dataset-review", tags=["Dataset Review"])
@@ -102,13 +103,14 @@ def me(reviewer: str = Depends(verify_session)):
 
 @router.get("/stats")
 def stats(reviewer: str = Depends(verify_session)):
-    return review_report(_root())
+    return review_report(_root(), reviewer)
 
 
 @router.get("/candidates")
 def candidates(
     breed: Optional[str] = Query(None),
     status: Optional[str] = Query(None),
+    review_state: Optional[str] = Query(None),
     source: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
     page: int = Query(1, ge=1),
@@ -120,9 +122,20 @@ def candidates(
     items = []
     for r in rows:
         st = image_status(reviews, r["id"])
+        prog = review_progress(reviews, r["id"], reviewer)
         if breed and r["breed_id"] != breed:
             continue
         if status and st != status:
+            continue
+        # Progress filters are deliberately separate from `status`: a single
+        # review never resolves an image, so "reviewed" != "verified".
+        if review_state == "unreviewed" and prog["review_count"]:
+            continue
+        if review_state == "awaiting_second" and not (prog["review_count"] >= 1 and st == "pending"):
+            continue
+        if review_state == "mine" and not prog["my_decision"]:
+            continue
+        if review_state == "not_mine" and prog["my_decision"]:
             continue
         if source and r.get("source") != source:
             continue
@@ -138,6 +151,8 @@ def candidates(
             "bytes": r.get("bytes"), "sha256": r.get("sha256"),
             "asset_type": r.get("asset_type", "unknown"),
             "training_eligible": eligible, "exclusion_reason": exclusion,
+            "review_count": prog["review_count"], "reviewers": prog["reviewers"],
+            "my_decision": prog["my_decision"],
             "special_check": SPECIAL_CHECKS.get(r["breed_id"], ""),
             "image_url": f"/api/dataset-review/candidates/{r['id'][:16]}/image",
         })
@@ -160,6 +175,7 @@ def candidate_detail(image_ref: str, reviewer: str = Depends(verify_session)):
     reviews = [r for r in _reviews() if r["image_id"] == row["id"]]
     public = {k: v for k, v in row.items() if k != "file"}
     return {"candidate": public, "status": image_status(reviews, row["id"]),
+            "progress": review_progress(reviews, row["id"], reviewer),
             "reviews": reviews,
             "image_url": f"/api/dataset-review/candidates/{row['id'][:16]}/image"}
 

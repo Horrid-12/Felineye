@@ -27,7 +27,7 @@ def test_real_photo_remains_eligible_only_when_verified():
 
 def test_unknown_stays_unverified_and_ineligible():
     ok, reason = training_eligibility("unknown", "verified")
-    assert ok is False and reason == "non_photographic_asset"
+    assert ok is False and reason == "asset_type_unknown"
 
 
 def test_historical_photograph_eligible_but_metadata_retained():

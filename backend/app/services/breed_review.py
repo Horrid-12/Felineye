@@ -83,12 +83,34 @@ def image_status(reviews: List[Dict[str, Any]], image_id: str) -> str:
     return "pending"
 
 
+def review_progress(reviews: List[Dict[str, Any]], image_id: str,
+                    reviewer: str | None = None) -> Dict[str, Any]:
+    """Per-image progress that is *not* a verification verdict.
+
+    A row can have one review recorded and still be ``pending``; the dashboard
+    needs that distinction or a single reviewer sees no movement at all.
+    """
+    mine = [r for r in reviews if r["image_id"] == image_id]
+    decisions = {"approved": 0, "rejected": 0, "ambiguous": 0}
+    for r in mine:
+        if r["decision"] in decisions:
+            decisions[r["decision"]] += 1
+    names = sorted({r["reviewer"] for r in mine})
+    me = (reviewer or "").strip().lower()
+    my = next((r["decision"] for r in mine
+               if r["reviewer"].strip().lower() == me and me), None)
+    return {"review_count": len(mine), "reviewers": names,
+            "decisions": decisions, "my_decision": my}
+
+
 def training_eligibility(asset_type: str, review_status: str) -> tuple[bool, str | None]:
     """Training only needs verified photographic assets. Unknown stays
     unverified; non-photographic types keep metadata with an exclusion reason."""
     asset_type = (asset_type or "unknown").strip().lower()
     if asset_type not in ASSET_TYPES:
         asset_type = "unknown"
+    if asset_type == "unknown":
+        return False, "asset_type_unknown"
     if asset_type not in TRAINING_ELIGIBLE_ASSET_TYPES:
         return False, EXCLUSION_REASON_NON_PHOTOGRAPHIC
     if review_status != "verified":
@@ -115,13 +137,19 @@ def sync_manifest(dataset_root: Path) -> int:
     manifest_path = dataset_root / "manifest.jsonl"
     reviews = load_reviews(dataset_root / "reviews.jsonl")
     rows = [json.loads(l) for l in manifest_path.read_text(encoding="utf-8").splitlines() if l.strip()]
+    # A reviewer-set asset type in reviews.jsonl wins over the collector's guess,
+    # so a re-sync can never undo a manual classification.
+    reviewed_asset: Dict[str, str] = {}
+    for rev in reviews:
+        if rev.get("asset_type"):
+            reviewed_asset[rev["image_id"]] = rev["asset_type"]
     verified = 0
     for r in rows:
         st = image_status(reviews, r["id"])
         r["review_status"] = st
         r["label_confidence"] = "verified" if st == "verified" else "unverified"
         r["reviewers"] = sorted({x["reviewer"] for x in reviews if x["image_id"] == r["id"]})
-        asset_type = (r.get("asset_type") or "unknown").strip().lower()
+        asset_type = (reviewed_asset.get(r["id"]) or r.get("asset_type") or "unknown").strip().lower()
         if asset_type not in ASSET_TYPES:
             asset_type = "unknown"
         r["asset_type"] = asset_type
@@ -136,24 +164,42 @@ def sync_manifest(dataset_root: Path) -> int:
     return verified
 
 
-def review_report(dataset_root: Path) -> Dict[str, Any]:
+def review_report(dataset_root: Path, reviewer: str | None = None) -> Dict[str, Any]:
     manifest_path = dataset_root / "manifest.jsonl"
     reviews = load_reviews(dataset_root / "reviews.jsonl")
     rows = [json.loads(l) for l in manifest_path.read_text(encoding="utf-8").splitlines() if l.strip()]
     status_by_id = {r["id"]: image_status(reviews, r["id"]) for r in rows}
+    progress_by_id = {r["id"]: review_progress(reviews, r["id"], reviewer) for r in rows}
+    me = (reviewer or "").strip().lower()
     per: Dict[str, Dict[str, int]] = {}
     for r in rows:
-        b = per.setdefault(r["breed_id"], {"total": 0, "verified": 0, "rejected": 0,
-                                           "ambiguous": 0, "contested": 0, "pending": 0})
+        b = per.setdefault(r["breed_id"], {
+            "total": 0, "verified": 0, "rejected": 0, "ambiguous": 0,
+            "contested": 0, "pending": 0,
+            "reviewed": 0, "unreviewed": 0, "awaiting_second": 0, "mine": 0,
+        })
+        st = status_by_id[r["id"]]
+        prog = progress_by_id[r["id"]]
         b["total"] += 1
-        b[status_by_id[r["id"]]] += 1
+        b[st] += 1
+        b["reviewed"] += 1 if prog["review_count"] else 0
+        b["unreviewed"] += 0 if prog["review_count"] else 1
+        # One recorded review and still no verdict = waiting on a second reviewer.
+        b["awaiting_second"] += 1 if (prog["review_count"] >= 1 and st == "pending") else 0
+        b["mine"] += 1 if prog["my_decision"] else 0
     for b, v in per.items():
         n = v["total"] or 1
         v["approval_rate"] = round(v["verified"] / n, 4)
         v["rejection_rate"] = round(v["rejected"] / n, 4)
         v["ambiguity_rate"] = round(v["ambiguous"] / n, 4)
+        v["reviewed_rate"] = round(v["reviewed"] / n, 4)
     return {"generated": time.strftime("%Y-%m-%d"),
+            "reviewer": reviewer,
             "total": len(rows), "total_verified": sum(v["verified"] for v in per.values()),
+            "total_reviewed": sum(v["reviewed"] for v in per.values()),
+            "total_unreviewed": sum(v["unreviewed"] for v in per.values()),
+            "total_awaiting_second": sum(v["awaiting_second"] for v in per.values()),
+            "total_mine": sum(v["mine"] for v in per.values()),
             "per_breed": per, "special_checks": SPECIAL_CHECKS}
 
 

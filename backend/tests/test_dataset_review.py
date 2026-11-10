@@ -90,6 +90,30 @@ def test_stats_filter_pagination(dataset_root):
     assert page2["total"] == 3 and len(page2["items"]) == 1
 
 
+def test_stats_report_single_review_progress(dataset_root):
+    """One recorded review must move *progress* counters even though the
+    verdict stays pending (two-reviewer rule). This is what the dashboard reads."""
+    from backend.app.routes import dataset_review
+    dataset_review.settings.reviewer_session_secret = SECRET
+    dataset_review.settings.reviewer_names = "reviewer-a,reviewer-b"
+    item = client.get("/api/dataset-review/candidates", headers=_h()).json()["items"][0]
+    assert item["review_count"] == 0 and item["my_decision"] is None
+    client.post(f"/api/dataset-review/candidates/{item['id'][:16]}/review", headers=_h(),
+                json={"decision": "approved", "expected_reviews": 0})
+    stats = client.get("/api/dataset-review/stats", headers=_h()).json()
+    assert stats["total"] == 3
+    assert stats["total_reviewed"] == 1 and stats["total_unreviewed"] == 2
+    assert stats["total_awaiting_second"] == 1 and stats["total_mine"] == 1
+    assert stats["total_verified"] == 0  # single approval is not verification
+    after = client.get("/api/dataset-review/candidates", headers=_h()).json()["items"][0]
+    assert after["status"] == "pending" and after["review_count"] == 1
+    assert after["my_decision"] == "approved" and after["reviewers"] == [REV]
+    mine = client.get("/api/dataset-review/candidates?review_state=mine", headers=_h()).json()
+    assert mine["total"] == 1
+    un = client.get("/api/dataset-review/candidates?review_state=unreviewed", headers=_h()).json()
+    assert un["total"] == 2
+
+
 def test_two_reviewer_verification_and_duplicate_guard(dataset_root):
     from backend.app.routes import dataset_review
     dataset_review.settings.reviewer_session_secret = SECRET

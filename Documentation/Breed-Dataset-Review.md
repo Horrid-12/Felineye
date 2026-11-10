@@ -6,7 +6,9 @@
 
 App navigation **Dataset Review** (Navbar, ActivePage `dataset-review`). Design system: felid palette, brutalist cards, felid-accent/ivory/muted, display+mono typography, `bg-[#141218]` / `bg-[#0c0a0e]` / `bg-[#1d1922]` surfaces.
 
-Flow: sign in with allow-listed reviewer handle (`REVIEWER_NAMES` + `REVIEWER_SESSION_SECRET` HMAC session) → Dashboard (total/pending/verified/rejected/ambiguous/contested + per-breed progress + reviewer activity, breed/status/source filters) → Review workspace (one image at a time: large preview with zoom 0.5–4×, claimed breed, source title/link, author, licence, resolution/size, SHA-256, special check, existing decisions; Approve/Reject/Ambiguous with reason-required validation; prev/next + keyboard A/R/U and ←/→; position `n of N`).
+Flow: sign in with allow-listed reviewer handle (`REVIEWER_NAMES` + `REVIEWER_SESSION_SECRET` HMAC session) → Dashboard (total/unreviewed/awaiting-2nd/your-decisions/verified/rejected/ambiguous/contested cards, per-breed progress bars, candidate table, breed/verdict/progress/source filters) → Review workspace (one image at a time: large preview with zoom 0.5–4×, claimed breed, source title/link, author, licence, resolution/size, SHA-256, review count + your own decision, special check; Approve/Reject/Ambiguous with reason-required validation; prev/next + keyboard A/R/U and ←/→; position `n of N`).
+
+Single-review progress is tracked separately from the verdict: a decision from one reviewer leaves the row `pending` (two-reviewer rule) but increments `reviewed` / `awaiting_second` / `mine`, so the dashboard moves immediately. `GET /candidates?review_state=unreviewed|awaiting_second|mine|not_mine` filters on that. The workspace hides rows you already decided (toggle "include mine") and advances to the next unreviewed image after each decision; it sends the row's real `review_count` as `expected_reviews`, so re-deciding a row 409s instead of silently duplicating.
 
 Backend: `backend/app/routes/dataset_review.py` (`/api/dataset-review/*`): `POST /login`, `GET /me`, `GET /stats`, `GET /candidates` (filter+pagination), `GET /candidates/{id}`, `GET /candidates/{id}/image` (authenticated FileResponse, no fs paths in payloads), `POST /candidates/{id}/review` (optimistic `expected_reviews` + thread lock; duplicate → 409; stale → 409). Status logic stays in `breed_review.py` — React never computes it. Reviewer identity derives from the session token only.
 
@@ -52,7 +54,7 @@ Labels are never changed; candidate images stay under `images/candidates/`.
 
 ## Asset types
 
-Fields: `asset_type` (9 values incl. `unknown`), `training_eligible`, `exclusion_reason` (`non_photographic_asset` | `not_yet_verified`). Only `animal_photograph` + `historical_photograph` meeting two-review verification enter a training export (`training_export_rows` filters). Collector guesses conservatively from titles (real photos stay `unknown`); reviewers set the type manually via the workspace select. Pilot audit (125): `unknown` ×120, `diagram_or_infographic` ×2, `book_illustration` ×2, `painting_or_artwork` ×1 — the 5 non-photographic rows are **retained with metadata** for a historical/cultural archive, never deleted, never trained on.
+Fields: `asset_type` (9 values incl. `unknown`), `training_eligible`, `exclusion_reason` (`non_photographic_asset` | `asset_type_unknown` | `not_yet_verified`). Only `animal_photograph` + `historical_photograph` meeting two-review verification enter a training export (`training_export_rows` filters). Collector guesses conservatively from titles (real photos stay `unknown`); reviewers set the type manually via the workspace select, and a reviewer-set type in `reviews.jsonl` always wins over the collector guess on re-sync. Pilot audit (125): 114 `unknown`, 7 `book_illustration`, 2 `diagram_or_infographic`, 1 `sculpture_or_artefact` (the 1970 Isle of Man Manx coin), 1 `painting_or_artwork` — non-photographic rows are **retained with metadata** for a historical/cultural archive, never deleted, never trained on.
 
 ## Backend
 
@@ -65,6 +67,6 @@ backend\.venv\Scripts\python.exe backend\scripts\review_breed_candidates.py sync
 backend\.venv\Scripts\python.exe backend\scripts\review_breed_candidates.py report
 ```
 
-`review_report.json` (gitignored): per-breed totals + verified/rejected/ambiguous/contested/pending + rates. Initial state: **0.0% approval across all 5 breeds (125 pending)** — honest emptiness, not a missed deadline.
+`review_report.json` (gitignored): per-breed totals + verified/rejected/ambiguous/contested/pending + `reviewed`/`unreviewed`/`awaiting_second`/`mine` + rates. Initial state: **0 verified, 125 pending** — honest emptiness, not a missed deadline. Verified only moves with a second distinct reviewer.
 
-**Tests:** `backend/tests/test_breed_review.py` (7) + `backend/tests/test_dataset_review.py` (5: auth, stats/filter/pagination, two-approver verification, duplicate/stale 409, contested, reason-required, auth-only image with no fs paths) + `frontend/src/tests/DatasetReviewPage.test.tsx` (3: login→dashboard, navigation/keyboard A/R, client-side reason guard). Backend **106 passed**, frontend **40 passed**, build OK.
+**Tests:** `backend/tests/test_breed_review.py` (7) + `backend/tests/test_dataset_review.py` (6, incl. single-review progress counters and `review_state` filters) + `backend/tests/test_asset_types.py` (6) + `frontend/src/tests/DatasetReviewPage.test.tsx` (5: login→dashboard, authenticated image blob, navigation/keyboard A/R, progress cards, decision advance + reason guard). Backend **113 passed**, frontend **43 passed**, build OK.
