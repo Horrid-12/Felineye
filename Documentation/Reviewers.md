@@ -2,11 +2,11 @@
 
 **Date:** 2026-11-11 · **Status:** Handles registered; sessions disabled until secrets are configured.
 
-| Handle | Role | Rationale |
-|---|---|---|
-| `reviewer-a` | **Primary reviewer (operator)** | Owner/approver of the 125 pilot candidates; sign in via Dataset Review → handle |
+| Handle         | Role                                    | Rationale                                                                                    |
+| -------------- | --------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `reviewer-a` | **Primary reviewer (operator)**   | Owner/approver of the 125 pilot candidates; sign in via Dataset Review → handle             |
 | `reviewer-b` | **Second reviewer (independent)** | Must be a human other than approval author; required for verification (2 distinct approvals) |
-| `reviewer-c` | **Reserve** | Available for contested tie-input (never auto-resolves) |
+| `reviewer-c` | **Reserve**                       | Available for contested tie-input (never auto-resolves)                                      |
 
 ## Configuration (backend env, never committed)
 
