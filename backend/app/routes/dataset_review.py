@@ -1,4 +1,4 @@
-"""Dataset Review API (Phase 4) — authenticated two-reviewer workspace.
+"""Dataset Review API — authenticated review workspace.
 
 Single source of truth stays ``services/breed_review.py``; React never
 re-implements status logic. Reviewer identity comes from a server session
@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 import threading
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -37,7 +38,6 @@ def _manifest() -> List[Dict[str, Any]]:
     p = _root() / "manifest.jsonl"
     if not p.exists():
         return []
-    import json
     return [json.loads(l) for l in p.read_text(encoding="utf-8").splitlines() if l.strip()]
 
 
@@ -205,15 +205,9 @@ def submit_review(image_ref: str, body: ReviewBody, reviewer: str = Depends(veri
                                   reviewer, body.decision, body.reason, body.asset_type)
         except ValueError as exc:
             raise HTTPException(409, str(exc))
-        # Persist reviewer-set asset type + eligibility on the manifest row.
-        from ..services.breed_review import sync_manifest, training_eligibility
-        if body.asset_type:
-            rows = _manifest()
-            for r in rows:
-                if r["id"] == row["id"]:
-                    r["asset_type"] = body.asset_type
-            (_root() / "manifest.jsonl").write_text(
-                "".join(json.dumps(r, ensure_ascii=True) + "\n" for r in rows), encoding="utf-8")
+        # sync_manifest also applies a reviewer-set asset_type (it reads it from
+        # reviews.jsonl), so this remains the single place that rewrites the row.
+        from ..services.breed_review import sync_manifest
         sync_manifest(_root())
         status = image_status(_reviews(), row["id"])
     return {"review": saved, "status": status}

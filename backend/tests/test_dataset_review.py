@@ -115,6 +115,25 @@ def test_stats_report_single_review_progress(dataset_root):
     assert un["total"] == 2
 
 
+def test_review_with_asset_type_persists_without_crashing(dataset_root):
+    """Regression: a review carrying asset_type used to hit a NameError while
+    rewriting the manifest, after the review row had already been appended."""
+    from backend.app.routes import dataset_review
+    dataset_review.settings.reviewer_session_secret = SECRET
+    dataset_review.settings.reviewer_names = "reviewer-a,reviewer-b"
+    item = client.get("/api/dataset-review/candidates", headers=_h()).json()["items"][0]
+    res = client.post(f"/api/dataset-review/candidates/{item['id'][:16]}/review", headers=_h(),
+                      json={"decision": "rejected", "reason": "coin, not a photograph",
+                            "asset_type": "sculpture_or_artefact", "expected_reviews": 0})
+    assert res.status_code == 200 and res.json()["status"] == "rejected"
+    rows = [json.loads(l) for l in (dataset_root / "manifest.jsonl").read_text().splitlines() if l.strip()]
+    row = next(r for r in rows if r["id"] == item["id"])
+    assert row["asset_type"] == "sculpture_or_artefact"
+    assert row["training_eligible"] is False
+    assert row["exclusion_reason"] == "non_photographic_asset"
+    assert row["review_status"] == "rejected"
+
+
 def test_two_reviewer_mode_keeps_rows_pending(dataset_root, monkeypatch):
     monkeypatch.setenv("REVIEW_APPROVALS_REQUIRED", "2")
     from backend.app.routes import dataset_review
