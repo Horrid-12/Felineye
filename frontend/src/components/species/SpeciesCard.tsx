@@ -23,7 +23,7 @@ export const SpeciesCard: React.FC<Props> = ({ species, onClick }) => {
         <img
           src={species.thumbnail_url}
           alt={species.common_name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
 

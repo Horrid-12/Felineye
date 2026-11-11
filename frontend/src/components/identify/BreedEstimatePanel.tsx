@@ -53,7 +53,7 @@ export const BreedEstimatePanel: React.FC<Props> = ({
             <img
               src={breed.thumbnail_url}
               alt={breed.common_name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-top"
               loading="lazy"
             />
           </div>

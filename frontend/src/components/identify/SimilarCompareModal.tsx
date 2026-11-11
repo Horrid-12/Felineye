@@ -91,7 +91,7 @@ export const SimilarCompareModal: React.FC<Props> = ({ sourceSlug, onClose, onNa
                     <img
                       src={sourceDetail.image_url}
                       alt={sourceDetail.common_name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                     />
                     <div className="absolute top-2 right-2">
                       <ConservationBadge status={sourceDetail.conservation_status} />
@@ -131,7 +131,7 @@ export const SimilarCompareModal: React.FC<Props> = ({ sourceSlug, onClose, onNa
                       <img
                         src={targetDetail.image_url}
                         alt={targetDetail.common_name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-top"
                       />
                       <div className="absolute top-2 right-2">
                         <ConservationBadge status={targetDetail.conservation_status} />

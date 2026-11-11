@@ -146,7 +146,7 @@ export const DomesticCatsSection: React.FC<Props> = ({ onSelectTaxon, search }) 
                     <img
                       src={breed.thumbnail_url}
                       alt={breed.common_name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
                   ) : (
@@ -226,7 +226,7 @@ export const DomesticCatsSection: React.FC<Props> = ({ onSelectTaxon, search }) 
                     <img
                       src={hybrid.thumbnail_url}
                       alt={hybrid.common_name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                       loading="lazy"
                     />
                   </div>

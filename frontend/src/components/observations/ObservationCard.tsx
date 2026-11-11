@@ -15,7 +15,7 @@ export const ObservationCard: React.FC<Props> = ({ observation }) => {
           <img
             src={observation.image_url}
             alt={observation.species_name}
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            className="w-full h-full object-cover object-top transition-transform duration-500 hover:scale-105"
             loading="lazy"
           />
         ) : (

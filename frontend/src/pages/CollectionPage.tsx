@@ -257,7 +257,7 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
                     <img
                       src={sp.thumbnail_url}
                       alt={sp.common_name}
-                      className={`w-full h-full object-cover transition-all ${
+                      className={`w-full h-full object-cover object-top transition-all ${
                         isFound ? 'filter-none' : 'grayscale contrast-125 brightness-40'
                       }`}
                       loading="lazy"

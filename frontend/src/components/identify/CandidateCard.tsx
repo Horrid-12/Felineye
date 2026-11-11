@@ -61,7 +61,7 @@ export const CandidateCard: React.FC<Props> = ({
             <img
               src={candidate.thumbnail_url}
               alt={candidate.common_name}
-              className="w-full h-full object-cover transition-transform group-hover:scale-105"
+              className="w-full h-full object-cover object-top transition-transform group-hover:scale-105"
               loading="lazy"
             />
             {/* Viewfinder crosshairs in corners */}

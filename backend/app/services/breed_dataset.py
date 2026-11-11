@@ -10,9 +10,11 @@ Pure stdlib + Pillow; the API runtime never imports this module.
 """
 from __future__ import annotations
 
+import colorsys
 import hashlib
 import html
 import json
+import math
 import re
 import time
 import urllib.error
@@ -91,6 +93,50 @@ SKIP_TITLE_TOKENS = (
     "stamp", "sculpture", "skeleton", "skull", "taxidermy", "anatomy", "genetic",
     "head", "kitten", "museo", "museum", "specimen",
 )
+
+# --- retrieval relevance -----------------------------------------------------
+# Commons full-text search is only a fallback for thin categories, and it
+# matches any file whose *text* mentions the words. "Manx cats" therefore
+# returns Isle of Man TT motorcycles ("2019 Senior Manx Grand Prix") and
+# "Siamese cats" returns book plates, swans and unrelated portraits. A search
+# hit must name the breed in the file title; a direct category member is a
+# trustworthy hint on its own but still drops known non-cat subjects.
+BREED_TITLE_TOKENS: Dict[str, Tuple[str, ...]] = {
+    "manx": ("manx",),
+    "siamese": ("siamese",),
+    "norwegian-forest-cat": ("norwegian forest", "skogkatt"),
+    "tonkinese": ("tonkinese",),
+    "siberian": ("siberian",),
+}
+IRRELEVANT_TITLE_PATTERN = re.compile(
+    r"\b(?:"
+    r"grand prix|motorbike|motor cycle|motorcycle|motorsport|norton|suzuki|"
+    r"yamaha|honda|kawasaki|ducati|triumph|racing|racer|race|rally|"
+    r"steam packet|ferry|steamship|ship|yacht|hovercraft|railway|locomotive|"
+    r"tram|bus|aircraft|aeroplane|airplane|"
+    r"football|rugby|cricket|cyclist|bicycle|athlete|marathon|stadium|"
+    r"gravestone|headstone|memorial|war memorial|"
+    r")s?\b", re.I)
+# Breeds that are routinely mis-filed under a target breed (Cymric is the
+# long-haired Manx variant but a distinct CFA breed; bobtails are not Manx).
+FOREIGN_BREED_TOKENS = (
+    "cymric", "owyhee bob", "mountain bob", "pixie-bob", "japanese bobtail",
+    "american bobtail", "karelian bobtail", "kurilian bobtail",
+)
+
+# --- colour gate -------------------------------------------------------------
+# Users cannot judge a breed from a monochrome scan: coat colour is a primary
+# Siamese/Manx cue. White-balancing first removes a global sepia/cyan cast, so
+# a toned historical scan collapses to grey while a real colour photo keeps a
+# broad hue spread. Thresholds were calibrated on the pilot + round-2 batches
+# (see Documentation/Breed-Dataset-Collection.md).
+HUE_BINS = 36
+COLOUR_SAMPLE = 160
+MONOCHROME_MAX_COLOUR_FRACTION = 0.02   # hard floor: essentially grey
+TONED_MAX_COLOUR_FRACTION = 0.06        # sepia/duotone: tint mostly cancels
+TONED_MAX_HUE_ENTROPY = 2.2
+TONED_MIN_DOMINANT_SHARE = 0.45
+
 MIN_WIDTH = 400
 MIN_HEIGHT = 400
 ALLOWED_MIMES = {"image/jpeg", "image/png"}
@@ -145,6 +191,88 @@ def hamming(a: int, b: int) -> int:
 
 def is_near_duplicate(ph: int, seen: Iterable[int], threshold: int = 5) -> bool:
     return any(hamming(ph, s) <= threshold for s in seen)
+
+
+def breed_title_tokens(breed_id: str, category: str = "") -> Tuple[str, ...]:
+    """Title tokens that identify the target breed (breed map, else category)."""
+    tokens = BREED_TITLE_TOKENS.get(breed_id or "")
+    if tokens:
+        return tokens
+    base = re.sub(r"\s*\(cat\)\s*$", "", category or "", flags=re.I)
+    base = re.sub(r"\s+cats?$", "", base, flags=re.I).strip().lower()
+    return (base,) if base else ()
+
+
+def title_mentions_breed(title: str, breed_id: str, category: str = "") -> bool:
+    """Whole-word/phrase match so "Manxman" (a ship) is not a Manx cat."""
+    lowered = (title or "").lower()
+    return any(re.search(rf"\b{re.escape(tok)}\b", lowered)
+               for tok in breed_title_tokens(breed_id, category))
+
+
+def title_is_irrelevant(title: str) -> bool:
+    """Titles about vehicles, races, sports or memorials are never a cat photo."""
+    return bool(IRRELEVANT_TITLE_PATTERN.search(title or ""))
+
+
+def title_has_foreign_breed(title: str, breed_id: str, category: str = "") -> bool:
+    """True when the title names a different breed and not the target."""
+    lowered = (title or "").lower()
+    if any(tok in lowered for tok in breed_title_tokens(breed_id, category)):
+        return False
+    return any(tok in lowered for tok in FOREIGN_BREED_TOKENS)
+
+
+def colour_profile(image: Image.Image) -> Dict[str, Any]:
+    """White-balanced colour statistics used by the collection colour gate.
+
+    ``colour_fraction`` is the share of pixels that stay chromatic after a
+    grey-world white balance (a sepia scan loses its tint and drops to ~0).
+    ``hue_entropy``/``dominant_share`` describe how much of that colour is one
+    narrow band (duotone) versus a real, varied colour photo.
+    """
+    im = image.convert("RGB")
+    im.thumbnail((COLOUR_SAMPLE, COLOUR_SAMPLE))
+    pixels = list(im.getdata())
+    total = len(pixels) or 1
+    means = [max(1.0, sum(p[i] for p in pixels) / total) for i in range(3)]
+    target = sum(means) / 3.0
+    scale = [target / m for m in means]
+    bins = [0] * HUE_BINS
+    coloured = 0
+    for r, g, b in pixels:
+        r = min(255, r * scale[0])
+        g = min(255, g * scale[1])
+        b = min(255, b * scale[2])
+        mx, mn = max(r, g, b), min(r, g, b)
+        if mx - mn >= 20 and mx >= 45:
+            hue, _, _ = colorsys.rgb_to_hsv(r / 255.0, g / 255.0, b / 255.0)
+            bins[int(hue * HUE_BINS) % HUE_BINS] += 1
+            coloured += 1
+    fraction = coloured / total
+    if coloured:
+        probs = [c / coloured for c in bins if c]
+        entropy = -sum(p * math.log2(p) for p in probs)
+        dominant = max(bins) / coloured
+        used = sum(1 for c in bins if c / coloured >= 0.01)
+    else:
+        entropy, dominant, used = 0.0, 0.0, 0
+    return {"colour_fraction": round(fraction, 4),
+            "hue_entropy": round(entropy, 3),
+            "dominant_share": round(dominant, 3),
+            "hue_bins": used}
+
+
+def monochrome_reason(profile: Dict[str, Any]) -> Optional[str]:
+    """``greyscale`` / ``toned_monochrome`` when a photo carries no usable colour."""
+    fraction = float(profile.get("colour_fraction") or 0.0)
+    if fraction < MONOCHROME_MAX_COLOUR_FRACTION:
+        return "greyscale"
+    if (fraction < TONED_MAX_COLOUR_FRACTION
+            and float(profile.get("hue_entropy") or 0.0) < TONED_MAX_HUE_ENTROPY
+            and float(profile.get("dominant_share") or 0.0) >= TONED_MIN_DOMINANT_SHARE):
+        return "toned_monochrome"
+    return None
 
 
 def validate_image_bytes(data: bytes) -> tuple[Image.Image, int, int, str]:

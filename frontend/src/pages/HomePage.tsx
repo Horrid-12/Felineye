@@ -149,7 +149,7 @@ export const HomePage: React.FC<Props> = ({ setActivePage, onSelectSpecies, onOp
                   <img
                     src={featured.image_url}
                     alt={featured.common_name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black text-[9px] font-mono text-felid-muted border border-black">
                     {featured.image_attribution}

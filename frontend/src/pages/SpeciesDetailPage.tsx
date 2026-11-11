@@ -56,7 +56,7 @@ const SpeciesView: React.FC<{
           <img
             src={species.image_url}
             alt={species.common_name}
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-top"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
@@ -317,7 +317,7 @@ const BreedView: React.FC<{
     <div className="border-2 border-black bg-[#141218] shadow-brutal-lg overflow-hidden">
       <div className="relative h-72 sm:h-96 w-full overflow-hidden bg-black border-b-2 border-black">
         {breed.image_url ? (
-          <img src={breed.image_url} alt={breed.common_name} className="w-full h-full object-cover object-center" />
+          <img src={breed.image_url} alt={breed.common_name} className="w-full h-full object-cover object-top" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-felid-muted">
             <Cat className="w-16 h-16" />
@@ -453,7 +453,7 @@ const HybridView: React.FC<{
     <div className="border-2 border-black bg-[#141218] shadow-brutal-lg overflow-hidden">
       <div className="relative h-64 sm:h-80 w-full overflow-hidden bg-black border-b-2 border-black">
         {hybrid.image_url ? (
-          <img src={hybrid.image_url} alt={hybrid.common_name} className="w-full h-full object-cover object-center" />
+          <img src={hybrid.image_url} alt={hybrid.common_name} className="w-full h-full object-cover object-top" />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-felid-muted">
             <Dna className="w-12 h-12" />
