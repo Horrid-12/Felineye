@@ -462,6 +462,11 @@ interface WorkspaceProps {
   onDecided?: () => void;
 }
 
+/** A candidate the workspace should queue by default: no verdict yet and no
+ *  decision from this reviewer. Rows rejected/approved by anyone else are done. */
+export const isQueueItem = (c: DatasetCandidate): boolean =>
+  c.status === 'pending' && !c.my_decision;
+
 export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({
   session,
   reviewer,
@@ -477,7 +482,7 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({
   const [message, setMessage] = useState('');
   const [imageSrc, setImageSrc] = useState('');
   const [imageError, setImageError] = useState('');
-  const [includeMine, setIncludeMine] = useState(false);
+  const [includeDecided, setIncludeDecided] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const load = useCallback(() => {
@@ -494,11 +499,12 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({
     load();
   }, [load]);
 
-  // Default: only show images this reviewer has not decided on, so the queue
-  // actually shrinks as you work instead of looping over the same rows.
+  // Default: only genuinely open rows. Hiding solely on `my_decision` leaves
+  // rows another reviewer already rejected (e.g. the quality gate) in the
+  // queue forever, so resolved verdicts are excluded too.
   const items = useMemo(
-    () => (includeMine ? allItems : allItems.filter((c) => !c.my_decision)),
-    [allItems, includeMine],
+    () => (includeDecided ? allItems : allItems.filter(isQueueItem)),
+    [allItems, includeDecided],
   );
 
   useEffect(() => {
@@ -570,15 +576,15 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({
           page_size: 100,
         });
         setAllItems(r.items);
-        const nextItems = includeMine ? r.items : r.items.filter((c) => !c.my_decision);
-        setIndex((i) => Math.max(0, Math.min(includeMine ? i + 1 : i, nextItems.length - 1)));
+        const nextItems = includeDecided ? r.items : r.items.filter(isQueueItem);
+        setIndex((i) => Math.max(0, Math.min(includeDecided ? i + 1 : i, nextItems.length - 1)));
       } catch (err: any) {
         setMessage(err?.message || 'Submission failed.');
       } finally {
         setSubmitting(false);
       }
     },
-    [current, reason, assetType, session, breed, includeMine, submitting, onDecided],
+    [current, reason, assetType, session, breed, includeDecided, submitting, onDecided],
   );
 
   useEffect(() => {
@@ -604,16 +610,17 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({
             Queue complete for this filter
           </p>
           <p className="text-xs sm:text-sm font-sans text-felid-muted-ink">
-            You have reviewed every candidate here. Switch breed, or include your decisions to revisit them.
+            Every open candidate here has a verdict. Switch breed, or include decided images to
+            revisit resolved rows.
           </p>
           <label className="inline-flex items-center gap-2 text-xs font-mono text-felid-muted-ink mt-2 cursor-pointer">
             <input
               type="checkbox"
-              checked={includeMine}
-              onChange={(e) => setIncludeMine(e.target.checked)}
+              checked={includeDecided}
+              onChange={(e) => setIncludeDecided(e.target.checked)}
               className="accent-felid-cobalt"
             />
-            <span>Include images I already reviewed ({allItems.length})</span>
+            <span>Include decided images ({allItems.length})</span>
           </label>
         </div>
       </section>
@@ -651,11 +658,11 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({
           <label className="inline-flex items-center gap-1.5 text-xs font-mono text-felid-muted-ink mr-1 cursor-pointer">
             <input
               type="checkbox"
-              checked={includeMine}
-              onChange={(e) => setIncludeMine(e.target.checked)}
+              checked={includeDecided}
+              onChange={(e) => setIncludeDecided(e.target.checked)}
               className="accent-felid-cobalt"
             />
-            <span>include mine</span>
+            <span>include decided</span>
           </label>
           <button
             type="button"

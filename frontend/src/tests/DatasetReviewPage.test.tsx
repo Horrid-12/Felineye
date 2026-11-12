@@ -118,6 +118,33 @@ it('a decision advances to the next unreviewed image and drops the decided row',
   expect(api.submitDatasetReview).toHaveBeenCalledWith('sess', expect.any(String), expect.objectContaining({ expected_reviews: 0 }));
 });
 
+it('workspace queue hides rows rejected by another reviewer until decided images are included', async () => {
+  const rejected = {
+    ...candidates[0],
+    status: 'rejected',
+    review_count: 1,
+    my_decision: null,
+    quality_flags: ['greyscale'],
+  };
+  vi.spyOn(api, 'getDatasetCandidates').mockResolvedValue({
+    total: 2, page: 1, page_size: 100, items: [rejected, candidates[1]],
+  } as any);
+
+  render(<DatasetReviewPage />);
+  await act(async () => { fireEvent.change(screen.getByTestId('reviewer-input'), { target: { value: 'reviewer-a' } }); });
+  await act(async () => { fireEvent.click(screen.getByText('Sign in')); });
+  await act(async () => { fireEvent.click(screen.getByText('Review workspace')); });
+
+  // Only the genuinely open row is queued; the quality-gate rejection is done.
+  expect(await screen.findByText(/Image 1 of 1/)).toBeTruthy();
+  expect(await screen.findByText(/File:siamese 2/)).toBeTruthy();
+  expect(screen.queryByText(/File:siamese 1/)).toBeNull();
+
+  await act(async () => { fireEvent.click(screen.getByText('include decided')); });
+  expect(await screen.findByText(/Image 1 of 2/)).toBeTruthy();
+  expect(await screen.findByText(/File:siamese 1/)).toBeTruthy();
+});
+
 it('dashboard shows the round-2 collection gap by priority', async () => {
   render(<DatasetReviewPage />);
   await act(async () => { fireEvent.change(screen.getByTestId('reviewer-input'), { target: { value: 'reviewer-a' } }); });
@@ -164,6 +191,9 @@ it('candidate table uses required_reviewers denominator and zoom resizes image l
   expect(table.textContent).not.toContain('1/2 reviews');
 
   await act(async () => { fireEvent.click(screen.getByText('Review workspace')); });
+  // A verified row is resolved, so it is not in the default queue.
+  expect(await screen.findByTestId('workspace-empty')).toBeTruthy();
+  await act(async () => { fireEvent.click(screen.getByRole('checkbox')); });
   const img = await screen.findByAltText('File:siamese 1') as HTMLImageElement;
   expect(img.style.width).toBe('auto');
 
