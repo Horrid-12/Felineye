@@ -169,6 +169,7 @@ def candidates(
             "bytes": r.get("bytes"), "sha256": r.get("sha256"),
             "asset_type": r.get("asset_type", "unknown"),
             "training_eligible": eligible, "exclusion_reason": exclusion,
+            "quality_flags": r.get("quality_flags", []),
             "review_count": prog["review_count"], "reviewers": prog["reviewers"],
             "my_decision": prog["my_decision"],
             "special_check": SPECIAL_CHECKS.get(r["breed_id"], ""),

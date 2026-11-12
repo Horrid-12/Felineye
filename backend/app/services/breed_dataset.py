@@ -115,7 +115,7 @@ IRRELEVANT_TITLE_PATTERN = re.compile(
     r"steam packet|ferry|steamship|ship|yacht|hovercraft|railway|locomotive|"
     r"tram|bus|aircraft|aeroplane|airplane|"
     r"football|rugby|cricket|cyclist|bicycle|athlete|marathon|stadium|"
-    r"gravestone|headstone|memorial|war memorial|"
+    r"gravestone|headstone|memorial|war memorial"
     r")s?\b", re.I)
 # Breeds that are routinely mis-filed under a target breed (Cymric is the
 # long-haired Manx variant but a distinct CFA breed; bobtails are not Manx).
@@ -233,7 +233,8 @@ def colour_profile(image: Image.Image) -> Dict[str, Any]:
     """
     im = image.convert("RGB")
     im.thumbnail((COLOUR_SAMPLE, COLOUR_SAMPLE))
-    pixels = list(im.getdata())
+    raw = im.tobytes()
+    pixels = [(raw[i], raw[i + 1], raw[i + 2]) for i in range(0, len(raw), 3)]
     total = len(pixels) or 1
     means = [max(1.0, sum(p[i] for p in pixels) / total) for i in range(3)]
     target = sum(means) / 3.0
@@ -360,17 +361,23 @@ def _category_pages(client: CommonsClient, category: str, limit: int, gcmtype: s
     return client.api(params)
 
 
-def list_category_files(client: CommonsClient, category: str, limit: int) -> List[Dict[str, Any]]:
+def list_category_files(client: CommonsClient, category: str, limit: int,
+                        breed_id: str = "") -> List[Dict[str, Any]]:
     """Return imageinfo rows for a Commons category (jpeg/png, min size, no junk titles).
 
     Recurses one level into subcategories (e.g. Norwegian Forest cats has only
     subcats), then falls back to Commons full-text search so filing quirks in a
     few thin categories don't starve the run. Pages are deduped by title.
+
+    Every row records where it came from (``retrieval``): ``search`` rows must
+    name the target breed in the file title, while category/subcategory rows are
+    trusted as a retrieval hint. Titles naming vehicles, races or another breed
+    are dropped either way.
     """
     rows: List[Dict[str, Any]] = []
     seen: set[str] = set()
 
-    def add_pages(data: Dict[str, Any]) -> None:
+    def add_pages(data: Dict[str, Any], retrieval: str) -> None:
         for page in (data.get("query", {}).get("pages", {}) or {}).values():
             title = page.get("title", "")
             infos = page.get("imageinfo") or []
@@ -384,6 +391,10 @@ def list_category_files(client: CommonsClient, category: str, limit: int) -> Lis
                 continue
             if any(tok in title.lower() for tok in SKIP_TITLE_TOKENS):
                 continue
+            if title_is_irrelevant(title) or title_has_foreign_breed(title, breed_id, category):
+                continue
+            if retrieval == "search" and not title_mentions_breed(title, breed_id, category):
+                continue
             meta = info.get("extmetadata", {})
             rows.append({"title": title, "url": info.get("thumburl") or info.get("url"),
                          "description_url": info.get("descriptionurl", ""),
@@ -391,16 +402,16 @@ def list_category_files(client: CommonsClient, category: str, limit: int) -> Lis
                          "license": clean(meta.get("LicenseShortName", {}).get("value")),
                          "license_url": clean(meta.get("LicenseURL", {}).get("value")),
                          "width": int(info.get("width") or 0), "height": int(info.get("height") or 0),
-                         "mime": info.get("mime")})
+                         "mime": info.get("mime"), "retrieval": retrieval})
 
-    add_pages(_category_pages(client, category, limit))
+    add_pages(_category_pages(client, category, limit), "category")
     # One level of subcategories.
     if len(rows) < limit:
         subs = _category_pages(client, category, limit, gcmtype="subcat")
         for page in (subs.get("query", {}).get("pages", {}) or {}).values():
             sub = page.get("title", "").removeprefix("Category:")
-            if sub:
-                add_pages(_category_pages(client, sub, limit))
+            if sub and not title_is_irrelevant(sub) and not title_has_foreign_breed(sub, breed_id, category):
+                add_pages(_category_pages(client, sub, limit), "subcategory")
             if len(rows) >= limit:
                 break
     # Search fallback (filetype bitmap + breed phrase, namespace File only).
@@ -409,7 +420,7 @@ def list_category_files(client: CommonsClient, category: str, limit: int) -> Lis
             "action": "query", "generator": "search", "gsrsearch": f"{category} filetype:bitmap",
             "gsrnamespace": 6, "gsrlimit": min(500, max(limit * 3, 50)), "prop": "imageinfo",
             "iiprop": "url|mime|size|extmetadata", "iiurlwidth": 960, "format": "json"})
-        add_pages(data)
+        add_pages(data, "search")
     return rows[:limit]
 
 
@@ -436,6 +447,70 @@ def append_manifest(path: Path, row: Dict[str, Any]) -> None:
         fh.write(json.dumps(row, ensure_ascii=True) + "\n")
 
 
+QUALITY_FLAG_IRRELEVANT = "irrelevant_subject"
+QUALITY_FLAG_FOREIGN = "foreign_breed"
+QUALITY_FLAG_UNREADABLE = "unreadable"
+
+
+def quality_flags_for_row(row: Dict[str, Any], dataset_root: Path) -> List[str]:
+    """Derived quality flags for an already-collected row.
+
+    Read-only: it inspects the stored file and title, and never changes a
+    review decision, split or label. Used to surface the pre-gate round-2 batch
+    for manual rejection instead of deleting it.
+    """
+    flags: List[str] = []
+    title = row.get("title", "")
+    breed_id = row.get("breed_id", "")
+    category = row.get("category_hint", "")
+    if title_is_irrelevant(title):
+        flags.append(QUALITY_FLAG_IRRELEVANT)
+    elif title_has_foreign_breed(title, breed_id, category):
+        flags.append(QUALITY_FLAG_FOREIGN)
+    path = dataset_root / row["file"] if row.get("file") else None
+    reason = None
+    if path is not None and path.exists():
+        try:
+            with Image.open(path) as im:
+                reason = monochrome_reason(colour_profile(im))
+        except (OSError, ValueError):
+            flags.append(QUALITY_FLAG_UNREADABLE)
+    if reason:
+        flags.append(reason)
+    return flags
+
+
+def flag_manifest_quality(dataset_root: Path, apply: bool = True) -> Dict[str, Any]:
+    """Recompute ``quality_flags`` for every manifest row (append-safe rewrite).
+
+    Nothing is deleted and no review decision is invented: flagged rows stay
+    ``pending`` so a reviewer decides them. ``apply=False`` is a dry run.
+    """
+    manifest_path = dataset_root / "manifest.jsonl"
+    rows = load_manifest(manifest_path)
+    flagged: List[Dict[str, Any]] = []
+    by_flag: Dict[str, int] = {}
+    by_breed: Dict[str, int] = {}
+    for r in rows:
+        flags = quality_flags_for_row(r, dataset_root)
+        r["quality_flags"] = flags
+        if not flags:
+            continue
+        flagged.append({"id": r["id"], "breed_id": r["breed_id"],
+                        "title": r.get("title"), "flags": flags})
+        by_breed[r["breed_id"]] = by_breed.get(r["breed_id"], 0) + 1
+        for flag in flags:
+            by_flag[flag] = by_flag.get(flag, 0) + 1
+    if apply and rows:
+        tmp = dataset_root / "manifest.jsonl.tmp"
+        tmp.write_text("".join(json.dumps(r, ensure_ascii=True) + "\n" for r in rows),
+                       encoding="utf-8")
+        tmp.replace(manifest_path)
+    return {"generated": time.strftime("%Y-%m-%d"), "scanned": len(rows),
+            "flagged": len(flagged), "by_flag": by_flag, "by_breed": by_breed,
+            "applied": bool(apply and rows), "items": flagged}
+
+
 def collect_breed(
     breed_id: str, category: str, per_breed: int, client: CommonsClient,
     dataset_root: Path, legacy_hashes: Set[str], known_sha: Set[str],
@@ -454,20 +529,29 @@ def collect_breed(
     counts = {"listed": 0, "downloaded": 0, "written": 0, "rejected_license": 0,
               "rejected_title": 0, "rejected_resolution": 0, "exact_dupe": 0,
               "near_dupe": 0, "legacy_overlap": 0, "already_collected": 0,
-              "integrity_fail": 0}
+              "integrity_fail": 0, "rejected_irrelevant": 0,
+              "rejected_monochrome": 0}
     if per_breed <= 0:
         return counts
     # Snapshot once instead of re-reading the manifest inside the loop; titles
     # guard against the same Commons file being re-downloaded at a new thumb size.
     existing = load_manifest(manifest)
     known_titles = {r["title"] for r in existing if r.get("title")}
-    files = list_category_files(client, category, max(per_breed * 10, 100))
+    files = list_category_files(client, category, max(per_breed * 10, 100), breed_id)
     counts["listed"] = len(files)
     for f in files:
         if counts["written"] >= per_breed:
             break
         if f["title"] in known_titles:
             counts["already_collected"] += 1
+            continue
+        # Defence in depth: a caller may pass unfiltered listings (or an older
+        # search response), so the relevance rules run again here.
+        if title_is_irrelevant(f["title"]) or title_has_foreign_breed(f["title"], breed_id, category):
+            counts["rejected_irrelevant"] += 1
+            continue
+        if f.get("retrieval") == "search" and not title_mentions_breed(f["title"], breed_id, category):
+            counts["rejected_irrelevant"] += 1
             continue
         ok, reason = license_decision(f["author"], f["license"])
         if not ok:
@@ -498,6 +582,13 @@ def collect_breed(
                 counts["integrity_fail"] += 1
             tmp.unlink(missing_ok=True)
             continue
+        # Coat colour is a primary breed cue, so a monochrome or toned scan is
+        # not reviewable material — reject before it reaches the manifest.
+        profile = colour_profile(image)
+        if monochrome_reason(profile):
+            counts["rejected_monochrome"] += 1
+            tmp.unlink(missing_ok=True)
+            continue
         ph = dhash64(image)
         if is_near_duplicate(ph, known_ph):
             counts["near_dupe"] += 1
@@ -524,6 +615,8 @@ def collect_breed(
             "review_status": "pending",
             "audit_reason": None, "collected_at": time.strftime("%Y-%m-%d"),
             "category_hint": category,
+            "retrieval": f.get("retrieval", "category"),
+            "quality": profile, "quality_flags": [],
             "asset_type": guess_asset_type(f["title"]),
             "training_eligible": False,
             "exclusion_reason": None,

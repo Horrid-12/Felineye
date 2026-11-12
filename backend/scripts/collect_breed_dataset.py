@@ -29,8 +29,8 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 from backend.app.services.breed_dataset import (  # noqa: E402
-    CATEGORY_BY_BREED, CommonsClient, collect_breed, legacy_test_hashes,
-    load_manifest, progress_report,
+    CATEGORY_BY_BREED, CommonsClient, collect_breed, flag_manifest_quality,
+    legacy_test_hashes, load_manifest, progress_report,
 )
 from backend.app.services.collection_gap import (  # noqa: E402
     PRIORITY_BREEDS, collection_gap, target_per_breed,
@@ -57,6 +57,10 @@ def main() -> int:
                     help="round-2 eligible-photo target per breed (default 30 or COLLECTION_TARGET_PER_BREED)")
     ap.add_argument("--gaps", action="store_true",
                     help="write collection_gap.json and exit (no network)")
+    ap.add_argument("--audit-quality", action="store_true",
+                    help="flag already-collected rows (colour/relevance) and exit (no network)")
+    ap.add_argument("--dry-run", action="store_true",
+                    help="with --audit-quality: report flags without rewriting the manifest")
     ap.add_argument("--min-interval", type=float, default=2.0)
     ap.add_argument("--image-interval", type=float, default=0.6)
     ap.add_argument("--offline-report", action="store_true")
@@ -74,6 +78,17 @@ def main() -> int:
         report = write_gap_report(args.gap_target, breeds)
         print(json.dumps(report, indent=2))
         print(f"report: {DATASET_ROOT / 'collection_gap.json'}")
+        return 0
+
+    if args.audit_quality:
+        report = flag_manifest_quality(DATASET_ROOT, apply=not args.dry_run)
+        (DATASET_ROOT / "quality_audit.json").write_text(
+            json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        for item in report["items"]:
+            print(f"  {item['breed_id']:22} {item['id'][:10]} {','.join(item['flags']):32} {item['title'][:60]}")
+        print(f"scanned={report['scanned']} flagged={report['flagged']} "
+              f"applied={report['applied']} by_flag={report['by_flag']}")
+        print(f"report: {DATASET_ROOT / 'quality_audit.json'}")
         return 0
 
     if args.offline_report:

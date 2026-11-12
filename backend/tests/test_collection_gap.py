@@ -9,7 +9,9 @@ from PIL import Image, ImageDraw
 
 from backend.app.services import breed_dataset
 from backend.app.services.breed_dataset import (
-    collect_breed, dhash64, hamming, load_manifest,
+    collect_breed, colour_profile, dhash64, flag_manifest_quality, hamming,
+    list_category_files, load_manifest, monochrome_reason, title_is_irrelevant,
+    title_mentions_breed,
 )
 from backend.app.services.breed_review import append_review, sync_manifest
 from backend.app.services.collection_gap import (
@@ -244,3 +246,180 @@ def test_round_two_per_breed_is_new_candidates_and_skips_duplicates(tmp_path, mo
     assert again["already_collected"] == 3   # existing-0 + the two new rows
     assert again["exact_dupe"] == 1 and again["near_dupe"] == 1
     assert len(load_manifest(tmp_path / "manifest.jsonl")) == 5
+
+
+# --- round-2 quality gates: colour + relevance -------------------------------
+
+def _grey_image(seed=0):
+    rnd = random.Random(seed)
+    im = Image.new("RGB", (600, 600))
+    px = im.load()
+    for y in range(600):
+        for x in range(600):
+            v = (x * 3 + y * 5 + rnd.randrange(30)) % 256
+            px[x, y] = (v, v, v)
+    return im
+
+
+def _sepia_image(seed=1):
+    grey = _grey_image(seed).convert("L")
+    return Image.merge("RGB", (
+        grey.point(lambda v: min(255, int(v * 1.04))),
+        grey.point(lambda v: int(v * 0.82)),
+        grey.point(lambda v: int(v * 0.60)),
+    ))
+
+
+def test_colour_profile_separates_grey_sepia_and_colour():
+    grey = colour_profile(_grey_image())
+    sepia = colour_profile(_sepia_image())
+    colour = colour_profile(_block_image(3))
+
+    assert monochrome_reason(grey) == "greyscale"
+    assert monochrome_reason(sepia) is not None
+    assert monochrome_reason(colour) is None
+    assert colour["colour_fraction"] > 0.5
+    assert colour["hue_bins"] >= 5
+
+
+def test_title_relevance_rules():
+    assert title_is_irrelevant("File:2019 Senior Manx Grand Prix.jpg")
+    assert title_is_irrelevant("File:2026 Norton Manx R.jpg")
+    assert title_is_irrelevant("File:Manx Northern Railway locomotive.jpg")
+    # "Grace" must not trip the \brace\b rule.
+    assert not title_is_irrelevant("File:Grace the Manx cat.jpg")
+    assert title_mentions_breed("File:White Manx cat.jpg", "manx", "Manx cats")
+    # "Manxman" is a ship, not a Manx cat.
+    assert not title_mentions_breed("File:MV Manxman arriving.jpg", "manx", "Manx cats")
+    assert title_mentions_breed("File:Norwegian Forest Cat 01.jpg",
+                                "norwegian-forest-cat", "Norwegian Forest cats")
+
+
+def test_collector_rejects_monochrome_and_toned_images(tmp_path, monkeypatch):
+    blobs = {
+        "grey": _jpeg(_grey_image()),
+        "sepia": _jpeg(_sepia_image()),
+        "colour": _jpeg(_block_image(7)),
+    }
+    files = [
+        _file("File:grey siamese.jpg", "grey"),
+        _file("File:sepia siamese.jpg", "sepia"),
+        _file("File:siamese colour portrait.jpg", "colour"),
+    ]
+    monkeypatch.setattr(breed_dataset, "list_category_files", lambda *a, **k: files)
+
+    counts = collect_breed("siamese", "Siamese cats", 3, _FakeClient(blobs),
+                           tmp_path, set(), set(), [])
+
+    assert counts["written"] == 1
+    assert counts["rejected_monochrome"] == 2
+    rows = load_manifest(tmp_path / "manifest.jsonl")
+    assert [r["title"] for r in rows] == ["File:siamese colour portrait.jpg"]
+    assert rows[0]["quality"]["colour_fraction"] > 0.5
+    assert rows[0]["quality_flags"] == []
+    assert rows[0]["retrieval"] == "category"
+
+
+def test_collector_rejects_irrelevant_search_hits(tmp_path, monkeypatch):
+    blobs = {"ok": _jpeg(_block_image(11))}
+    files = [
+        _file("File:2019 Senior Manx Grand Prix.jpg", "ok"),
+        _file("File:2026 Norton Manx R.jpg", "ok"),
+        _file("File:Cymric Fond Blanc.jpg", "ok"),
+        _file("File:Bill Watterson at Kenyon.jpg", "ok"),
+        _file("File:A Manx cat in a garden.jpg", "ok"),
+    ]
+    for f in files:
+        f["retrieval"] = "search"
+    monkeypatch.setattr(breed_dataset, "list_category_files", lambda *a, **k: files)
+
+    counts = collect_breed("manx", "Manx cats", 5, _FakeClient(blobs),
+                           tmp_path, set(), set(), [])
+
+    assert counts["written"] == 1
+    assert counts["rejected_irrelevant"] == 4
+    rows = load_manifest(tmp_path / "manifest.jsonl")
+    assert [r["title"] for r in rows] == ["File:A Manx cat in a garden.jpg"]
+    assert rows[0]["retrieval"] == "search"
+
+
+class _FakeApiClient:
+    """Returns fixed Commons pages and tags which generator was asked for."""
+
+    def __init__(self, category, subcats, search):
+        self.category = category
+        self.subcats = subcats
+        self.search = search
+        self.calls = []
+
+    def api(self, params):
+        self.calls.append(params)
+        if params.get("gcmtype") == "subcat":
+            return {"query": {"pages": self.subcats}}
+        if params.get("generator") == "search":
+            return {"query": {"pages": self.search}}
+        return {"query": {"pages": self.category}}
+
+
+def _page(title):
+    return {title: {"title": title, "imageinfo": [{
+        "mime": "image/jpeg", "width": 800, "height": 800,
+        "thumburl": f"thumb:{title}", "url": f"url:{title}",
+        "descriptionurl": f"https://commons.wikimedia.org/wiki/{title}",
+        "extmetadata": {},
+    }]}}
+
+
+def test_list_category_files_filters_search_but_trusts_categories():
+    client = _FakeApiClient(
+        category=_page("File:Manx cats on a sofa.jpg"),
+        subcats={**_page("Category:Cymric cats"), **_page("Category:Manx Grand Prix")},
+        search={**_page("File:2019 Senior Manx Grand Prix.jpg"),
+                **_page("File:Cymric Fond Blanc.jpg"),
+                **_page("File:Bill Watterson at Kenyon.jpg"),
+                **_page("File:Manx cat portrait.jpg")},
+    )
+    rows = list_category_files(client, "Manx cats", 20, "manx")
+
+    titles = {r["title"]: r["retrieval"] for r in rows}
+    assert titles == {"File:Manx cats on a sofa.jpg": "category",
+                      "File:Manx cat portrait.jpg": "search"}
+    # Foreign/irrelevant subcategories are never recursed into.
+    fetched = {c["gcmtitle"] for c in client.calls if c.get("generator") == "categorymembers"}
+    assert "Category:Cymric cats" not in fetched
+    assert "Category:Manx Grand Prix" not in fetched
+
+
+def test_quality_audit_flags_rows_without_deleting_or_reviewing(tmp_path):
+    grey_row, colour_row = _row(1), _row(2)
+    grey_row["title"] = "File:Manx scan.jpg"
+    colour_row["title"] = "File:Manx cat.jpg"
+    _write(tmp_path, [grey_row, colour_row])
+    for row, im in ((grey_row, _grey_image()), (colour_row, _block_image(5))):
+        path = tmp_path / row["file"]
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(_jpeg(im))
+
+    report = flag_manifest_quality(tmp_path)
+    assert report["scanned"] == 2
+    assert report["flagged"] == 1
+    assert report["by_flag"] == {"greyscale": 1}
+    assert report["items"][0]["id"] == grey_row["id"]
+
+    rows = load_manifest(tmp_path / "manifest.jsonl")
+    assert len(rows) == 2                                  # nothing deleted
+    assert rows[0]["quality_flags"] == ["greyscale"]
+    assert rows[1]["quality_flags"] == []
+    assert rows[0]["review_status"] == "pending"           # no invented review
+    assert rows[0]["split"] == "candidates"
+    assert rows[0]["training_eligible"] is False
+
+
+def test_quality_audit_dry_run_does_not_rewrite_manifest(tmp_path):
+    row = _row(1)
+    _write(tmp_path, [row])
+    before = (tmp_path / "manifest.jsonl").read_text(encoding="utf-8")
+    report = flag_manifest_quality(tmp_path, apply=False)
+    after = (tmp_path / "manifest.jsonl").read_text(encoding="utf-8")
+    assert report["applied"] is False
+    assert after == before
