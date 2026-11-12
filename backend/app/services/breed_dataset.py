@@ -131,6 +131,12 @@ FOREIGN_BREED_TOKENS = (
     "cymric", "owyhee bob", "mountain bob", "pixie-bob", "japanese bobtail",
     "american bobtail", "karelian bobtail", "kurilian bobtail",
 )
+# Artwork/culture categories hold plates and paintings, never usable photos.
+NON_PHOTO_CATEGORY_PATTERN = re.compile(r"\b(in art|art of|in culture|mythology|folklore|cartoons?)\b", re.I)
+# How many subcategory levels to descend (Manx needs two for its colour subcats).
+CATEGORY_DEPTH = 2
+# Commons returns at most 500 search hits per response; paginate thin breeds.
+SEARCH_PAGES = 2
 
 # --- colour gate -------------------------------------------------------------
 # Users cannot judge a breed from a monochrome scan: coat colour is a primary
@@ -375,20 +381,22 @@ def _category_pages(client: CommonsClient, category: str, limit: int, gcmtype: s
 
 
 def list_category_files(client: CommonsClient, category: str, limit: int,
-                        breed_id: str = "") -> List[Dict[str, Any]]:
+                        breed_id: str = "", depth: int = CATEGORY_DEPTH) -> List[Dict[str, Any]]:
     """Return imageinfo rows for a Commons category (jpeg/png, min size, no junk titles).
 
-    Recurses one level into subcategories (e.g. Norwegian Forest cats has only
-    subcats), then falls back to Commons full-text search so filing quirks in a
-    few thin categories don't starve the run. Pages are deduped by title.
+    Recurses ``depth`` levels into subcategories (thin breeds such as Manx file
+    their photos two levels down: Manx → Black tabby Manx → Black blotched…),
+    then falls back to paginated Commons full-text search so filing quirks don't
+    starve the run. Pages are deduped by title.
 
     Every row records where it came from (``retrieval``): ``search`` rows must
     name the target breed in the file title, while category/subcategory rows are
     trusted as a retrieval hint. Titles naming vehicles, races or another breed
-    are dropped either way.
+    are dropped either way, and artwork categories are never entered.
     """
     rows: List[Dict[str, Any]] = []
     seen: set[str] = set()
+    visited: set[str] = set()
 
     def add_pages(data: Dict[str, Any], retrieval: str) -> None:
         for page in (data.get("query", {}).get("pages", {}) or {}).values():
@@ -419,23 +427,42 @@ def list_category_files(client: CommonsClient, category: str, limit: int,
                          "width": int(info.get("width") or 0), "height": int(info.get("height") or 0),
                          "mime": info.get("mime"), "retrieval": retrieval})
 
-    add_pages(_category_pages(client, category, limit), "category")
-    # One level of subcategories.
-    if len(rows) < limit:
-        subs = _category_pages(client, category, limit, gcmtype="subcat")
+    def walk(sub: str, level: int, retrieval: str) -> None:
+        key = sub.lower()
+        if key in visited or len(rows) >= limit:
+            return
+        visited.add(key)
+        add_pages(_category_pages(client, sub, limit), retrieval)
+        if level <= 0 or len(rows) >= limit:
+            return
+        subs = _category_pages(client, sub, limit, gcmtype="subcat")
         for page in (subs.get("query", {}).get("pages", {}) or {}).values():
-            sub = page.get("title", "").removeprefix("Category:")
-            if sub and not title_is_irrelevant(sub) and not title_has_foreign_breed(sub, breed_id, category):
-                add_pages(_category_pages(client, sub, limit), "subcategory")
+            child = page.get("title", "").removeprefix("Category:")
+            if not child:
+                continue
+            if NON_PHOTO_CATEGORY_PATTERN.search(child):
+                continue
+            if title_is_irrelevant(child) or title_has_foreign_breed(child, breed_id, category):
+                continue
+            walk(child, level - 1, "subcategory")
             if len(rows) >= limit:
-                break
+                return
+
+    walk(category, depth, "category")
     # Search fallback (filetype bitmap + breed phrase, namespace File only).
+    # Commons caps one response at 500 hits, so paginate when a breed is thin.
     if len(rows) < limit:
-        data = client.api({
+        params: Dict[str, Any] = {
             "action": "query", "generator": "search", "gsrsearch": f"{category} filetype:bitmap",
-            "gsrnamespace": 6, "gsrlimit": min(500, max(limit * 3, 50)), "prop": "imageinfo",
-            "iiprop": "url|mime|size|extmetadata", "iiurlwidth": 960, "format": "json"})
-        add_pages(data, "search")
+            "gsrnamespace": 6, "gsrlimit": min(500, max(limit * 2, 100)), "prop": "imageinfo",
+            "iiprop": "url|mime|size|extmetadata", "iiurlwidth": 960, "format": "json"}
+        for _ in range(SEARCH_PAGES):
+            data = client.api(params)
+            add_pages(data, "search")
+            cont = data.get("continue") or {}
+            if "gsroffset" not in cont or len(rows) >= limit:
+                break
+            params = {**params, "gsroffset": cont["gsroffset"]}
     return rows[:limit]
 
 

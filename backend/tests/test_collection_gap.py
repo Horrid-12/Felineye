@@ -399,6 +399,62 @@ def test_list_category_files_filters_search_but_trusts_categories():
     assert "Category:Manx Grand Prix" not in fetched
 
 
+class _TreeClient:
+    """Category tree + paginated search fake for depth/pagination tests."""
+
+    def __init__(self, files, subs, search):
+        self.files = files
+        self.subs = subs
+        self.search = search
+        self.calls = []
+
+    def api(self, params):
+        self.calls.append(params)
+        if params.get("generator") == "search":
+            return self.search[params.get("gsroffset", 0)]
+        cat = params["gcmtitle"].removeprefix("Category:")
+        source = self.subs if params.get("gcmtype") == "subcat" else self.files
+        return {"query": {"pages": source.get(cat, {})}}
+
+
+def test_list_category_files_descends_two_levels_and_paginates_search():
+    files = {
+        "Manx cats": _page("File:Manx cat root.jpg"),
+        "Black tabby Manx cats": _page("File:Black tabby Manx cat.jpg"),
+        "Black blotched tabby Manx cats": _page("File:Black blotched Manx cat.jpg"),
+    }
+    subs = {
+        "Manx cats": {**_page("Category:Black tabby Manx cats"),
+                      **_page("Category:Manx cats in art")},
+        "Black tabby Manx cats": _page("Category:Black blotched tabby Manx cats"),
+    }
+    search = {
+        0: {"query": {"pages": _page("File:Manx cat search one.jpg")},
+            "continue": {"gsroffset": 1}},
+        1: {"query": {"pages": _page("File:Manx cat search two.jpg")}},
+    }
+    client = _TreeClient(files, subs, search)
+
+    rows = list_category_files(client, "Manx cats", 20, "manx")
+
+    titles = {r["title"] for r in rows}
+    assert titles == {
+        "File:Manx cat root.jpg",
+        "File:Black tabby Manx cat.jpg",
+        "File:Black blotched Manx cat.jpg",
+        "File:Manx cat search one.jpg",
+        "File:Manx cat search two.jpg",
+    }
+    # Artwork categories are never entered.
+    assert not any("in art" in c.get("gcmtitle", "") for c in client.calls)
+    # The second search page was requested by offset.
+    assert any(c.get("gsroffset") == 1 for c in client.calls)
+
+    shallow = list_category_files(_TreeClient(files, subs, {0: {"query": {"pages": {}}}}),
+                                  "Manx cats", 20, "manx", depth=0)
+    assert {r["title"] for r in shallow} == {"File:Manx cat root.jpg"}
+
+
 def test_quality_audit_flags_rows_without_deleting_or_reviewing(tmp_path):
     grey_row, colour_row = _row(1), _row(2)
     grey_row["title"] = "File:Manx scan.jpg"

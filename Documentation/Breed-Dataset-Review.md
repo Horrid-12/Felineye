@@ -74,7 +74,7 @@ backend\.venv\Scripts\python.exe backend\scripts\collect_breed_dataset.py --gaps
 
 Writes `backend/datasets/breed-v1/collection_gap.json` and prints it. Per breed: `collected`, `reviewed`, `decided`, verified/rejected/ambiguous/contested/pending, `eligible`, `remaining`, `target`, `completion_pct`, `yield_rate`, `estimated_candidates_needed`, plus asset-type and exclusion counts. `eligible` is derived with `training_eligibility(asset_type, review_status)` — never `label_confidence` — so only verified `animal_photograph`/`historical_photograph` rows count; rejected, ambiguous, pending and non-photographic assets are excluded. The estimate is `ceil(remaining / yield_rate)`, where the yield comes from the completed pilot sample (blank until something is decided).
 
-Current report (2026-11-10): **70 eligible / 80 remaining**, estimates 163 siamese, 59 manx, 22 Norwegian Forest, 20 Tonkinese, 7 Siberian (~271 new candidates).
+Current report (2026-11-12): **70 eligible / 80 remaining** — siamese 4/30, manx 9/30, Norwegian Forest 16/30, Tonkinese 17/30, Siberian 24/30. Eligible counts only move when pending rows are reviewed.
 
 Authenticated `GET /api/dataset-review/gaps?target=30&breeds=siamese,manx` returns the same shape. The dashboard renders priority chips, eligible/target bars and remaining counts, refreshing with the review stats.
 
@@ -109,6 +109,25 @@ Batch 1 result: **36 of 50 rejected** (23 Siamese, 13 Manx), 14 kept pending
 flags stay visible after rejection. A `verified` row is never demoted by a flag,
 and reversing a gate rejection needs a second reviewer like any decision. See
 `Documentation/Breed-Dataset-Collection.md` for the gate thresholds.
+
+### Batch-2 replacement collection (2026-11-12)
+
+The replacement run used the new gates. Siamese: 224 listings → **40 new
+candidates** written (50 already collected, 4 near-duplicates, 4 legacy
+overlaps, 3 licence rejects, 4 monochrome rejects). All 40 are colour photos
+with no flags.
+
+Manx: Commons coverage is the bottleneck. Category/search traversal found only
+**33 listings** in total (category depth 2 plus search pagination), of which 27
+were already collected; the run wrote **5 new candidates** (4 at depth 2, 1 via
+search) and rejected 1 licence + 1 legacy overlap. All 5 are genuine colour Manx
+photos. **Manx cannot reach 30 eligible photos from Wikimedia Commons alone** —
+every additional pass skips the same 27 titles. A second image source or a
+relaxed retrieval route is needed before Manx can close its gap.
+
+Manifest: 220 rows / 220 image files (85 rejected, 71 verified, 59 pending, 5
+ambiguous). The 45 new rows are `pending`, `candidates`, `unverified`,
+`training_eligible=false`; `--audit-quality` left all of them flag-free.
 
 ## Backend
 
