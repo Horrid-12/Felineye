@@ -22,6 +22,7 @@ import { BreedEstimatePanel } from '../components/identify/BreedEstimatePanel';
 import { SimilarCompareModal } from '../components/identify/SimilarCompareModal';
 import { useCollectionStore } from '../store/useCollectionStore';
 import { DiscoveryAwardKind } from '../store/collectionStorage';
+import { AlertBanner, PageHeader } from '../components/ui/JournalPrimitives';
 
 interface Props {
   setActivePage: (page: ActivePage) => void;
@@ -89,11 +90,28 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
 
   const celebrate = () => {
     try {
+      const style = getComputedStyle(document.documentElement);
+      const tokenVars = [
+        '--felid-cobalt-rgb',
+        '--felid-pomegranate-rgb',
+        '--felid-highlight-rgb',
+        '--felid-accent-rgb',
+        '--felid-surface-rgb',
+      ];
+      const colors = tokenVars
+        .map((v) => {
+          const parts = style.getPropertyValue(v).trim().split(/\s+/).map(Number);
+          if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
+          return `#${parts.map((n) => n.toString(16).padStart(2, '0')).join('')}`;
+        })
+        .filter((c): c is string => Boolean(c));
+
       confetti({
-        particleCount: 90,
-        spread: 70,
+        particleCount: 80,
+        spread: 65,
         origin: { y: 0.6 },
-        colors: ['#f472b6', '#fb7185', '#fda4af', '#f43f5e', '#ffffff'],
+        zIndex: 45,
+        ...(colors.length > 0 ? { colors } : {}),
       });
     } catch {
       // Safe fallback if canvas is restricted
@@ -149,23 +167,23 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
 
     if (result.status === 'model_unavailable') {
       return (
-        <div className="p-6 bg-[#0c0a0e] border-2 border-black shadow-brutal text-pink-200 space-y-3">
-          <div className="flex items-center gap-2">
-            <WifiOff className="w-6 h-6 text-amber-400" />
-            <h3 className="font-display font-black text-base text-felid-ivory uppercase">
+        <div className="journal-plate border-felid-highlight/60 p-6 space-y-3">
+          <div className="flex items-center gap-2.5">
+            <WifiOff className="w-5 h-5 text-felid-highlight-ink shrink-0" />
+            <h3 className="font-display font-semibold text-lg text-felid-ink uppercase">
               IDENTIFICATION MODEL NOT AVAILABLE
             </h3>
           </div>
-          <p className="text-xs text-felid-muted font-mono leading-relaxed">
+          <p className="text-sm text-felid-muted-ink font-sans leading-relaxed">
             {result.uncertainty_note ||
               'No real identification model is installed, so no prediction was attempted.'}
           </p>
-          <p className="text-[11px] text-felid-muted font-mono leading-relaxed">
+          <p className="text-xs text-felid-muted-ink font-sans leading-relaxed">
             Felineye does not fall back to random, hash-based, or heuristic predictions. When the
             model is unavailable the honest answer is that no identification was performed.
           </p>
           {result.model_setup_hint && (
-            <code className="block p-2.5 bg-black/60 border border-[#332c3a] text-[10px] text-felid-accent font-mono break-all">
+            <code className="block p-3 bg-felid-elevated/80 border border-felid-border rounded-sm text-xs text-felid-cobalt-ink font-mono break-all">
               {result.model_setup_hint}
             </code>
           )}
@@ -175,14 +193,14 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
 
     if (result.status === 'processing_error') {
       return (
-        <div className="p-6 bg-[#0c0a0e] border-2 border-black shadow-brutal text-pink-200 space-y-2">
-          <div className="flex items-center gap-2">
-            <ShieldAlert className="w-6 h-6 text-felid-accent" />
-            <h3 className="font-display font-black text-base text-felid-ivory uppercase">
+        <div className="journal-plate border-felid-pomegranate/60 p-6 space-y-2">
+          <div className="flex items-center gap-2.5">
+            <ShieldAlert className="w-5 h-5 text-felid-pomegranate-ink shrink-0" />
+            <h3 className="font-display font-semibold text-lg text-felid-ink uppercase">
               PROCESSING ERROR
             </h3>
           </div>
-          <p className="text-xs text-felid-muted font-mono leading-relaxed">
+          <p className="text-sm text-felid-muted-ink font-sans leading-relaxed">
             {result.uncertainty_note ||
               'The inference provider failed before producing a result. No prediction or discovery XP was produced.'}
           </p>
@@ -192,12 +210,12 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
 
     if (result.status === 'non_feline_detected') {
       return (
-        <div className="p-6 bg-[#0c0a0e] border-2 border-black shadow-brutal text-pink-200 space-y-2 text-center">
-          <FileQuestion className="w-10 h-10 text-felid-accent mx-auto mb-2" />
-          <h3 className="font-display font-black text-lg text-felid-ivory uppercase">
+        <div className="journal-plate p-6 space-y-2.5 text-center">
+          <FileQuestion className="w-9 h-9 text-felid-cobalt-ink mx-auto" />
+          <h3 className="font-display font-semibold text-xl text-felid-ink uppercase">
             NO FELINE DETECTED
           </h3>
-          <p className="text-xs text-felid-muted max-w-lg mx-auto font-mono leading-relaxed">
+          <p className="text-sm text-felid-muted-ink max-w-lg mx-auto font-sans leading-relaxed">
             {result.uncertainty_note ||
               'The image was not found to contain a cat or wild felid with sufficient evidence, so it was not matched to a species.'}
           </p>
@@ -207,14 +225,14 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
 
     if (result.status === 'unable_to_identify') {
       return (
-        <div className="p-6 bg-[#0c0a0e] border-2 border-black shadow-brutal text-pink-200 space-y-2">
-          <div className="flex items-center gap-2 text-felid-accent">
-            <AlertTriangle className="w-5 h-5 text-amber-400" />
-            <h3 className="font-display font-black text-base text-felid-ivory uppercase">
+        <div className="journal-plate border-felid-highlight/60 p-6 space-y-2">
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle className="w-5 h-5 text-felid-highlight-ink shrink-0" />
+            <h3 className="font-display font-semibold text-lg text-felid-ink uppercase">
               UNABLE TO IDENTIFY — RESULT WITHHELD
             </h3>
           </div>
-          <p className="text-xs text-felid-muted font-mono leading-relaxed">
+          <p className="text-sm text-felid-muted-ink font-sans leading-relaxed">
             {result.uncertainty_note ||
               'The available evidence was insufficient or conflicting. No species is asserted; the closest candidates are listed for comparison only.'}
           </p>
@@ -223,42 +241,44 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
     }
 
     return (
-      <div className="p-4 bg-[#141218] border-2 border-black shadow-brutal flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+      <div className="journal-plate p-4 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
         <div className="flex flex-wrap items-center gap-2">
           <span
-            className={`w-3 h-3 ${
-              isIdentified ? 'bg-felid-accent' : 'bg-amber-400'
+            className={`w-2.5 h-2.5 rounded-full ${
+              isIdentified ? 'bg-felid-cobalt-line' : 'bg-felid-highlight-line'
             }`}
           />
-          <span className="font-black text-felid-ivory uppercase">
+          <span className="font-medium text-felid-ink uppercase">
             {STATUS_LABELS[result.status] ?? result.status.replace(/_/g, ' ')}
           </span>
-          <span className="text-felid-muted">· {scoreSemanticsLabel(result.score_semantics)}</span>
+          <span className="text-felid-muted-ink">· {scoreSemanticsLabel(result.score_semantics)}</span>
           {result.is_mock && (
-            <span className="px-2 py-0.5 bg-amber-400 text-black font-black border border-black">
+            <span className="px-2 py-0.5 bg-felid-highlight/20 text-felid-highlight-ink font-medium border border-felid-highlight/50 rounded-sm">
               NOT REAL AI
             </span>
           )}
           {!result.is_calibrated && (
-            <span className="px-2 py-0.5 bg-[#0c0a0e] text-felid-muted border border-black">
+            <span className="px-2 py-0.5 bg-felid-elevated text-felid-muted-ink border border-felid-border rounded-sm">
               UNCALIBRATED
             </span>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-felid-muted text-[11px]">
+        <div className="flex flex-wrap items-center gap-2 text-felid-muted-ink text-[11px]">
           {result.model_name && (
-            <span className="flex items-center gap-1 bg-[#0c0a0e] px-2 py-0.5 border border-black">
-              <BrainCircuit className="w-3 h-3 text-felid-accent" />
-              {result.model_name}
-              {result.model_license ? ` · ${result.model_license}` : ''}
+            <span className="flex items-center gap-1.5 bg-felid-elevated/70 px-2.5 py-0.5 border border-felid-border rounded-sm">
+              <BrainCircuit className="w-3.5 h-3.5 text-felid-cobalt-ink" />
+              <span>
+                {result.model_name}
+                {result.model_license ? ` · ${result.model_license}` : ''}
+              </span>
             </span>
           )}
-          <span className="flex items-center gap-1 bg-[#0c0a0e] px-2 py-0.5 border border-black">
-            <Clock className="w-3 h-3 text-felid-accent" />
-            {result.processing_time_ms}ms measured
+          <span className="flex items-center gap-1.5 bg-felid-elevated/70 px-2.5 py-0.5 border border-felid-border rounded-sm">
+            <Clock className="w-3.5 h-3.5 text-felid-cobalt-ink" />
+            <span>{result.processing_time_ms}ms measured</span>
           </span>
           {typeof gate?.feline_probability === 'number' && (
-            <span className="bg-[#0c0a0e] px-2 py-0.5 border border-black">
+            <span className="bg-felid-elevated/70 px-2.5 py-0.5 border border-felid-border rounded-sm">
               GATE: {gate.top_label ?? 'unknown'} ·{' '}
               {(gate.feline_probability * 100).toFixed(1)}% feline mass
             </span>
@@ -269,23 +289,18 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-4 space-y-8">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm text-xs font-mono font-black text-felid-accent uppercase">
-          <PawPrint className="w-3.5 h-3.5" />
-          <span>LOCAL VISION MODEL // ABSTENTION-AWARE PIPELINE</span>
-        </div>
-        <h1 className="font-display font-black text-3xl sm:text-5xl text-felid-ivory uppercase tracking-tight">
-          FELINE <span className="text-felid-accent underline decoration-4 underline-offset-4">PAW SCANNER</span>
-        </h1>
-        <p className="text-xs sm:text-sm text-felid-muted max-w-xl mx-auto font-mono leading-relaxed">
-          Upload a feline photo to rank it against 40 wild species and the domestic cat. Scores are
-          model similarities, not calibrated probabilities. Domestic cats may also receive a separate
-          closest visual breed match — similarity only, never pedigree verification. When evidence is
-          weak or conflicting, Felineye abstains instead of forcing a species.
-        </p>
-      </div>
+    <div className="max-w-4xl mx-auto py-2 space-y-8">
+      <PageHeader
+        centered
+        kicker="Local Vision Model · Abstention-Aware Pipeline"
+        kickerIcon={<PawPrint className="w-3.5 h-3.5" />}
+        title={
+          <>
+            Feline <span className="italic text-felid-cobalt-ink">Paw Scanner</span>
+          </>
+        }
+        subtitle="Upload a feline photo to rank it against 40 wild species and the domestic cat. Scores are model similarities, not calibrated probabilities. Domestic cats may also receive a separate closest visual breed match — similarity only, never pedigree verification. When evidence is weak or conflicting, Felineye abstains instead of forcing a species."
+      />
 
       {/* Upload Zone & Interactive Scanner Preview */}
       <div className="relative">
@@ -296,19 +311,19 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
           isLoading={isLoading}
         />
 
-        {/* Cinematic Scanner Overlay while running inference */}
+        {/* Scanner Overlay while running inference */}
         {isLoading && <ScannerEffect />}
       </div>
 
-      {/* Action Button (Komi Store Tactile CTA Style) */}
+      {/* Action Button */}
       {selectedFile && !result && !isLoading && (
         <div className="flex justify-center">
           <button
             type="button"
             onClick={runIdentification}
-            className="px-8 py-4 bg-felid-accent hover:bg-felid-accent-hover text-black font-mono font-black text-sm uppercase border-2 border-black shadow-brutal brutal-press inline-flex items-center gap-2.5"
+            className="btn-primary px-8 py-3.5 text-xs sm:text-sm font-mono uppercase tracking-wider"
           >
-            <PawPrint className="w-5 h-5" />
+            <PawPrint className="w-4 h-4" />
             <span>ANALYZE FELINE MORPHOLOGY</span>
           </button>
         </div>
@@ -316,13 +331,9 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
 
       {/* Error state */}
       {errorMsg && (
-        <div className="p-4 bg-red-950/70 border-2 border-black shadow-brutal text-pink-200 text-xs font-mono flex items-start gap-3">
-          <ShieldAlert className="w-5 h-5 text-felid-accent shrink-0 mt-0.5" />
-          <div>
-            <strong className="block font-black uppercase mb-0.5">IDENTIFICATION FAILED // REQUEST REJECTED</strong>
-            {errorMsg}
-          </div>
-        </div>
+        <AlertBanner tone="error" title="IDENTIFICATION FAILED // REQUEST REJECTED">
+          {errorMsg}
+        </AlertBanner>
       )}
 
       {/* Identification Results Section */}
@@ -330,9 +341,9 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
         <div className="space-y-6 animate-fadeIn">
           {/* Journal outcome banner */}
           {discoveryNotice && (
-            <div className="p-4 bg-[#141218] border-2 border-black shadow-brutal text-pink-100 text-xs font-mono flex flex-wrap items-center justify-between gap-3">
+            <div className="journal-plate border-felid-highlight/60 p-4 text-xs flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-felid-accent border-2 border-black flex items-center justify-center text-black font-black text-base shadow-brutal-sm">
+                <div className="w-10 h-10 bg-felid-highlight/20 border border-felid-highlight/50 rounded-sm flex items-center justify-center text-felid-highlight-ink shrink-0">
                   {discoveryNotice.kind === 'new_species' ? (
                     <CheckCircle2 className="w-5 h-5" />
                   ) : (
@@ -340,12 +351,12 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
                   )}
                 </div>
                 <div>
-                  <span className="font-black text-felid-accent block uppercase text-sm">
+                  <span className="font-mono font-medium text-felid-highlight-ink block uppercase text-xs sm:text-sm">
                     {discoveryNotice.kind === 'new_species' && 'NEW SPECIES LOGGED IN FIELD JOURNAL!'}
                     {discoveryNotice.kind === 'new_photo' && 'NEW PHOTO LOGGED — SPECIES ALREADY DISCOVERED'}
                     {discoveryNotice.kind === 'repeat_image' && 'THIS PHOTO WAS ALREADY ANALYSED'}
                   </span>
-                  <span className="text-felid-ivory-dim">
+                  <span className="text-felid-muted-ink font-sans">
                     {discoveryNotice.kind === 'new_species' &&
                       `Discovered ${discoveryNotice.name} // Awarded +${discoveryNotice.xp} Discovery XP`}
                     {discoveryNotice.kind === 'new_photo' &&
@@ -356,8 +367,9 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setActivePage('collection')}
-                className="px-4 py-2 bg-felid-accent text-black font-mono font-black text-xs border-2 border-black shadow-brutal-sm brutal-press uppercase"
+                className="btn-primary py-2 px-4 text-xs uppercase font-mono"
               >
                 VIEW JOURNAL
               </button>
@@ -366,34 +378,27 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
 
           {/* Development simulation warning (honesty requirement) */}
           {result.is_mock && (
-            <div className="p-3.5 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm text-felid-muted text-xs font-mono flex items-center gap-2.5">
-              <Info className="w-4 h-4 shrink-0 text-felid-accent" />
-              <span>
-                <strong className="text-felid-ivory uppercase">DEVELOPMENT SIMULATION ACTIVE:</strong>{' '}
-                The explicit mock provider is running. These are deterministic test ranks, not real
-                AI predictions, and they cannot award discovery XP.
-              </span>
-            </div>
+            <AlertBanner tone="warning">
+              <strong className="text-felid-ink uppercase font-mono">
+                DEVELOPMENT SIMULATION ACTIVE:
+              </strong>{' '}
+              The explicit mock provider is running. These are deterministic test ranks, not real
+              AI predictions, and they cannot award discovery XP.
+            </AlertBanner>
           )}
 
           {/* Outcome State Header */}
           {renderOutcomeHeader()}
 
-          {/* Advisory note for identified results that still carry a caveat,
-              e.g. domestic cat identified at species level but breed left undetermined.
-              When a breed estimate is shown, the panel carries its own caveat. */}
+          {/* Advisory note for identified results that still carry a caveat */}
           {isIdentified && result.uncertainty_note && !result.breed && (
-            <div className="p-3.5 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm text-felid-muted text-xs font-mono flex items-start gap-2.5">
-              <Info className="w-4 h-4 shrink-0 text-felid-accent mt-0.5" />
-              <span>
-                <strong className="text-felid-ivory uppercase">ADVISORY:</strong>{' '}
-                {result.uncertainty_note}
-              </span>
-            </div>
+            <AlertBanner tone="info">
+              <strong className="text-felid-ink uppercase font-mono">ADVISORY:</strong>{' '}
+              {result.uncertainty_note}
+            </AlertBanner>
           )}
 
-          {/* Breed estimate for accepted domestic cats. Separate from the species
-              result; never affects discovery eligibility or XP. */}
+          {/* Breed estimate for accepted domestic cats */}
           {result.status === 'identified_domestic_cat' && (
             <BreedEstimatePanel
               breed={result.breed}
@@ -408,12 +413,14 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
           {/* Candidate Predictions List */}
           {result.candidates.length > 0 && (
             <div className="space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b-2 border-black">
-                <h3 className="font-display font-black text-xl text-felid-ivory uppercase">
-                  {isIdentified ? 'RANKED MODEL CANDIDATES' : 'CANDIDATES FOR COMPARISON (NOT ASSERTED)'}
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-felid-border">
+                <h3 className="font-display font-semibold text-xl text-felid-ink">
+                  {isIdentified
+                    ? 'RANKED MODEL CANDIDATES'
+                    : 'CANDIDATES FOR COMPARISON (NOT ASSERTED)'}
                 </h3>
-                <span className="text-xs text-felid-muted font-mono font-bold">
-                  {result.candidates.length} TAXA RANKED
+                <span className="text-xs text-felid-muted-ink font-mono">
+                  {result.candidates.length} taxa ranked
                 </span>
               </div>
 
@@ -437,15 +444,15 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
             <button
               type="button"
               onClick={handleClear}
-              className="px-6 py-3 bg-[#1d1922] hover:bg-[#26222d] text-felid-ivory text-xs font-mono font-bold uppercase border-2 border-black shadow-brutal brutal-press inline-flex items-center gap-2"
+              className="btn-secondary text-xs"
             >
-              <RotateCcw className="w-4 h-4 text-felid-accent" />
-              Upload Another Cat Photo
+              <RotateCcw className="w-4 h-4 text-felid-cobalt-ink" />
+              <span>Upload Another Cat Photo</span>
             </button>
           </div>
 
           {/* Scientific Disclaimer */}
-          <p className="text-[11px] text-felid-muted text-center max-w-xl mx-auto italic font-mono">
+          <p className="text-xs text-felid-muted-ink text-center max-w-xl mx-auto italic font-sans">
             {result.disclaimer}
           </p>
         </div>

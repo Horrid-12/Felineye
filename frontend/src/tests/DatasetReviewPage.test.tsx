@@ -144,3 +144,35 @@ it('reason is required before reject/ambiguous can succeed client-side', async (
   expect(await screen.findByText(/A reason is required/)).toBeTruthy();
   expect(api.submitDatasetReview).not.toHaveBeenCalled();
 });
+
+it('candidate table uses required_reviewers denominator and zoom resizes image layout without CSS transform clipping', async () => {
+  vi.stubGlobal('URL', { ...URL, createObjectURL: vi.fn(() => 'blob:mock-zoom'), revokeObjectURL: vi.fn() });
+  vi.spyOn(window, 'fetch').mockResolvedValue(new Response(new Blob(['x']), { status: 200 }) as any);
+  vi.spyOn(api, 'getDatasetCandidates').mockResolvedValue({
+    total: 1,
+    page: 1,
+    page_size: 100,
+    items: [{ ...candidates[0], status: 'verified', review_count: 1, my_decision: null }],
+  } as any);
+
+  render(<DatasetReviewPage />);
+  await act(async () => { fireEvent.change(screen.getByTestId('reviewer-input'), { target: { value: 'reviewer-a' } }); });
+  await act(async () => { fireEvent.click(screen.getByText('Sign in')); });
+
+  const table = await screen.findByTestId('candidate-table');
+  expect(table.textContent).toContain('1/1 reviews');
+  expect(table.textContent).not.toContain('1/2 reviews');
+
+  await act(async () => { fireEvent.click(screen.getByText('Review workspace')); });
+  const img = await screen.findByAltText('File:siamese 1') as HTMLImageElement;
+  expect(img.style.width).toBe('auto');
+
+  fireEvent.click(screen.getByRole('button', { name: 'Zoom in' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Zoom in' }));
+  expect(img.style.width).toBe('150%');
+  expect(img.style.transform).toBe('');
+
+  fireEvent.click(screen.getByRole('button', { name: '150%' }));
+  expect(img.style.width).toBe('auto');
+  vi.unstubAllGlobals();
+});

@@ -326,6 +326,8 @@ export interface DatasetCandidate {
   asset_type?: string;
   training_eligible?: boolean;
   exclusion_reason?: string | null;
+  /** Derived collection-quality flags (monochrome, irrelevant subject, ...). */
+  quality_flags?: string[];
   /** How many decisions are recorded (0 = untouched). */
   review_count?: number;
   reviewers?: string[];

@@ -6,51 +6,55 @@ interface Props {
   showTitle?: boolean;
 }
 
-export const ConservationBadge: React.FC<Props> = ({ status, className = '', showTitle = false }) => {
+export const ConservationBadge: React.FC<Props> = ({
+  status,
+  className = '',
+  showTitle = false,
+}) => {
   const code = status.toUpperCase();
 
   const getStyle = () => {
     switch (code) {
       case 'CR':
         return {
-          bg: 'bg-[#f43f5e] text-white border-black',
-          dot: 'bg-white',
+          pill: 'bg-felid-pomegranate text-felid-on-pomegranate border-felid-pomegranate',
+          dot: 'bg-felid-on-pomegranate',
           title: 'Critically Endangered',
         };
       case 'EN':
         return {
-          bg: 'bg-[#fb7185] text-black border-black',
-          dot: 'bg-black',
+          pill: 'bg-felid-surface/95 text-felid-pomegranate-ink border-felid-pomegranate/70',
+          dot: 'bg-felid-pomegranate-line',
           title: 'Endangered',
         };
       case 'VU':
         return {
-          bg: 'bg-[#fb923c] text-black border-black',
-          dot: 'bg-black',
+          pill: 'bg-felid-surface/95 text-felid-highlight-ink border-felid-highlight/70',
+          dot: 'bg-felid-highlight-line',
           title: 'Vulnerable',
         };
       case 'NT':
         return {
-          bg: 'bg-[#eab308] text-black border-black',
-          dot: 'bg-black',
+          pill: 'bg-felid-surface/95 text-felid-cobalt-ink border-felid-cobalt/70',
+          dot: 'bg-felid-cobalt-line',
           title: 'Near Threatened',
         };
       case 'LC':
         return {
-          bg: 'bg-[#34d399] text-black border-black',
-          dot: 'bg-black',
+          pill: 'bg-felid-surface/95 text-felid-muted-ink border-felid-border-strong',
+          dot: 'bg-felid-muted',
           title: 'Least Concern',
         };
       case 'DOMESTIC':
         return {
-          bg: 'bg-[#f472b6] text-black border-black',
-          dot: 'bg-black',
+          pill: 'bg-felid-surface/95 text-felid-cobalt-ink border-felid-cobalt/55',
+          dot: 'bg-felid-highlight-line',
           title: 'Domesticated',
         };
       default:
         return {
-          bg: 'bg-[#1d1922] text-[#fdf2f8] border-black',
-          dot: 'bg-[#9e94a4]',
+          pill: 'bg-felid-surface/95 text-felid-muted-ink border-felid-border-strong',
+          dot: 'bg-felid-muted',
           title: 'Unassessed',
         };
     }
@@ -60,12 +64,12 @@ export const ConservationBadge: React.FC<Props> = ({ status, className = '', sho
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-mono font-black border-2 shadow-brutal-sm ${style.bg} ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[11px] font-mono font-medium rounded-sm border shadow-sm backdrop-blur-[2px] ${style.pill} ${className}`}
       title={style.title}
     >
-      <span className={`w-1.5 h-1.5 ${style.dot} animate-pulse`} />
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${style.dot}`} aria-hidden="true" />
       <span>{code}</span>
-      {showTitle && <span className="font-bold opacity-90">· {style.title}</span>}
+      {showTitle && <span className="opacity-85">· {style.title}</span>}
     </span>
   );
 };

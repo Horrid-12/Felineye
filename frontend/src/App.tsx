@@ -10,6 +10,7 @@ import { CollectionPage } from './pages/CollectionPage';
 import { ObservationsPage } from './pages/ObservationsPage';
 import { MethodologyPage } from './pages/MethodologyPage';
 import { DatasetReviewPage } from './pages/DatasetReviewPage';
+import { useThemeStore } from './store/useThemeStore';
 
 const BACK_LABELS: Partial<Record<ActivePage, string>> = {
   home: 'Back to Home',
@@ -21,6 +22,8 @@ const BACK_LABELS: Partial<Record<ActivePage, string>> = {
 type AtlasCategory = 'wild_species' | 'domestic_species' | '';
 
 export function App() {
+  useThemeStore();
+
   const [activePage, setActivePage] = useState<ActivePage>('home');
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [detailBackPage, setDetailBackPage] = useState<ActivePage>('species');
@@ -43,25 +46,25 @@ export function App() {
       setAtlasCategory('');
     }
     setActivePage(page);
+    window.scrollTo?.({ top: 0, behavior: 'auto' });
   };
 
   const handleOpenDomestic = () => {
     setAtlasCategory('domestic_species');
     setActivePage('species');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo?.({ top: 0, behavior: 'auto' });
   };
 
   return (
-    <div className="min-h-screen bg-felid-dark text-felid-ivory flex flex-col selection:bg-felid-accent selection:text-black">
-      {/* Ambient pink-gray radial glow & subtle texture */}
-      <div className="fixed inset-0 pointer-events-none bg-topo-subtle z-0 opacity-60" />
-      <div className="fixed inset-0 pointer-events-none bg-paw-glow z-0 opacity-40" />
+    <div className="min-h-screen bg-felid-bg text-felid-ink flex flex-col selection:bg-felid-cobalt/20 selection:text-felid-ink relative">
+      {/* Subtle Cobalt & Pomegranate archival canvas wash */}
+      <div className="fixed inset-0 pointer-events-none journal-canvas-wash z-0" aria-hidden="true" />
 
       {/* Primary Navigation */}
       <Navbar activePage={activePage} setActivePage={handleNavigate} />
 
       {/* Main View Container */}
-      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activePage === 'home' && (
           <HomePage
             setActivePage={handleNavigate}
@@ -72,7 +75,7 @@ export function App() {
 
         {activePage === 'identify' && (
           <IdentifyPage
-            setActivePage={setActivePage}
+            setActivePage={handleNavigate}
             onSelectSpecies={(slug) => handleSelectTaxon(slug, 'identify')}
           />
         )}
@@ -96,7 +99,7 @@ export function App() {
 
         {activePage === 'collection' && (
           <CollectionPage
-            setActivePage={setActivePage}
+            setActivePage={handleNavigate}
             onSelectSpecies={(slug) => handleSelectTaxon(slug, 'collection')}
           />
         )}

@@ -13,7 +13,7 @@
 
 > [!NOTE]
 > **Original Concept & Attribution:**
-> Felineye was inspired by the original idea and architecture of **[BirdLens](https://github.com/sdprojects12/birdlens)** by [sdprojects12](https://github.com/sdprojects12). Reimagined and built from the ground up for the entire cat family (**Felidae**), Felineye introduces a pinky-gray velvet feline aesthetic, responsible wildlife coordinate obscuration, abstention-aware local inference, and a curated multi-lineage cat taxonomy.
+> Felineye was inspired by the original idea and architecture of **[BirdLens](https://github.com/sdprojects12/birdlens)** by [sdprojects12](https://github.com/sdprojects12). Reimagined and built from the ground up for the entire cat family (**Felidae**), Felineye pairs a Cobalt & Pomegranate Anatolian natural-history journal aesthetic (with full light, dark, and system theme support), responsible wildlife coordinate obscuration, abstention-aware local inference, and a curated multi-lineage cat taxonomy.
 
 ---
 
@@ -278,7 +278,7 @@ npm test --prefix frontend
 npm run build --prefix frontend      # tsc -b && vite build
 ```
 
-**Verified on 2026-11-09:** 77 backend tests passed (including the 12 real-weight tests), 36 frontend tests passed, and the production build succeeded.
+**Verified on 2026-11-12:** 134 backend tests passed (including the 12 real-weight tests), 61 frontend tests passed, and the production build succeeded.
 
 ---
 

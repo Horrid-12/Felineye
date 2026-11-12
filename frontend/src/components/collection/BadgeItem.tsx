@@ -12,47 +12,51 @@ interface Props {
 export const BadgeItem: React.FC<Props> = ({ badge, unlocked, progressCount }) => {
   return (
     <div
-      className={`border-2 border-black p-4 flex items-start gap-4 transition-all ${
+      className={`border rounded-sm p-4 flex items-start gap-4 transition-colors ${
         unlocked
-          ? 'bg-[#141218] shadow-brutal'
-          : 'bg-[#141218]/50 shadow-brutal-sm opacity-70'
+          ? 'bg-felid-surface border-felid-highlight/55 shadow-plate'
+          : 'bg-felid-surface/65 border-felid-border opacity-85'
       }`}
     >
       <div
-        className={`w-12 h-12 flex items-center justify-center shrink-0 border-2 border-black ${
+        className={`w-12 h-12 flex items-center justify-center shrink-0 rounded-sm border ${
           unlocked
-            ? 'bg-[#0c0a0e] text-felid-accent shadow-brutal-sm'
-            : 'bg-[#0c0a0e] text-felid-muted'
+            ? 'bg-felid-highlight/15 border-felid-highlight/45 text-felid-highlight-ink'
+            : 'bg-felid-elevated/70 border-felid-border text-felid-muted-ink'
         }`}
       >
-        {unlocked ? getIconComponent(badge.icon) : <Lock className="w-5 h-5 text-felid-muted/60" />}
+        {unlocked ? (
+          getIconComponent(badge.icon)
+        ) : (
+          <Lock className="w-4 h-4 text-felid-muted-ink" />
+        )}
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
-          <h4 className="font-display font-black text-sm text-felid-ivory uppercase truncate">
+          <h4 className="font-display font-semibold text-base text-felid-ink truncate">
             {badge.title}
           </h4>
           {unlocked ? (
-            <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-mono font-bold uppercase bg-[#0c0a0e] px-2 py-0.5 border border-black">
-              <CheckCircle2 className="w-3 h-3" /> UNLOCKED
+            <span className="inline-flex items-center gap-1 text-[10px] text-felid-pomegranate-ink font-mono font-medium uppercase bg-felid-pomegranate/15 px-2 py-0.5 border border-felid-pomegranate/40 rounded-sm shrink-0">
+              <CheckCircle2 className="w-3 h-3" /> Unlocked
             </span>
           ) : (
-            <span className="text-[10px] font-mono font-bold text-felid-muted bg-[#0c0a0e] px-2 py-0.5 border border-black">
+            <span className="text-[10px] font-mono text-felid-muted-ink bg-felid-elevated/80 px-2 py-0.5 border border-felid-border rounded-sm shrink-0">
               {Math.min(progressCount, badge.required_count)} / {badge.required_count}
             </span>
           )}
         </div>
 
-        <p className="text-xs text-felid-muted mt-1 leading-relaxed">
+        <p className="text-xs text-felid-muted-ink mt-1 leading-relaxed font-sans">
           {badge.description}
         </p>
 
-        {/* Progress meter for locked badge in pink */}
+        {/* Quiet progress bar in Royal Cobalt */}
         {!unlocked && (
-          <div className="mt-2.5 w-full h-2 bg-[#0c0a0e] border border-black overflow-hidden">
+          <div className="mt-2.5 w-full h-1.5 bg-felid-elevated border border-felid-border rounded-sm overflow-hidden">
             <div
-              className="h-full bg-felid-accent"
+              className="h-full bg-felid-cobalt-line transition-all duration-500"
               style={{
                 width: `${Math.min(100, Math.round((progressCount / badge.required_count) * 100))}%`,
               }}

@@ -1,5 +1,7 @@
-import React, { useState, useRef } from 'react';
-import { Camera, X, Image as ImageIcon, AlertCircle, PawPrint, Cat } from 'lucide-react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Camera, X, Image as ImageIcon, PawPrint, Cat } from 'lucide-react';
+import { AlertBanner } from '../ui/JournalPrimitives';
+import { SpecimenCorners } from '../ui/JournalOrnament';
 
 interface Props {
   onImageSelected: (file: File) => void;
@@ -22,6 +24,14 @@ export const ImageDropzone: React.FC<Props> = ({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const processFile = (file: File) => {
     setValidationError(null);
@@ -84,14 +94,16 @@ export const ImageDropzone: React.FC<Props> = ({
       />
 
       {validationError && (
-        <div className="mb-4 p-3.5 bg-red-950/60 border-2 border-black shadow-brutal-sm text-pink-200 text-xs flex items-center gap-2.5 font-mono">
-          <AlertCircle className="w-4 h-4 shrink-0 text-felid-accent" />
-          <span>{validationError}</span>
-        </div>
+        <AlertBanner tone="error" className="mb-4">
+          {validationError}
+        </AlertBanner>
       )}
 
       {!selectedImage ? (
         <div
+          role="button"
+          tabIndex={0}
+          aria-label="Drop feline photograph here or press Enter to choose a file"
           onDragOver={(e) => {
             e.preventDefault();
             setIsDragOver(true);
@@ -99,84 +111,76 @@ export const ImageDropzone: React.FC<Props> = ({
           onDragLeave={() => setIsDragOver(false)}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`relative border-2 border-dashed p-8 sm:p-12 text-center transition-all cursor-pointer bg-[#0c0a0e] shadow-brutal group ${
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              fileInputRef.current?.click();
+            }
+          }}
+          className={`relative border border-dashed rounded-sm p-8 sm:p-12 text-center transition-all cursor-pointer bg-felid-surface shadow-plate group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-felid-cobalt ${
             isDragOver
-              ? 'border-felid-accent bg-felid-accent/10 shadow-brutal-lg scale-[0.99]'
-              : 'border-felid-accent/60 hover:border-felid-accent'
+              ? 'border-felid-cobalt bg-felid-cobalt/10 shadow-plate-hover'
+              : 'border-felid-border-strong hover:border-felid-cobalt/80'
           }`}
         >
-          {/* Viewfinder Optical Brackets */}
-          <div className="absolute top-2.5 left-2.5 text-felid-accent font-mono font-black text-xs select-none">
-            + [CAM_OPTIC_01]
-          </div>
-          <div className="absolute top-2.5 right-2.5 text-felid-accent font-mono font-black text-xs select-none">
-            VIEWFINDER // READY +
-          </div>
-          <div className="absolute bottom-2.5 left-2.5 text-felid-muted font-mono text-[10px] select-none">
-            ISO: AUTO // MATRIX 1080P
-          </div>
-          <div className="absolute bottom-2.5 right-2.5 text-felid-muted font-mono text-[10px] select-none">
-            GATE: SHANNON_H
+          <SpecimenCorners colorClass="border-felid-cobalt/55" />
+
+          {/* Subtle specimen plate metadata labels */}
+          <div className="flex items-center justify-between text-[10px] font-mono text-felid-muted-ink uppercase tracking-wider mb-4 px-2 select-none">
+            <span>Specimen Plate · Optical Input</span>
+            <span>Ready for Analysis</span>
           </div>
 
-          {/* Central Target Crosshair decal */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
-            <div className="w-56 h-56 border border-felid-accent flex items-center justify-center">
-              <div className="w-20 h-20 border-t border-b border-felid-accent"></div>
-            </div>
+          {/* Feline Emblem Container */}
+          <div className="relative z-10 w-14 h-14 bg-felid-elevated border border-felid-border-strong rounded-sm mx-auto flex items-center justify-center text-felid-cobalt-ink mb-4 group-hover:border-felid-cobalt/60 transition-colors">
+            <PawPrint className="w-7 h-7" />
           </div>
 
-          {/* Feline Paw Container Icon */}
-          <div className="relative z-10 w-16 h-16 bg-[#141218] border-2 border-black shadow-brutal-sm mx-auto flex items-center justify-center text-felid-accent mb-4 group-hover:scale-105 transition-transform">
-            <PawPrint className="w-8 h-8" />
-          </div>
-
-          <h3 className="relative z-10 font-display font-black text-xl text-felid-ivory uppercase tracking-tight mb-2 flex items-center justify-center gap-2">
+          <h3 className="relative z-10 font-display font-semibold text-xl sm:text-2xl text-felid-ink tracking-tight mb-2 flex items-center justify-center gap-2">
             <span>DROP FELINE PHOTOGRAPH HERE</span>
-            <Cat className="w-5 h-5 text-felid-accent" />
+            <Cat className="w-5 h-5 text-felid-pomegranate-ink" />
           </h3>
-          <p className="relative z-10 text-xs sm:text-sm text-felid-muted max-w-md mx-auto mb-6 leading-relaxed">
-            Upload any photo of a house cat, kitten, or wild felid. The neural vision model extracts morphological markers, ear tufts, and rosette topology.
+          <p className="relative z-10 text-sm text-felid-muted-ink max-w-md mx-auto mb-6 leading-relaxed font-sans">
+            Upload any photo of a house cat, kitten, or wild felid. The local vision model compares morphological features against the curated Felidae taxonomy.
           </p>
 
-          <div className="relative z-10 flex flex-wrap items-center justify-center gap-3" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="relative z-10 flex flex-wrap items-center justify-center gap-3"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="px-5 py-2.5 bg-[#1d1922] hover:bg-[#26222d] border-2 border-black shadow-brutal-sm text-felid-ivory text-xs font-mono font-bold inline-flex items-center gap-2 brutal-press"
+              className="btn-secondary text-xs uppercase tracking-wide font-mono"
             >
-              <ImageIcon className="w-4 h-4 text-felid-accent" />
-              CHOOSE FILE
+              <ImageIcon className="w-4 h-4 text-felid-cobalt-ink" />
+              Choose File
             </button>
             <button
               type="button"
               onClick={() => cameraInputRef.current?.click()}
-              className="px-5 py-2.5 bg-felid-accent hover:bg-felid-accent-hover border-2 border-black shadow-brutal-sm text-black text-xs font-mono font-black inline-flex items-center gap-2 sm:hidden brutal-press"
+              className="btn-primary text-xs uppercase tracking-wide font-mono sm:hidden"
             >
               <Camera className="w-4 h-4" />
-              TAKE PHOTO
+              Take Photo
             </button>
           </div>
 
-          <div className="relative z-10 mt-6 text-[11px] text-felid-muted font-mono">
-            JPEG, PNG, WebP // UP TO 15MB // EXIF-SAFE
+          <div className="relative z-10 mt-6 text-[11px] text-felid-muted-ink font-mono tracking-wide">
+            JPEG, PNG, WebP · Up to 15 MB · EXIF-sanitized in memory
           </div>
         </div>
       ) : (
-        <div className="relative border-2 border-black bg-[#0c0a0e] shadow-brutal">
-          <div className="relative max-h-[440px] flex items-center justify-center bg-[#0c0a0e] overflow-hidden p-4">
+        <div className="relative journal-plate overflow-hidden">
+          <div className="relative max-h-[440px] flex items-center justify-center bg-felid-elevated/60 overflow-hidden p-4 sm:p-6">
             {previewUrl && (
-              <div className="relative border-2 border-black shadow-brutal-sm max-h-[400px]">
+              <div className="relative border border-felid-border-strong rounded-sm shadow-plate max-h-[400px] bg-felid-surface p-1">
                 <img
                   src={previewUrl}
                   alt="Selected feline for identification"
-                  className="max-h-[390px] w-auto object-contain mx-auto"
+                  className="max-h-[384px] w-auto object-contain mx-auto rounded-sm"
                 />
-                {/* Optical Reticle Overlays */}
-                <div className="absolute top-2 left-2 text-[#f472b6] font-mono font-black text-xs pointer-events-none">+</div>
-                <div className="absolute top-2 right-2 text-[#f472b6] font-mono font-black text-xs pointer-events-none">+</div>
-                <div className="absolute bottom-2 left-2 text-[#f472b6] font-mono font-black text-xs pointer-events-none">+</div>
-                <div className="absolute bottom-2 right-2 text-[#f472b6] font-mono font-black text-xs pointer-events-none">+</div>
+                <SpecimenCorners colorClass="border-felid-cobalt/80" />
               </div>
             )}
 
@@ -185,7 +189,7 @@ export const ImageDropzone: React.FC<Props> = ({
               <button
                 type="button"
                 onClick={handleClear}
-                className="absolute top-3 right-3 p-2 bg-black text-white hover:text-felid-accent border-2 border-black shadow-brutal-sm brutal-press focus:outline-none"
+                className="absolute top-3 right-3 p-2 bg-felid-surface/95 text-felid-ink hover:text-felid-pomegranate-ink border border-felid-border-strong rounded-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-felid-cobalt"
                 aria-label="Remove image"
                 title="Remove image"
               >
@@ -193,11 +197,11 @@ export const ImageDropzone: React.FC<Props> = ({
               </button>
             )}
 
-            {/* File info pill (Promptify Inset Influence) */}
-            <div className="absolute bottom-3 left-3 px-3 py-1.5 bg-[#141218] border-2 border-black shadow-brutal-sm text-xs font-mono text-felid-ivory flex items-center gap-2">
-              <PawPrint className="w-3.5 h-3.5 text-felid-accent" />
-              <span className="truncate max-w-[200px] font-bold">{selectedImage.name}</span>
-              <span className="text-felid-muted text-[10px]">
+            {/* File info pill */}
+            <div className="absolute bottom-3 left-3 px-3 py-1.5 bg-felid-surface/95 border border-felid-border-strong rounded-sm shadow-sm text-xs font-mono text-felid-ink flex items-center gap-2">
+              <PawPrint className="w-3.5 h-3.5 text-felid-cobalt-ink" />
+              <span className="truncate max-w-[200px] font-medium">{selectedImage.name}</span>
+              <span className="text-felid-muted-ink text-[10px]">
                 ({Math.round(selectedImage.size / 1024)} KB)
               </span>
             </div>

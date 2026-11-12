@@ -156,4 +156,17 @@ describe('BreedEstimatePanel Component', () => {
 
     expect(container.firstChild).toBeNull();
   });
+
+  it('renders a clean icon fallback instead of a broken img when breed thumbnail_url is empty', () => {
+    const { container } = render(
+      <BreedEstimatePanel
+        breed={{ ...britishShorthair, thumbnail_url: '' }}
+        candidates={[{ ...britishShorthair, thumbnail_url: '' }]}
+        onSelectBreed={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('British Shorthair')).toBeDefined();
+    expect(container.querySelector('img')).toBeNull();
+  });
 });

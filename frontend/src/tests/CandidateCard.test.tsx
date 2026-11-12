@@ -83,4 +83,18 @@ describe('CandidateCard Component', () => {
     expect(screen.queryByText('TOP MODEL CANDIDATE')).toBeNull();
     expect(screen.getByText('MODEL ESTIMATE')).toBeDefined();
   });
+
+  it('renders an icon fallback when thumbnail_url is empty', () => {
+    const { container } = render(
+      <CandidateCard
+        candidate={{ ...mockCandidate, thumbnail_url: '' }}
+        rank={1}
+        isTop={true}
+        onViewDetails={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('Snow Leopard')).toBeDefined();
+    expect(container.querySelector('img')).toBeNull();
+  });
 });

@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Sparkles,
-  Lock,
-  CheckCircle2,
-  PawPrint,
-  Cat
-} from 'lucide-react';
+import { Sparkles, Lock, CheckCircle2, PawPrint, Cat } from 'lucide-react';
 import { CollectionMetaResponse, CatalogMeta, ActivePage } from '../types';
 import { api } from '../services/api';
 import { useCollectionStore } from '../store/useCollectionStore';
 import { RankProgress } from '../components/collection/RankProgress';
 import { BadgeItem } from '../components/collection/BadgeItem';
+import { EmptyState, LoadingState, PageHeader } from '../components/ui/JournalPrimitives';
+import { BotanicalRule } from '../components/ui/JournalOrnament';
 
 interface Props {
   setActivePage: (page: ActivePage) => void;
@@ -99,56 +95,53 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
   };
 
   return (
-    <div className="py-4 space-y-10">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b-2 border-black">
-        <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm text-xs font-mono font-black text-felid-accent uppercase tracking-wider mb-2">
-            <PawPrint className="w-3.5 h-3.5" />
-            <span>LOCAL LOG // PRIVACY ENCRYPTED</span>
-          </div>
-          <h1 className="font-display font-black text-3xl sm:text-5xl text-felid-ivory uppercase tracking-tight">
-            DISCOVERY <span className="text-felid-accent underline decoration-4 underline-offset-4">EXPEDITION</span>
-          </h1>
-          <p className="text-xs sm:text-sm text-felid-muted mt-1 max-w-xl font-mono leading-relaxed">
-            Track logged feline discoveries, rank progression, and field achievement badges. All verified sightings are persistently cataloged in your private local journal.
-          </p>
-        </div>
-
-        {discoveryCount > 0 && (
-          <div>
-            {!showResetConfirm ? (
+    <div className="py-2 space-y-8">
+      <PageHeader
+        kicker="Private Local Log · Browser Storage"
+        kickerIcon={<PawPrint className="w-3.5 h-3.5" />}
+        title={
+          <>
+            Field <span className="italic text-felid-pomegranate-ink">Journal</span>
+          </>
+        }
+        subtitle="Track logged feline discoveries, naturalist rank progression, and milestone seals. Verified sightings are cataloged persistently in your private local journal."
+        aside={
+          discoveryCount > 0 ? (
+            !showResetConfirm ? (
               <button
+                type="button"
                 onClick={() => setShowResetConfirm(true)}
-                className="px-3.5 py-2 text-xs font-mono font-bold text-red-400 bg-[#0c0a0e] hover:bg-red-950 border-2 border-black shadow-brutal-sm brutal-press uppercase"
+                className="px-3.5 py-2 text-xs font-mono font-medium text-felid-pomegranate-ink bg-felid-surface hover:bg-felid-pomegranate/10 border border-felid-pomegranate/45 rounded-sm transition-colors uppercase"
               >
                 Reset Progress
               </button>
             ) : (
-              <div className="flex items-center gap-2 bg-[#0c0a0e] p-2 border-2 border-black text-xs font-mono shadow-brutal-sm">
-                <span className="text-pink-200">Clear journal?</span>
+              <div className="flex items-center gap-2 bg-felid-surface p-2 border border-felid-pomegranate/60 rounded-sm text-xs font-mono">
+                <span className="text-felid-ink">Clear journal?</span>
                 <button
+                  type="button"
                   onClick={() => {
                     clearProgress();
                     setShowResetConfirm(false);
                   }}
-                  className="px-2.5 py-1 bg-red-600 text-white font-bold border border-black brutal-press uppercase"
+                  className="px-2.5 py-1 bg-felid-pomegranate text-felid-on-pomegranate font-medium rounded-sm uppercase"
                 >
                   Yes, reset
                 </button>
                 <button
+                  type="button"
                   onClick={() => setShowResetConfirm(false)}
-                  className="px-2.5 py-1 bg-[#1d1922] text-felid-muted border border-black brutal-press uppercase"
+                  className="px-2.5 py-1 bg-felid-elevated hover:bg-felid-hover text-felid-ink border border-felid-border-strong rounded-sm uppercase transition-colors"
                 >
                   Cancel
                 </button>
               </div>
-            )}
-          </div>
-        )}
-      </div>
+            )
+          ) : undefined
+        }
+      />
 
-      {/* Rank Progress Bar (Promptify Inset Influence) */}
+      {/* Rank Progress */}
       <RankProgress
         currentRank={currentRank}
         nextRank={nextRank}
@@ -158,33 +151,36 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
       />
 
       {meta && (
-        <section className="grid grid-cols-2 sm:grid-cols-3 border-2 border-black bg-[#0c0a0e] divide-x-2 divide-black shadow-brutal-sm">
+        <section className="grid grid-cols-1 sm:grid-cols-3 journal-plate divide-y sm:divide-y-0 sm:divide-x divide-felid-border">
           {(
             [
               {
                 label: 'Wild Species Logged',
                 value: meta.species.filter((s) => s.category === 'wild_species' && discoveries[s.id]).length,
                 total: meta.species.filter((s) => s.category === 'wild_species').length,
+                tone: 'text-felid-cobalt-ink',
               },
               {
                 label: 'Domestic Cat Logged',
                 value: meta.species.filter((s) => s.category === 'domestic_species' && discoveries[s.id]).length,
                 total: meta.species.filter((s) => s.category === 'domestic_species').length,
+                tone: 'text-felid-pomegranate-ink',
               },
               {
                 label: 'CFA Breeds Catalogued',
                 value: catalogMeta?.breed_count ?? 0,
+                tone: 'text-felid-highlight-ink',
               },
-            ] as { label: string; value: number; total?: number }[]
+            ] as { label: string; value: number; total?: number; tone: string }[]
           ).map((stat) => (
-            <div key={stat.label} className="p-3 text-center">
-              <span className="block font-mono font-black text-lg text-felid-accent">
+            <div key={stat.label} className="p-4 text-center">
+              <span className={`block font-mono font-medium text-xl ${stat.tone}`}>
                 {stat.value}
                 {stat.total !== undefined && (
-                  <span className="text-felid-muted text-xs"> / {stat.total}</span>
+                  <span className="text-felid-muted-ink text-xs font-normal"> / {stat.total}</span>
                 )}
               </span>
-              <span className="text-[10px] uppercase tracking-wider text-felid-muted font-mono font-bold">
+              <span className="text-[10px] uppercase tracking-wider text-felid-muted-ink font-mono">
                 {stat.label}
               </span>
             </div>
@@ -192,20 +188,15 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
         </section>
       )}
 
-      {loading && (
-        <div className="py-12 text-center text-felid-muted space-y-2 font-mono">
-          <div className="w-8 h-8 border-2 border-felid-accent border-t-transparent animate-spin mx-auto" />
-          <p className="text-xs uppercase">LOADING EXPEDITION JOURNAL RECORDS...</p>
-        </div>
-      )}
+      {loading && <LoadingState label="Loading expedition journal records..." className="py-12" />}
 
       {/* Expedition Milestones & Badges */}
       {meta && (
         <section className="space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b-2 border-black">
-            <h2 className="font-display font-black text-xl text-felid-ivory uppercase flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-felid-accent" />
-              FIELD BADGES & MILESTONES
+          <div className="flex items-center justify-between pb-2.5 border-b border-felid-border">
+            <h2 className="font-display font-semibold text-xl text-felid-ink flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-felid-highlight-ink" />
+              <span>Field Badges &amp; Milestones</span>
             </h2>
           </div>
 
@@ -225,68 +216,84 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
         </section>
       )}
 
+      <BotanicalRule />
+
       {/* Discoveries Grid: Logged vs Uncataloged Silhouettes */}
       {meta && (
         <section className="space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b-2 border-black">
-            <h2 className="font-display font-black text-xl text-felid-ivory uppercase flex items-center gap-2">
-              <Cat className="w-5 h-5 text-felid-accent" />
-              FELIDAE FIELD ROSTER
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-felid-border">
+            <h2 className="font-display font-semibold text-xl text-felid-ink flex items-center gap-2">
+              <Cat className="w-5 h-5 text-felid-cobalt-ink" />
+              <span>Felidae Field Roster</span>
             </h2>
-            <span className="text-xs font-mono font-bold text-felid-muted">
-              {discoveryCount} DISCOVERED / {Math.max(0, meta.species.length - discoveryCount)} UNDOCUMENTED
+            <span className="text-xs font-mono text-felid-muted-ink">
+              {discoveryCount} discovered · {Math.max(0, meta.species.length - discoveryCount)} undocumented
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5">
             {meta.species.map((sp) => {
               const isFound = Boolean(discoveries[sp.id]);
 
               return (
                 <div
                   key={sp.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => onSelectSpecies(sp.id)}
-                  className={`relative border-2 border-black p-2 flex flex-col items-center text-center cursor-pointer transition-all brutal-press ${
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onSelectSpecies(sp.id);
+                    }
+                  }}
+                  className={`relative border rounded-sm p-2.5 flex flex-col items-center text-center cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-felid-cobalt ${
                     isFound
-                      ? 'bg-[#141218] shadow-brutal-sm hover:shadow-brutal'
-                      : 'bg-[#0c0a0e]/60 opacity-40 hover:opacity-75'
+                      ? 'bg-felid-surface border-felid-highlight/55 shadow-plate hover:border-felid-cobalt/65'
+                      : 'bg-felid-elevated/40 border-felid-border opacity-60 hover:opacity-90'
                   }`}
                 >
                   {/* Thumbnail / Silhouette */}
-                  <div className="w-full aspect-square overflow-hidden bg-black border-2 border-black relative mb-2">
+                  <div className="w-full aspect-square overflow-hidden bg-felid-elevated border border-felid-border rounded-sm relative mb-2">
                     <img
                       src={sp.thumbnail_url}
                       alt={sp.common_name}
                       className={`w-full h-full object-cover object-top transition-all ${
-                        isFound ? 'filter-none' : 'grayscale contrast-125 brightness-40'
+                        isFound ? 'filter-none' : 'grayscale contrast-125 opacity-55'
                       }`}
                       loading="lazy"
                     />
 
                     {isFound ? (
-                      <div className="absolute top-1 right-1 w-5 h-5 bg-felid-accent text-black border border-black flex items-center justify-center shadow-brutal-sm font-black">
+                      <div className="absolute top-1.5 right-1.5 w-5 h-5 bg-felid-cobalt text-felid-on-cobalt rounded-sm flex items-center justify-center shadow-sm">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                       </div>
                     ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-                        <Lock className="w-4 h-4 text-felid-muted" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-felid-photo-scrim/35">
+                        <Lock className="w-4 h-4 text-felid-photo-ink/90" />
                       </div>
                     )}
                   </div>
 
-                  <span className="font-display font-black text-xs text-felid-ivory uppercase truncate w-full">
+                  <span className="font-display font-semibold text-xs text-felid-ink truncate w-full">
                     {sp.common_name}
                   </span>
-                  <span className="text-[10px] text-felid-muted truncate w-full font-serif italic">
+                  <span className="text-[11px] text-felid-muted-ink truncate w-full font-serif italic">
                     {sp.scientific_name}
                   </span>
-                  <span className="text-[8px] text-felid-accent font-mono font-black uppercase tracking-wider">
-                    {sp.category === 'domestic_species' ? 'DOMESTIC' : 'WILD'}
+                  <span
+                    className={`text-[9px] font-mono uppercase tracking-wider mt-0.5 ${
+                      sp.category === 'domestic_species'
+                        ? 'text-felid-pomegranate-ink'
+                        : 'text-felid-cobalt-ink'
+                    }`}
+                  >
+                    {sp.category === 'domestic_species' ? 'Domestic' : 'Wild'}
                   </span>
 
-                  <div className="mt-1.5 pt-1.5 border-t border-[#332c3a] w-full flex items-center justify-between text-[10px] text-felid-muted font-mono font-bold">
+                  <div className="mt-1.5 pt-1.5 border-t border-felid-border w-full flex items-center justify-between text-[10px] text-felid-muted-ink font-mono">
                     <span>{sp.rarity}</span>
-                    <span className="text-felid-accent">+{sp.xp_reward}XP</span>
+                    <span className="text-felid-highlight-ink font-medium">+{sp.xp_reward}XP</span>
                   </div>
                 </div>
               );
@@ -297,18 +304,20 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
 
       {/* Call to action if no discoveries */}
       {discoveryCount === 0 && (
-        <div className="p-8 border-2 border-dashed border-[#332c3a] bg-[#0c0a0e] text-center space-y-4 shadow-brutal-sm">
-          <p className="text-sm text-felid-ivory font-mono font-bold uppercase">YOUR EXPEDITION JOURNAL IS CURRENTLY BLANK.</p>
-          <p className="text-xs text-felid-muted max-w-md mx-auto font-mono leading-relaxed">
-            Take or upload a photograph of your cat, kitten, or any wild felid in the Paw Scanner to earn your first discovery badge and XP!
-          </p>
-          <button
-            onClick={() => setActivePage('identify')}
-            className="px-6 py-3 bg-felid-accent hover:bg-felid-accent-hover text-black text-xs font-mono font-black uppercase border-2 border-black shadow-brutal brutal-press inline-flex items-center gap-2"
-          >
-            <PawPrint className="w-4 h-4" /> Go to Paw Scanner
-          </button>
-        </div>
+        <EmptyState
+          title="Your Field Journal is currently blank."
+          description="Take or upload a photograph of your cat, kitten, or any wild felid in the Paw Scanner to record your first species and earn discovery XP."
+          action={
+            <button
+              type="button"
+              onClick={() => setActivePage('identify')}
+              className="btn-primary text-xs"
+            >
+              <PawPrint className="w-4 h-4" />
+              <span>Go to Paw Scanner</span>
+            </button>
+          }
+        />
       )}
     </div>
   );

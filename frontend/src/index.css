@@ -2,110 +2,272 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================================
+   Felineye — Cobalt & Pomegranate: An Anatolian Natural-History Journal
+   Light Theme: Antique Paper (#F2E7D5), Porcelain (#FBF7F0), Ink (#302A30),
+   Muted Mauve (#897586), Royal Cobalt (#344E8C), Pomegranate (#B74750),
+   Burnished Gold (#C49A52).
+   Dark Theme: Midnight Plum (#241B29 / #352A3B / #403447), Antique Paper
+   (#F2E7D5), Soft Mauve (#C6B8C5), Dusty Rose (#C58C91), Cobalt (#526DA8),
+   Pomegranate (#B74750), Burnished Gold (#C49A52).
+   ============================================================================ */
+:root {
+  /* Core surfaces & ink */
+  --felid-bg-rgb: 242 231 213;           /* #F2E7D5 — Antique Paper */
+  --felid-surface-rgb: 251 247 240;      /* #FBF7F0 — Porcelain */
+  --felid-elevated-rgb: 232 218 197;     /* #E8DAC5 — Warm vellum step */
+  --felid-surface-hover-rgb: 239 228 211;/* #EFE4D3 */
+
+  --felid-border-rgb: 216 202 187;       /* #D8CABB — Warm archival hairline */
+  --felid-border-strong-rgb: 184 167 155;/* #B8A79B — Muted warm stone */
+
+  --felid-ink-rgb: 48 42 48;             /* #302A30 — Ink */
+  --felid-muted-rgb: 137 117 134;        /* #897586 — Muted Mauve */
+  --felid-muted-ink-rgb: 102 83 99;      /* #665363 — >=5.1:1 AA on bg/surface/elevated */
+
+  /* Primary Action (Royal Cobalt) */
+  --felid-accent-rgb: 52 78 140;         /* #344E8C */
+  --felid-accent-hover-rgb: 42 64 117;   /* #2A4075 */
+  --felid-accent-ink-rgb: 43 67 123;     /* #2B437B — >=6.9:1 AA */
+  --felid-on-accent-rgb: 251 247 240;    /* #FBF7F0 — 7.52:1 on #344E8C */
+
+  /* Secondary Accent (Pomegranate) */
+  --felid-secondary-rgb: 183 71 80;      /* #B74750 */
+  --felid-secondary-ink-rgb: 148 48 56;  /* #943038 — >=5.5:1 AA */
+  --felid-on-secondary-rgb: 251 247 240; /* #FBF7F0 — 4.88:1 on #B74750 */
+
+  /* Persistent Brand Anchors */
+  --felid-cobalt-rgb: 52 78 140;         /* #344E8C — Royal Cobalt */
+  --felid-cobalt-hover-rgb: 42 64 117;   /* #2A4075 */
+  --felid-cobalt-ink-rgb: 43 67 123;     /* #2B437B */
+  --felid-cobalt-line-rgb: 52 78 140;    /* #344E8C — >=5.84:1 graphical contrast */
+  --felid-on-cobalt-rgb: 251 247 240;    /* #FBF7F0 */
+
+  --felid-pomegranate-rgb: 183 71 80;    /* #B74750 — Pomegranate */
+  --felid-pomegranate-hover-rgb: 158 56 64;/* #9E3840 */
+  --felid-pomegranate-ink-rgb: 148 48 56;/* #943038 */
+  --felid-pomegranate-line-rgb: 183 71 80;/* #B74750 — >=3.79:1 graphical contrast */
+  --felid-on-pomegranate-rgb: 251 247 240;/* #FBF7F0 */
+
+  /* Highlight (Burnished Gold — used sparingly) */
+  --felid-highlight-rgb: 196 154 82;     /* #C49A52 */
+  --felid-highlight-ink-rgb: 117 85 29;  /* #75551D — >=4.97:1 AA */
+  --felid-highlight-line-rgb: 153 111 41;/* #996F29 — >=3.28:1 graphical contrast */
+  --felid-on-highlight-rgb: 48 42 48;    /* #302A30 — 5.40:1 on #C49A52 */
+
+  /* Semantic status (Cobalt / Burnished Gold / Pomegranate — zero green) */
+  --felid-success-rgb: 43 67 123;        /* #2B437B */
+  --felid-warning-rgb: 117 85 29;        /* #75551D */
+  --felid-danger-rgb: 148 48 56;         /* #943038 */
+
+  /* Photo overlays & scrims */
+  --felid-scrim-rgb: 36 27 41;           /* #241B29 */
+  --felid-photo-scrim-rgb: 30 22 35;     /* #1E1623 */
+  --felid-photo-ink-rgb: 251 247 240;    /* #FBF7F0 */
+
+  /* Elevation shadows */
+  --felid-shadow-plate: 0 1px 2px rgba(48, 42, 48, 0.06), 0 8px 20px -8px rgba(48, 42, 48, 0.1);
+  --felid-shadow-plate-hover: 0 4px 12px rgba(52, 78, 140, 0.1), 0 16px 30px -10px rgba(48, 42, 48, 0.16);
+  --felid-shadow-modal: 0 24px 48px -12px rgba(36, 27, 41, 0.28);
+}
+
+:root.dark {
+  /* Core surfaces & ink */
+  --felid-bg-rgb: 36 27 41;              /* #241B29 — Midnight Plum */
+  --felid-surface-rgb: 53 42 59;         /* #352A3B */
+  --felid-elevated-rgb: 64 52 71;        /* #403447 */
+  --felid-surface-hover-rgb: 75 61 83;   /* #4B3D53 */
+
+  --felid-border-rgb: 84 68 94;          /* #54445E */
+  --felid-border-strong-rgb: 112 92 124; /* #705C7C */
+
+  --felid-ink-rgb: 242 231 213;          /* #F2E7D5 — Antique Paper */
+  --felid-muted-rgb: 198 184 197;        /* #C6B8C5 */
+  --felid-muted-ink-rgb: 198 184 197;    /* #C6B8C5 — >=6.15:1 AA */
+
+  /* Primary Action (Dusty Rose) */
+  --felid-accent-rgb: 197 140 145;       /* #C58C91 */
+  --felid-accent-hover-rgb: 210 159 164; /* #D29FA4 */
+  --felid-accent-ink-rgb: 226 178 182;   /* #E2B2B6 — >=6.26:1 AA */
+  --felid-on-accent-rgb: 36 27 41;       /* #241B29 — 5.96:1 on #C58C91 */
+
+  /* Secondary Accent (Cobalt) */
+  --felid-secondary-rgb: 82 109 168;     /* #526DA8 */
+  --felid-secondary-ink-rgb: 155 180 234;/* #9BB4EA — >=5.62:1 AA */
+  --felid-on-secondary-rgb: 251 247 240; /* #FBF7F0 — 4.78:1 on #526DA8 */
+
+  /* Persistent Brand Anchors */
+  --felid-cobalt-rgb: 82 109 168;        /* #526DA8 — Dark-mode Cobalt */
+  --felid-cobalt-hover-rgb: 98 127 189;  /* #627FBD */
+  --felid-cobalt-ink-rgb: 155 180 234;   /* #9BB4EA */
+  --felid-cobalt-line-rgb: 122 152 216;  /* #7A98D8 — >=4.06:1 graphical contrast */
+  --felid-on-cobalt-rgb: 251 247 240;    /* #FBF7F0 */
+
+  --felid-pomegranate-rgb: 183 71 80;    /* #B74750 — Pomegranate */
+  --felid-pomegranate-hover-rgb: 199 88 97;/* #C75861 */
+  --felid-pomegranate-ink-rgb: 238 131 140;/* #EE838C — >=4.59:1 AA rich pomegranate */
+  --felid-pomegranate-line-rgb: 217 107 116;/* #D96B74 — >=3.50:1 graphical contrast */
+  --felid-on-pomegranate-rgb: 251 247 240;/* #FBF7F0 — 4.88:1 on #B74750 */
+
+  /* Highlight (Burnished Gold — used sparingly) */
+  --felid-highlight-rgb: 196 154 82;     /* #C49A52 */
+  --felid-highlight-ink-rgb: 227 192 126;/* #E3C07E — >=6.73:1 AA */
+  --felid-highlight-line-rgb: 196 154 82;/* #C49A52 — >=4.49:1 graphical contrast */
+  --felid-on-highlight-rgb: 36 27 41;    /* #241B29 — 6.40:1 on #C49A52 */
+
+  /* Semantic status (Cobalt / Burnished Gold / Pomegranate — zero green) */
+  --felid-success-rgb: 155 180 234;      /* #9BB4EA */
+  --felid-warning-rgb: 227 192 126;      /* #E3C07E */
+  --felid-danger-rgb: 238 131 140;       /* #EE838C */
+
+  /* Photo overlays & scrims */
+  --felid-scrim-rgb: 18 13 21;           /* #120D15 */
+  --felid-photo-scrim-rgb: 20 14 23;     /* #140E17 */
+  --felid-photo-ink-rgb: 242 231 213;    /* #F2E7D5 */
+
+  /* Elevation shadows */
+  --felid-shadow-plate: 0 2px 4px rgba(12, 8, 15, 0.35), 0 10px 26px -8px rgba(12, 8, 15, 0.45);
+  --felid-shadow-plate-hover: 0 6px 18px rgba(12, 8, 15, 0.45), 0 18px 34px -10px rgba(12, 8, 15, 0.56);
+  --felid-shadow-modal: 0 28px 56px -12px rgba(8, 5, 10, 0.72);
+}
+
 @layer base {
-  body {
-    background-color: #0c0a0e;
-    color: #fcf8fa;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  html {
+    background-color: rgb(var(--felid-bg-rgb));
+    color: rgb(var(--felid-ink-rgb));
+    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
   }
 
-  h1, h2, h3, .font-display {
-    font-family: 'Cinzel', serif;
-    letter-spacing: 0.02em;
+  body {
+    background-color: rgb(var(--felid-bg-rgb));
+    color: rgb(var(--felid-ink-rgb));
+    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: 'SOFT' 35, 'WONK' 0;
+  }
+
+  code,
+  kbd,
+  pre,
+  .font-mono {
+    font-family: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  select option,
+  select optgroup {
+    background-color: rgb(var(--felid-surface-rgb));
+    color: rgb(var(--felid-ink-rgb));
   }
 }
 
-/* Custom delicate pink-gray scrollbar */
+/* Archival scrollbars matching active theme */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f0d13;
+  background: rgb(var(--felid-bg-rgb));
 }
 ::-webkit-scrollbar-thumb {
-  background: #2b2533;
-  border-radius: 4px;
+  background: rgb(var(--felid-border-strong-rgb) / 0.55);
+  border-radius: 9999px;
+  border: 2px solid rgb(var(--felid-bg-rgb));
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f364a;
+  background: rgb(var(--felid-cobalt-rgb) / 0.75);
 }
 
-/* AI Laser & Whiskers Scanner line animation */
+/* Subtle Cobalt & Pomegranate archival wash backdrop */
+.journal-canvas-wash {
+  background-image:
+    radial-gradient(ellipse 85% 50% at 50% -10%, rgb(var(--felid-cobalt-rgb) / 0.065), transparent 70%),
+    radial-gradient(ellipse 55% 40% at 100% 100%, rgb(var(--felid-pomegranate-rgb) / 0.045), transparent 65%);
+}
+
+/* Optical analysis beam (restrained cobalt sweep) */
 @keyframes scanline {
   0% {
-    top: 0%;
-    opacity: 0.85;
+    top: 4%;
+    opacity: 0.75;
   }
   50% {
     opacity: 1;
   }
   100% {
-    top: 100%;
-    opacity: 0.85;
+    top: 96%;
+    opacity: 0.75;
   }
 }
 
 .animate-scanline {
-  animation: scanline 2.2s ease-in-out infinite alternate;
+  animation: scanline 2.4s ease-in-out infinite alternate;
 }
 
-/* Pink glow pulse */
-@keyframes pulseGlow {
-  0%, 100% {
-    box-shadow: 0 0 15px rgba(244, 114, 182, 0.2);
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
   }
-  50% {
-    box-shadow: 0 0 32px rgba(244, 114, 182, 0.45);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.animate-pulse-glow {
-  animation: pulseGlow 2s infinite ease-in-out;
+.animate-fadeIn {
+  animation: fadeIn 0.22s ease-out both;
 }
 
-/* Neo-Brutalist & Reference 1/2 Utility Styles */
-.hazard-stripe {
-  background: repeating-linear-gradient(
-    -45deg,
-    #f59e0b,
-    #f59e0b 14px,
-    #0c0a0e 14px,
-    #0c0a0e 28px
-  );
+@media (prefers-reduced-motion: reduce) {
+  .animate-scanline,
+  .animate-fadeIn,
+  .animate-pulse,
+  .animate-spin {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
-.hazard-stripe-rose {
-  background: repeating-linear-gradient(
-    -45deg,
-    #f472b6,
-    #f472b6 14px,
-    #141218 14px,
-    #141218 28px
-  );
-}
+@layer components {
+  /* Standard archival field-guide plate surface */
+  .journal-plate {
+    @apply bg-felid-surface border border-felid-border rounded-sm shadow-plate;
+  }
 
-/* Tactile press physics for buttons and interactive cards */
-.brutal-press {
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
-}
+  /* Subtle inset manuscript ledger block */
+  .journal-inset {
+    @apply bg-felid-elevated/60 border border-felid-border rounded-sm;
+  }
 
-.brutal-press:hover {
-  transform: translate(-1px, -1px);
-}
+  /* Interactive plate card hover & focus */
+  .journal-plate-interactive {
+    @apply bg-felid-surface border border-felid-border rounded-sm shadow-plate transition-all duration-150 hover:border-felid-cobalt/65 hover:shadow-plate-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-felid-cobalt focus-visible:ring-offset-2 focus-visible:ring-offset-felid-bg;
+  }
 
-.brutal-press:active {
-  transform: translate(2px, 2px);
-  box-shadow: 0px 0px 0px #000000 !important;
-}
+  /* Primary tactile editorial CTA button (Light: Royal Cobalt | Dark: Dusty Rose) */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-felid-accent hover:bg-felid-accent-hover text-felid-on-accent font-sans font-semibold text-sm rounded-sm border border-felid-accent transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-felid-accent focus-visible:ring-offset-2 focus-visible:ring-offset-felid-bg disabled:opacity-50 disabled:cursor-not-allowed;
+  }
 
-/* Promptify Double Frame styling */
-.promptify-frame {
-  border: 2px solid #000000;
-  box-shadow: 4px 4px 0px #000000;
-  position: relative;
-}
+  /* Secondary archival button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-felid-surface hover:bg-felid-hover text-felid-ink font-sans font-semibold text-sm rounded-sm border border-felid-border-strong transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-felid-cobalt focus-visible:ring-offset-2 focus-visible:ring-offset-felid-bg disabled:opacity-50 disabled:cursor-not-allowed;
+  }
 
-.promptify-inner {
-  border: 1px solid #483f52;
+  /* Form controls harmonized across light & dark */
+  .journal-input {
+    @apply w-full bg-felid-surface border border-felid-border-strong rounded-sm px-3 py-2 text-sm font-sans text-felid-ink placeholder:text-felid-muted-ink focus:outline-none focus:border-felid-cobalt focus:ring-1 focus:ring-felid-cobalt transition-colors;
+  }
+
+  .journal-select {
+    @apply bg-felid-surface border border-felid-border-strong rounded-sm px-3 py-2 text-sm font-sans text-felid-ink focus:outline-none focus:border-felid-cobalt focus:ring-1 focus:ring-felid-cobalt transition-colors;
+  }
 }

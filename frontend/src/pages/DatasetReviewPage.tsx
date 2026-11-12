@@ -1,31 +1,62 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  Check, X, HelpCircle, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, ImageOff,
-  RefreshCw, AlertTriangle, CircleDot,
+  Check,
+  X,
+  HelpCircle,
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
+  ZoomOut,
+  ImageOff,
+  RefreshCw,
+  CircleDot,
+  ClipboardCheck,
 } from 'lucide-react';
 import { api } from '../services/api';
 import { DatasetCandidate, DatasetStats, DatasetGaps } from '../types';
+import { AlertBanner, PageHeader } from '../components/ui/JournalPrimitives';
 
 const SELECT_CLS =
-  'ml-1 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm px-2 py-1 text-xs font-mono text-felid-ivory focus:outline-none';
-const CARD = 'bg-[#141218] border-2 border-black shadow-brutal p-4';
+  'ml-1.5 bg-felid-surface border border-felid-border-strong rounded-sm px-2.5 py-1.5 text-xs font-mono text-felid-ink focus:outline-none focus:border-felid-cobalt focus:ring-1 focus:ring-felid-cobalt';
+const CARD = 'journal-plate p-4';
 const ICON_BTN =
-  'p-1.5 bg-[#1d1922] border-2 border-black shadow-brutal-sm text-felid-ivory hover:bg-[#26222d] brutal-press';
-const LABEL = 'text-[10px] font-mono font-bold uppercase tracking-wider';
+  'p-2 bg-felid-surface border border-felid-border-strong rounded-sm text-felid-ink hover:bg-felid-hover hover:border-felid-cobalt/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-felid-cobalt';
+const LABEL = 'text-[10px] font-mono font-medium uppercase tracking-wider';
 
-const STATUS_STYLE: Record<string, string> = {
-  pending: 'bg-[#1d1922] text-felid-muted border-felid-border',
-  verified: 'bg-felid-success/15 text-felid-success border-felid-success/50',
-  rejected: 'bg-felid-danger/15 text-felid-danger border-felid-danger/50',
-  ambiguous: 'bg-felid-warning/15 text-felid-warning border-felid-warning/50',
-  contested: 'bg-felid-accent/15 text-felid-accent border-felid-accent/50',
+const STATUS_STYLE: Record<string, { pill: string; dot: string }> = {
+  pending: {
+    pill: 'bg-felid-elevated text-felid-muted-ink border-felid-border-strong',
+    dot: 'bg-felid-muted',
+  },
+  verified: {
+    pill: 'bg-felid-cobalt/15 text-felid-cobalt-ink border-felid-cobalt/45',
+    dot: 'bg-felid-cobalt-line',
+  },
+  rejected: {
+    pill: 'bg-felid-pomegranate/15 text-felid-pomegranate-ink border-felid-pomegranate/45',
+    dot: 'bg-felid-pomegranate-line',
+  },
+  ambiguous: {
+    pill: 'bg-felid-highlight/15 text-felid-highlight-ink border-felid-highlight/50',
+    dot: 'bg-felid-highlight-line',
+  },
+  contested: {
+    pill: 'bg-felid-pomegranate text-felid-on-pomegranate border-felid-pomegranate',
+    dot: 'bg-felid-on-pomegranate',
+  },
 };
 
-const StatusPill: React.FC<{ status: string }> = ({ status }) => (
-  <span className={`inline-block px-1.5 py-0.5 border font-mono text-[10px] font-bold uppercase ${STATUS_STYLE[status] || STATUS_STYLE.pending}`}>
-    {status}
-  </span>
-);
+const StatusPill: React.FC<{ status: string }> = ({ status }) => {
+  const style = STATUS_STYLE[status] || STATUS_STYLE.pending;
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2 py-0.5 border rounded-sm font-mono text-[10px] font-medium uppercase ${style.pill}`}
+    >
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${style.dot}`} aria-hidden="true" />
+      <span>{status}</span>
+    </span>
+  );
+};
 
 interface StatsProps {
   stats: DatasetStats | null;
@@ -45,59 +76,84 @@ export const DatasetDashboard: React.FC<StatsProps> = ({ stats, session, onStats
   const [gaps, setGaps] = useState<DatasetGaps | null>(null);
 
   const refreshStats = useCallback(() => {
-    api.getDatasetStats(session)
-      .then((s) => { onStats(s); setBreeds(Object.keys(s.per_breed)); })
+    api
+      .getDatasetStats(session)
+      .then((s) => {
+        onStats(s);
+        setBreeds(Object.keys(s.per_breed));
+      })
       .catch(() => undefined);
-    api.getDatasetGaps(session)
+    api
+      .getDatasetGaps(session)
       .then((g) => setGaps(g))
       .catch(() => undefined);
   }, [session, onStats]);
 
-  useEffect(() => { refreshStats(); }, [refreshStats]);
+  useEffect(() => {
+    refreshStats();
+  }, [refreshStats]);
 
   const load = useCallback(() => {
     setLoading(true);
-    api.getDatasetCandidates(session, {
-      breed: filterBreed || undefined,
-      status: filterStatus || undefined,
-      review_state: filterReviewState || undefined,
-      source: filterSource || undefined,
-      page: 1,
-      page_size: 100,
-    })
-      .then((r) => { setItems(r.items); setTotal(r.total); })
+    api
+      .getDatasetCandidates(session, {
+        breed: filterBreed || undefined,
+        status: filterStatus || undefined,
+        review_state: filterReviewState || undefined,
+        source: filterSource || undefined,
+        page: 1,
+        page_size: 100,
+      })
+      .then((r) => {
+        setItems(r.items);
+        setTotal(r.total);
+      })
       .catch(() => undefined)
       .finally(() => setLoading(false));
   }, [session, filterBreed, filterStatus, filterReviewState, filterSource]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const totals = useMemo(() => {
-    const base = { reviewed: 0, unreviewed: 0, awaiting_second: 0, mine: 0,
-      verified: 0, rejected: 0, ambiguous: 0, contested: 0, pending: 0 };
+    const base = {
+      reviewed: 0,
+      unreviewed: 0,
+      awaiting_second: 0,
+      mine: 0,
+      verified: 0,
+      rejected: 0,
+      ambiguous: 0,
+      contested: 0,
+      pending: 0,
+    };
     if (!stats) return null;
-    return Object.values(stats.per_breed).reduce((acc, b) => ({
-      reviewed: acc.reviewed + (b.reviewed ?? 0),
-      unreviewed: acc.unreviewed + (b.unreviewed ?? 0),
-      awaiting_second: acc.awaiting_second + (b.awaiting_second ?? 0),
-      mine: acc.mine + (b.mine ?? 0),
-      verified: acc.verified + b.verified,
-      rejected: acc.rejected + b.rejected,
-      ambiguous: acc.ambiguous + b.ambiguous,
-      contested: acc.contested + b.contested,
-      pending: acc.pending + b.pending,
-    }), base);
+    return Object.values(stats.per_breed).reduce(
+      (acc, b) => ({
+        reviewed: acc.reviewed + (b.reviewed ?? 0),
+        unreviewed: acc.unreviewed + (b.unreviewed ?? 0),
+        awaiting_second: acc.awaiting_second + (b.awaiting_second ?? 0),
+        mine: acc.mine + (b.mine ?? 0),
+        verified: acc.verified + b.verified,
+        rejected: acc.rejected + b.rejected,
+        ambiguous: acc.ambiguous + b.ambiguous,
+        contested: acc.contested + b.contested,
+        pending: acc.pending + b.pending,
+      }),
+      base,
+    );
   }, [stats]);
 
   const cards: Array<[string, number | undefined, string]> = [
-    ['TOTAL', stats?.total, 'text-felid-ivory'],
-    ['UNREVIEWED', totals?.unreviewed, 'text-felid-ivory'],
-    ['AWAITING REVIEW', totals?.awaiting_second, 'text-felid-accent'],
-    ['YOUR DECISIONS', totals?.mine, 'text-felid-ivory'],
-    ['VERIFIED', totals?.verified, 'text-felid-success'],
-    ['REJECTED', totals?.rejected, 'text-felid-danger'],
-    ['AMBIGUOUS', totals?.ambiguous, 'text-felid-warning'],
-    ['CONTESTED', totals?.contested, 'text-felid-accent'],
+    ['TOTAL', stats?.total, 'text-felid-ink'],
+    ['UNREVIEWED', totals?.unreviewed, 'text-felid-ink'],
+    ['AWAITING REVIEW', totals?.awaiting_second, 'text-felid-highlight-ink'],
+    ['YOUR DECISIONS', totals?.mine, 'text-felid-cobalt-ink'],
+    ['VERIFIED', totals?.verified, 'text-felid-cobalt-ink'],
+    ['REJECTED', totals?.rejected, 'text-felid-pomegranate-ink'],
+    ['AMBIGUOUS', totals?.ambiguous, 'text-felid-highlight-ink'],
+    ['CONTESTED', totals?.contested, 'text-felid-pomegranate-ink'],
   ];
   const required = stats?.required_reviewers ?? 1;
 
@@ -105,88 +161,156 @@ export const DatasetDashboard: React.FC<StatsProps> = ({ stats, session, onStats
     <section aria-label="Review dashboard" className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-3" data-testid="review-stats">
         {cards.map(([label, value, color]) => (
-          <div key={label} className="bg-[#141218] border-2 border-black shadow-brutal-sm p-3">
-            <div className={`${LABEL} text-felid-muted`}>{label}</div>
-            <div className={`font-display text-3xl font-black ${color}`}>{value ?? '—'}</div>
+          <div key={label} className="journal-plate p-3">
+            <div className={`${LABEL} text-felid-muted-ink`}>{label}</div>
+            <div className={`font-mono text-2xl font-medium mt-1 ${color}`}>{value ?? '—'}</div>
           </div>
         ))}
       </div>
 
-      <div className="flex items-start gap-2 bg-[#0c0a0e] border-2 border-black shadow-brutal-sm p-3">
-        <AlertTriangle className="w-4 h-4 shrink-0 text-felid-accent mt-0.5" />
-        <p className="text-[11px] font-mono text-felid-muted">
+      <AlertBanner tone="info">
+        <span className="text-xs font-sans">
           {required === 1 ? (
             <>
-              One reviewer decides. Approval records <b className="text-felid-ivory">verified</b>, rejection
-              <b className="text-felid-ivory"> rejected</b>, ambiguity <b className="text-felid-ivory">ambiguous</b>.
-              If a different reviewer later disagrees, the row becomes <b className="text-felid-ivory">contested</b>
+              One reviewer decides. Approval records <b className="text-felid-ink">verified</b>, rejection{' '}
+              <b className="text-felid-ink">rejected</b>, ambiguity <b className="text-felid-ink">ambiguous</b>.
+              If a different reviewer later disagrees, the row becomes <b className="text-felid-ink">contested</b>{' '}
               — never auto-resolved.
             </>
           ) : (
             <>
-              A verdict needs <b className="text-felid-ivory">{required} distinct reviewers</b> to agree. Until then the
-              row stays <b className="text-felid-ivory">pending</b> and appears under
-              <b className="text-felid-ivory"> awaiting review</b> / <b className="text-felid-ivory">your decisions</b>.
+              A verdict needs <b className="text-felid-ink">{required} distinct reviewers</b> to agree. Until then the
+              row stays <b className="text-felid-ink">pending</b> and appears under{' '}
+              <b className="text-felid-ink">awaiting review</b> / <b className="text-felid-ink">your decisions</b>.
             </>
           )}
-        </p>
-      </div>
+        </span>
+      </AlertBanner>
 
-      <div className="flex flex-wrap gap-3 items-end bg-[#141218] border-2 border-black shadow-brutal-sm p-3">
-        <label className="text-xs font-mono text-felid-muted">Breed
-          <select data-testid="filter-breed" value={filterBreed} onChange={(e) => setFilterBreed(e.target.value)} className={SELECT_CLS}>
-            <option value="">All</option>{breeds.map((b) => <option key={b} value={b}>{b.replace(/-/g, ' ')}</option>)}
-          </select></label>
-        <label className="text-xs font-mono text-felid-muted">Verdict
-          <select data-testid="filter-status" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={SELECT_CLS}>
-            <option value="">All</option>{['pending', 'verified', 'rejected', 'ambiguous', 'contested'].map((s) => <option key={s} value={s}>{s}</option>)}
-          </select></label>
-        <label className="text-xs font-mono text-felid-muted">Progress
-          <select data-testid="filter-review-state" value={filterReviewState} onChange={(e) => setFilterReviewState(e.target.value)} className={SELECT_CLS}>
+      <div className="journal-plate p-3.5 flex flex-wrap gap-3 items-center">
+        <label className="text-xs font-mono text-felid-muted-ink">
+          Breed
+          <select
+            data-testid="filter-breed"
+            value={filterBreed}
+            onChange={(e) => setFilterBreed(e.target.value)}
+            className={SELECT_CLS}
+          >
+            <option value="">All</option>
+            {breeds.map((b) => (
+              <option key={b} value={b}>
+                {b.replace(/-/g, ' ')}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="text-xs font-mono text-felid-muted-ink">
+          Verdict
+          <select
+            data-testid="filter-status"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className={SELECT_CLS}
+          >
+            <option value="">All</option>
+            {['pending', 'verified', 'rejected', 'ambiguous', 'contested'].map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="text-xs font-mono text-felid-muted-ink">
+          Progress
+          <select
+            data-testid="filter-review-state"
+            value={filterReviewState}
+            onChange={(e) => setFilterReviewState(e.target.value)}
+            className={SELECT_CLS}
+          >
             <option value="">All</option>
             <option value="unreviewed">unreviewed</option>
             <option value="awaiting_second">awaiting 2nd reviewer</option>
             <option value="mine">decided by me</option>
             <option value="not_mine">not decided by me</option>
-          </select></label>
-        <label className="text-xs font-mono text-felid-muted">Source
-          <select data-testid="filter-source" value={filterSource} onChange={(e) => setFilterSource(e.target.value)} className={SELECT_CLS}>
-            <option value="">All</option><option value="wikimedia-commons">wikimedia-commons</option>
-          </select></label>
+          </select>
+        </label>
+        <label className="text-xs font-mono text-felid-muted-ink">
+          Source
+          <select
+            data-testid="filter-source"
+            value={filterSource}
+            onChange={(e) => setFilterSource(e.target.value)}
+            className={SELECT_CLS}
+          >
+            <option value="">All</option>
+            <option value="wikimedia-commons">wikimedia-commons</option>
+          </select>
+        </label>
         <div className="ml-auto flex items-center gap-3">
-          <span className="text-xs font-mono font-bold text-felid-accent">{total} candidates</span>
-          <button type="button" onClick={() => { refreshStats(); load(); }} className={ICON_BTN} aria-label="Refresh dashboard">
+          <span className="text-xs font-mono font-medium text-felid-cobalt-ink">
+            {total} candidates
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              refreshStats();
+              load();
+            }}
+            className={ICON_BTN}
+            aria-label="Refresh dashboard"
+          >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
         </div>
       </div>
 
       {stats && (
-        <div className="bg-[#0c0a0e] border-2 border-black shadow-brutal-sm p-4">
-          <h3 className={`${LABEL} text-felid-muted mb-3`}>PER-BREED PROGRESS</h3>
-          <div className="space-y-3">
+        <div className="journal-plate p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <h3 className={`${LABEL} text-felid-muted-ink`}>PER-BREED PROGRESS</h3>
+            <div className="flex items-center gap-3 text-[11px] font-mono text-felid-muted-ink">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2.5 h-2 rounded-sm bg-felid-cobalt-line inline-block" aria-hidden="true" />
+                verified
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2.5 h-2 rounded-sm bg-felid-muted/55 inline-block" aria-hidden="true" />
+                reviewed
+              </span>
+            </div>
+          </div>
+          <div className="space-y-3.5">
             {Object.entries(stats.per_breed).map(([breed, v]) => {
               const reviewed = v.reviewed ?? 0;
               const awaiting = v.awaiting_second ?? 0;
               const reviewedPct = Math.round((reviewed / Math.max(1, v.total)) * 100);
               const verifiedPct = Math.round((v.verified / Math.max(1, v.total)) * 100);
               return (
-                <div key={breed} className="space-y-1">
+                <div key={breed} className="space-y-1.5">
                   <div className="flex flex-wrap items-center gap-3">
-                    <span className="font-display font-black text-xs text-felid-ivory uppercase w-44">{breed.replace(/-/g, ' ')}</span>
-                    <span className="text-xs font-mono text-felid-muted ml-auto">
+                    <span className="font-display font-semibold text-sm text-felid-ink capitalize w-44">
+                      {breed.replace(/-/g, ' ')}
+                    </span>
+                    <span className="text-xs font-mono text-felid-muted-ink ml-auto">
                       {reviewed}/{v.total} reviewed · {awaiting} awaiting review · {v.verified} verified · {v.pending} pending
                     </span>
                   </div>
-                  <div className="relative h-2.5 bg-[#1d1922] border border-black overflow-hidden">
-                    <div className="absolute inset-y-0 left-0 bg-felid-accent/40" style={{ width: `${reviewedPct}%` }} />
-                    <div className="absolute inset-y-0 left-0 bg-felid-success" style={{ width: `${verifiedPct}%` }} />
+                  <div className="relative h-2 bg-felid-elevated border border-felid-border rounded-sm overflow-hidden">
+                    <div
+                      className="absolute inset-y-0 left-0 bg-felid-muted/55"
+                      style={{ width: `${reviewedPct}%` }}
+                    />
+                    <div
+                      className="absolute inset-y-0 left-0 bg-felid-cobalt-line"
+                      style={{ width: `${verifiedPct}%` }}
+                    />
                   </div>
-                  <div className="flex flex-wrap gap-3 text-[10px] font-mono text-felid-muted">
+                  <div className="flex flex-wrap gap-3 text-[11px] font-mono text-felid-muted-ink">
                     <span>approve {Math.round(v.approval_rate * 100)}%</span>
                     <span>reject {Math.round(v.rejection_rate * 100)}%</span>
                     <span>ambiguous {Math.round(v.ambiguity_rate * 100)}%</span>
-                    <span className="text-felid-accent">{v.contested} contested</span>
+                    <span className="text-felid-pomegranate-ink">{v.contested} contested</span>
                   </div>
                 </div>
               );
@@ -196,44 +320,57 @@ export const DatasetDashboard: React.FC<StatsProps> = ({ stats, session, onStats
       )}
 
       {gaps && (
-        <div className="bg-[#0c0a0e] border-2 border-black shadow-brutal-sm p-4" data-testid="collection-gap">
+        <div className="journal-plate p-4" data-testid="collection-gap">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-            <h3 className={`${LABEL} text-felid-muted`}>COLLECTION GAP · ROUND 2</h3>
-            <span className="text-[10px] font-mono text-felid-muted">
+            <h3 className={`${LABEL} text-felid-muted-ink`}>COLLECTION GAP · ROUND 2</h3>
+            <span className="text-[11px] font-mono text-felid-muted-ink">
               target {gaps.target_per_breed} eligible / breed · {gaps.total_remaining} still needed
             </span>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             {gaps.priority_order.map((breed) => {
               const g = gaps.per_breed[breed];
               if (!g) return null;
               const pct = Math.min(100, Math.round((g.eligible / Math.max(1, g.target)) * 100));
               const topPriority = g.priority_tier === 1;
               return (
-                <div key={breed} className="space-y-1" data-testid={`gap-${breed}`}>
+                <div key={breed} className="space-y-1.5" data-testid={`gap-${breed}`}>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-display font-black text-xs text-felid-ivory uppercase w-44">{breed.replace(/-/g, ' ')}</span>
-                    <span className={`px-1.5 py-0.5 border font-mono text-[10px] font-bold uppercase ${topPriority ? 'bg-felid-accent/15 text-felid-accent border-felid-accent/50' : 'bg-[#1d1922] text-felid-muted border-felid-border'}`}>
+                    <span className="font-display font-semibold text-sm text-felid-ink capitalize w-44">
+                      {breed.replace(/-/g, ' ')}
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 border rounded-sm font-mono text-[10px] font-medium uppercase ${
+                        topPriority
+                          ? 'bg-felid-highlight/20 text-felid-highlight-ink border-felid-highlight/50'
+                          : 'bg-felid-elevated text-felid-muted-ink border-felid-border'
+                      }`}
+                    >
                       {topPriority ? 'priority' : `tier ${g.priority_tier ?? '—'}`}
                     </span>
-                    <span className="text-xs font-mono text-felid-muted ml-auto">
+                    <span className="text-xs font-mono text-felid-muted-ink ml-auto">
                       {g.eligible}/{g.target} eligible ·{' '}
-                      <b className={g.remaining ? 'text-felid-accent' : 'text-felid-success'}>
+                      <b className={g.remaining ? 'text-felid-highlight-ink font-medium' : 'text-felid-cobalt-ink font-medium'}>
                         {g.remaining ? `${g.remaining} to go` : 'target met'}
                       </b>
                     </span>
                   </div>
-                  <div className="relative h-2.5 bg-[#1d1922] border border-black overflow-hidden">
-                    <div className={`absolute inset-y-0 left-0 ${g.remaining ? 'bg-felid-accent/70' : 'bg-felid-success'}`} style={{ width: `${pct}%` }} />
+                  <div className="relative h-2 bg-felid-elevated border border-felid-border rounded-sm overflow-hidden">
+                    <div
+                      className={`absolute inset-y-0 left-0 ${
+                        g.remaining ? 'bg-felid-highlight-line' : 'bg-felid-cobalt-line'
+                      }`}
+                      style={{ width: `${pct}%` }}
+                    />
                   </div>
-                  <div className="flex flex-wrap gap-3 text-[10px] font-mono text-felid-muted">
+                  <div className="flex flex-wrap gap-3 text-[11px] font-mono text-felid-muted-ink">
                     <span>{g.collected} collected</span>
                     <span>{g.verified} verified</span>
                     <span>{g.rejected} rejected</span>
                     <span>{g.ambiguous} ambiguous</span>
                     <span>{g.pending} pending</span>
                     <span>{g.excluded_non_photographic} non-photo excluded</span>
-                    <span className="text-felid-accent">
+                    <span className="text-felid-cobalt-ink">
                       {g.estimated_candidates_needed == null
                         ? 'yield unknown — collect a sample'
                         : `~${g.estimated_candidates_needed} new candidates`}
@@ -243,42 +380,68 @@ export const DatasetDashboard: React.FC<StatsProps> = ({ stats, session, onStats
               );
             })}
           </div>
-          <p className="mt-3 text-[10px] font-mono text-felid-muted">
+          <p className="mt-3 text-[11px] font-mono text-felid-muted-ink leading-relaxed">
             Eligible = verified animal/historical photograph. Rejected, ambiguous, pending and
-            non-photographic assets are excluded. Estimates use the pilot yield
-            ({gaps.total_eligible} eligible from {Object.values(gaps.per_breed).reduce((n, b) => n + b.decided, 0)} decided).
+            non-photographic assets are excluded. Estimates use the pilot yield (
+            {gaps.total_eligible} eligible from{' '}
+            {Object.values(gaps.per_breed).reduce((n, b) => n + b.decided, 0)} decided).
           </p>
         </div>
       )}
 
-      <div className="bg-[#141218] border-2 border-black shadow-brutal" data-testid="candidate-table">
-        <div className="flex items-center justify-between px-3 py-2 border-b-2 border-black bg-[#1d1922]">
-          <h3 className={`${LABEL} text-felid-muted`}>CANDIDATES</h3>
-          <span className="text-[10px] font-mono text-felid-muted">{items.length} shown</span>
+      <div className="journal-plate overflow-hidden" data-testid="candidate-table">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-felid-border bg-felid-elevated/60">
+          <h3 className={`${LABEL} text-felid-muted-ink`}>CANDIDATES</h3>
+          <span className="text-[11px] font-mono text-felid-muted-ink">{items.length} shown</span>
         </div>
         {items.length === 0 ? (
-          <p className="p-4 text-xs font-mono text-felid-muted">
+          <p className="p-4 text-xs font-mono text-felid-muted-ink">
             {loading ? 'Loading…' : 'No candidates match these filters.'}
           </p>
         ) : (
-          <ul className="divide-y divide-black/60 max-h-[420px] overflow-auto">
+          <ul className="divide-y divide-felid-border max-h-[420px] overflow-auto">
             {items.map((c) => (
-              <li key={c.id} className="flex flex-wrap items-center gap-2 px-3 py-2 hover:bg-[#1d1922]">
+              <li
+                key={c.id}
+                className="flex flex-wrap items-center gap-2.5 px-4 py-2.5 hover:bg-felid-hover/70 transition-colors"
+              >
                 <StatusPill status={c.status} />
-                <span className="font-mono text-[10px] text-felid-muted">{c.id.slice(0, 10)}</span>
-                <span className="text-xs font-mono text-felid-ivory truncate max-w-[22rem]">{c.title}</span>
-                <span className="text-[10px] font-mono text-felid-muted uppercase">{c.breed_id.replace(/-/g, ' ')}</span>
-                <span className="text-[10px] font-mono text-felid-muted">{c.asset_type}</span>
-                <span className={`text-[10px] font-mono ${c.training_eligible ? 'text-felid-success' : 'text-felid-muted'}`}>
-                  {c.training_eligible ? 'training-eligible' : (c.exclusion_reason || 'not eligible')}
+                <span className="font-mono text-[11px] text-felid-muted-ink">{c.id.slice(0, 10)}</span>
+                <span className="text-xs font-sans font-medium text-felid-ink truncate max-w-[22rem]">
+                  {c.title}
+                </span>
+                <span className="text-[11px] font-mono text-felid-muted-ink uppercase">
+                  {c.breed_id.replace(/-/g, ' ')}
+                </span>
+                <span className="text-[11px] font-mono text-felid-muted-ink">{c.asset_type}</span>
+                {!!c.quality_flags?.length && (
+                  <span
+                    className="text-[10px] font-mono px-1.5 py-0.5 rounded-sm border border-felid-highlight/60 text-felid-highlight-ink bg-felid-highlight/10 uppercase"
+                    title="Detected by the collection quality audit; review before approving."
+                  >
+                    {c.quality_flags.join(' · ')}
+                  </span>
+                )}
+                <span
+                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded-sm border ${
+                    c.training_eligible
+                      ? 'bg-felid-cobalt/15 text-felid-cobalt-ink border-felid-cobalt/35'
+                      : 'bg-felid-elevated text-felid-muted-ink border-felid-border'
+                  }`}
+                >
+                  {c.training_eligible ? 'training-eligible' : c.exclusion_reason || 'not eligible'}
                 </span>
                 {c.my_decision && (
-                  <span className="text-[10px] font-mono text-felid-accent">you: {c.my_decision}</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-sm bg-felid-elevated border border-felid-border text-felid-cobalt-ink">
+                    you: {c.my_decision}
+                  </span>
                 )}
                 {c.review_count ? (
-                  <span className="text-[10px] font-mono text-felid-muted ml-auto">{c.review_count}/2 reviews</span>
+                  <span className="text-[11px] font-mono text-felid-muted-ink ml-auto">
+                    {c.review_count}/{required} reviews
+                  </span>
                 ) : (
-                  <span className="text-[10px] font-mono text-felid-muted ml-auto flex items-center gap-1">
+                  <span className="text-[11px] font-mono text-felid-muted-ink ml-auto flex items-center gap-1">
                     <CircleDot className="w-3 h-3" /> untouched
                   </span>
                 )}
@@ -299,7 +462,13 @@ interface WorkspaceProps {
   onDecided?: () => void;
 }
 
-export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({ session, reviewer, breed, required, onDecided }) => {
+export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({
+  session,
+  reviewer,
+  breed,
+  required,
+  onDecided,
+}) => {
   const [allItems, setAllItems] = useState<DatasetCandidate[]>([]);
   const [index, setIndex] = useState(0);
   const [scale, setScale] = useState(1);
@@ -312,12 +481,18 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({ session, revi
   const [submitting, setSubmitting] = useState(false);
 
   const load = useCallback(() => {
-    api.getDatasetCandidates(session, { breed, page: 1, page_size: 100 })
-      .then((r) => { setAllItems(r.items); })
+    api
+      .getDatasetCandidates(session, { breed, page: 1, page_size: 100 })
+      .then((r) => {
+        setAllItems(r.items);
+      })
       .catch(() => undefined);
   }, [session, breed]);
 
-  useEffect(() => { setIndex(0); load(); }, [load]);
+  useEffect(() => {
+    setIndex(0);
+    load();
+  }, [load]);
 
   // Default: only show images this reviewer has not decided on, so the queue
   // actually shrinks as you work instead of looping over the same rows.
@@ -332,13 +507,18 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({ session, revi
 
   const current = items[index] as DatasetCandidate | undefined;
 
-  useEffect(() => { setAssetType(current?.asset_type || 'unknown'); }, [current?.id]);
+  useEffect(() => {
+    setAssetType(current?.asset_type || 'unknown');
+  }, [current?.id]);
 
-  // Load the protected image via fetch so the Bearer session is sent;
-  // a plain <img src> cannot carry headers and would 401 forever.
+  // Load the protected image via fetch so the Bearer session is sent.
   useEffect(() => {
     const url = current?.image_url;
-    if (!url) { setImageSrc(''); setImageError(''); return; }
+    if (!url) {
+      setImageSrc('');
+      setImageError('');
+      return;
+    }
     let cancelled = false;
     let objectUrl = '';
     fetch(url, { headers: { Authorization: `Bearer ${session}` } })
@@ -349,39 +529,57 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({ session, revi
       .then((blob) => {
         if (cancelled) return;
         objectUrl = URL.createObjectURL(blob);
-        setImageSrc(objectUrl); setImageError('');
+        setImageSrc(objectUrl);
+        setImageError('');
       })
-      .catch((err) => { if (!cancelled) { setImageSrc(''); setImageError(`Image failed to load (${err instanceof Error ? err.message : 'error'}).`); } });
-    return () => { cancelled = true; if (objectUrl) URL.revokeObjectURL(objectUrl); };
+      .catch((err) => {
+        if (!cancelled) {
+          setImageSrc('');
+          setImageError(
+            `Image failed to load (${err instanceof Error ? err.message : 'error'}).`,
+          );
+        }
+      });
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
   }, [current?.image_url, session]);
 
-  const submit = useCallback(async (decision: 'approved' | 'rejected' | 'ambiguous') => {
-    if (!current || submitting) return;
-    if (decision !== 'approved' && !reason.trim()) {
-      setMessage('A reason is required for rejection and ambiguous decisions.');
-      return;
-    }
-    setSubmitting(true);
-    try {
-      const result = await api.submitDatasetReview(session, current.id.slice(0, 16), {
-        decision, reason: reason.trim(), asset_type: assetType,
-        expected_reviews: current.review_count ?? 0,
-      });
-      setReason('');
-      setMessage(`Recorded ${decision} → ${result.status}.`);
-      onDecided?.();  // refresh dashboard stats live
-      const r = await api.getDatasetCandidates(session, { breed, page: 1, page_size: 100 });
-      setAllItems(r.items);
-      // The decided row drops out of the queue (unless "include mine"), so the
-      // next unreviewed image slides into the current index.
-      const nextItems = includeMine ? r.items : r.items.filter((c) => !c.my_decision);
-      setIndex((i) => Math.max(0, Math.min(includeMine ? i + 1 : i, nextItems.length - 1)));
-    } catch (err: any) {
-      setMessage(err?.message || 'Submission failed.');
-    } finally {
-      setSubmitting(false);
-    }
-  }, [current, reason, assetType, session, breed, includeMine, submitting, onDecided]);
+  const submit = useCallback(
+    async (decision: 'approved' | 'rejected' | 'ambiguous') => {
+      if (!current || submitting) return;
+      if (decision !== 'approved' && !reason.trim()) {
+        setMessage('A reason is required for rejection and ambiguous decisions.');
+        return;
+      }
+      setSubmitting(true);
+      try {
+        const result = await api.submitDatasetReview(session, current.id.slice(0, 16), {
+          decision,
+          reason: reason.trim(),
+          asset_type: assetType,
+          expected_reviews: current.review_count ?? 0,
+        });
+        setReason('');
+        setMessage(`Recorded ${decision} → ${result.status}.`);
+        onDecided?.();
+        const r = await api.getDatasetCandidates(session, {
+          breed,
+          page: 1,
+          page_size: 100,
+        });
+        setAllItems(r.items);
+        const nextItems = includeMine ? r.items : r.items.filter((c) => !c.my_decision);
+        setIndex((i) => Math.max(0, Math.min(includeMine ? i + 1 : i, nextItems.length - 1)));
+      } catch (err: any) {
+        setMessage(err?.message || 'Submission failed.');
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [current, reason, assetType, session, breed, includeMine, submitting, onDecided],
+  );
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -400,15 +598,22 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({ session, revi
   if (!current) {
     return (
       <section aria-label="Review workspace" className="space-y-4">
-        <div className={`${CARD} text-center space-y-2`} data-testid="workspace-empty">
-          <Check className="w-8 h-8 mx-auto text-felid-success" />
-          <p className="font-display font-black text-sm uppercase text-felid-ivory">Queue complete for this filter</p>
-          <p className="text-xs font-mono text-felid-muted">
+        <div className={`${CARD} text-center space-y-2 py-10`} data-testid="workspace-empty">
+          <Check className="w-8 h-8 mx-auto text-felid-cobalt-ink" />
+          <p className="font-display font-semibold text-base text-felid-ink">
+            Queue complete for this filter
+          </p>
+          <p className="text-xs sm:text-sm font-sans text-felid-muted-ink">
             You have reviewed every candidate here. Switch breed, or include your decisions to revisit them.
           </p>
-          <label className="inline-flex items-center gap-2 text-xs font-mono text-felid-muted mt-2">
-            <input type="checkbox" checked={includeMine} onChange={(e) => setIncludeMine(e.target.checked)} className="accent-felid-accent" />
-            Include images I already reviewed ({allItems.length})
+          <label className="inline-flex items-center gap-2 text-xs font-mono text-felid-muted-ink mt-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeMine}
+              onChange={(e) => setIncludeMine(e.target.checked)}
+              className="accent-felid-cobalt"
+            />
+            <span>Include images I already reviewed ({allItems.length})</span>
           </label>
         </div>
       </section>
@@ -417,90 +622,266 @@ export const DatasetReviewWorkspace: React.FC<WorkspaceProps> = ({ session, revi
 
   return (
     <section aria-label="Review workspace" className="space-y-4">
-      <div className="flex items-center justify-between gap-2 flex-wrap">
-        <div className="space-y-1">
-          <span className="text-xs font-mono text-felid-muted">
-            Image {index + 1} of {items.length} · <span className="text-felid-ivory">{current.id.slice(0, 16)}</span>
-          </span>
+      {/* Top Specimen Bar & Navigation Controls */}
+      <div className="journal-plate p-3.5 flex items-center justify-between gap-3 flex-wrap">
+        <div className="space-y-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-felid-muted-ink">
+            <span>
+              Image {index + 1} of {items.length} ·{' '}
+              <span className="text-felid-ink font-medium">{current.id.slice(0, 16)}</span>
+            </span>
+            <span className="px-1.5 py-0.5 bg-felid-elevated border border-felid-border rounded-sm text-[10px] uppercase text-felid-ink">
+              {current.breed_id.replace(/-/g, ' ')}
+            </span>
+          </div>
           <div className="flex flex-wrap items-center gap-2">
             <StatusPill status={current.status} />
-            <span className="text-[10px] font-mono text-felid-muted">{current.review_count ?? 0}/{required} reviews</span>
-            {current.my_decision && (
-              <span className="text-[10px] font-mono text-felid-accent">you: {current.my_decision}</span>
-            )}
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <label className="inline-flex items-center gap-2 text-[10px] font-mono text-felid-muted">
-            <input type="checkbox" checked={includeMine} onChange={(e) => setIncludeMine(e.target.checked)} className="accent-felid-accent" />
-            include mine
-          </label>
-          <button type="button" aria-label="Previous" className={ICON_BTN} onClick={() => setIndex((i) => Math.max(0, i - 1))}><ChevronLeft className="w-4 h-4" /></button>
-          <button type="button" aria-label="Next" className={ICON_BTN} onClick={() => setIndex((i) => Math.min(items.length - 1, i + 1))}><ChevronRight className="w-4 h-4" /></button>
-          <button type="button" aria-label="Zoom out" className={ICON_BTN} onClick={() => setScale((s) => Math.max(0.5, s - 0.25))}><ZoomOut className="w-4 h-4" /></button>
-          <button type="button" aria-label="Zoom in" className={ICON_BTN} onClick={() => setScale((s) => Math.min(4, s + 0.25))}><ZoomIn className="w-4 h-4" /></button>
-          <span className="text-xs font-mono text-felid-muted self-center">{Math.round(scale * 100)}%</span>
-        </div>
-      </div>
-
-      <div className="overflow-auto bg-[#0c0a0e] border-2 border-black shadow-brutal p-2 min-h-[280px] flex items-center justify-center" data-testid="image-preview">
-        {imageSrc
-          ? <img src={imageSrc} alt={current.title || 'candidate'} style={{ transform: `scale(${scale})` }} className="max-h-[480px] w-full object-contain" />
-          : (
-            <div className="text-center space-y-2">
-              <ImageOff className="w-8 h-8 mx-auto text-felid-muted" />
-              <p className="text-xs font-mono text-felid-muted">{imageError || 'Loading protected image…'}</p>
-            </div>
-          )}
-      </div>
-
-      <div className="grid lg:grid-cols-2 gap-4">
-        <dl className={`text-xs font-mono space-y-2 ${CARD}`}>
-          <div><dt className={`${LABEL} text-felid-muted`}>Claimed breed (unverified)</dt><dd className="font-display font-black text-sm uppercase text-felid-ivory">{current.breed_id.replace(/-/g, ' ')}</dd></div>
-          <div><dt className={`${LABEL} text-felid-muted`}>Source</dt><dd className="text-felid-ivory">{current.title} · {current.source}</dd></div>
-          <div><dt className={`${LABEL} text-felid-muted`}>Author / licence</dt><dd>{current.author} · {current.license}</dd></div>
-          <div><dt className={`${LABEL} text-felid-muted`}>Resolution / size</dt><dd>{current.width}×{current.height} · {current.bytes} B</dd></div>
-          <div><dt className={`${LABEL} text-felid-muted`}>SHA-256</dt><dd className="break-all">{current.sha256}</dd></div>
-          <div><dt className={`${LABEL} text-felid-muted`}>Asset type / training</dt><dd>
-            <select data-testid="asset-type" value={assetType} onChange={(e) => setAssetType(e.target.value)} className={SELECT_CLS} aria-label="Asset type">
-              <option value="unknown">unknown</option><option value="animal_photograph">animal_photograph</option>
-              <option value="historical_photograph">historical_photograph</option>
-              <option value="scientific_illustration">scientific_illustration</option>
-              <option value="book_illustration">book_illustration</option>
-              <option value="painting_or_artwork">painting_or_artwork</option>
-              <option value="sculpture_or_artefact">sculpture_or_artefact</option>
-              <option value="diagram_or_infographic">diagram_or_infographic</option>
-              <option value="ai_generated">ai_generated</option>
-            </select>
-            <span className={`ml-2 font-bold ${current.training_eligible ? 'text-felid-success' : 'text-felid-muted'}`}>
-              {current.training_eligible ? 'training-eligible' : 'not training-eligible'}
+            <span className="text-[11px] font-mono text-felid-muted-ink">
+              {current.review_count ?? 0}/{required} reviews
             </span>
-            {current.exclusion_reason && <span className="block text-felid-danger">{current.exclusion_reason}</span>}
-            {current.status === 'verified' && assetType === 'unknown' && (
-              <span className="block text-[10px] font-mono text-felid-warning">
-                Verified label, but not training-eligible — classify the asset as animal_photograph or historical_photograph.
+            {current.my_decision && (
+              <span className="text-[11px] font-mono text-felid-cobalt-ink">
+                you: {current.my_decision}
               </span>
             )}
-          </dd></div>
-          <div><dt className={`${LABEL} text-felid-muted`}>Special check</dt><dd className="text-felid-accent">{current.special_check}</dd></div>
-          <div><dt className={`${LABEL} text-felid-muted`}>Reviewing as</dt><dd>{reviewer}</dd></div>
-        </dl>
-
-        <div className={`${CARD} space-y-3`}>
-          <label className="block text-xs font-mono text-felid-muted">Reason (required for reject / ambiguous)
-            <textarea data-testid="decision-reason" value={reason} onChange={(e) => setReason(e.target.value)} className="mt-1 w-full bg-[#0c0a0e] border-2 border-black p-2 text-felid-ivory focus:outline-none focus:border-felid-accent" />
-          </label>
-          <div className="flex flex-wrap gap-2">
-            <button type="button" disabled={submitting} onClick={() => submit('approved')} className="inline-flex items-center gap-1 px-3 py-2 bg-felid-accent hover:bg-felid-accent-hover text-black font-mono font-bold text-xs border-2 border-black shadow-brutal-sm brutal-press disabled:opacity-50"><Check className="w-3.5 h-3.5" /> Approve (A)</button>
-            <button type="button" disabled={submitting} onClick={() => submit('rejected')} className="inline-flex items-center gap-1 px-3 py-2 bg-felid-danger hover:bg-[#fb7185] text-black font-mono font-bold text-xs border-2 border-black shadow-brutal-sm brutal-press disabled:opacity-50"><X className="w-3.5 h-3.5" /> Reject (R)</button>
-            <button type="button" disabled={submitting} onClick={() => submit('ambiguous')} className="inline-flex items-center gap-1 px-3 py-2 bg-felid-warning hover:bg-[#fdba74] text-black font-mono font-bold text-xs border-2 border-black shadow-brutal-sm brutal-press disabled:opacity-50"><HelpCircle className="w-3.5 h-3.5" /> Ambiguous (U)</button>
           </div>
-          {message && <p className="text-xs font-mono text-felid-muted" role="status">{message}</p>}
-          <p className="text-[10px] font-mono text-felid-muted">
-            {required === 1
-              ? 'One reviewer decides. A conflicting second decision makes the row contested.'
-              : `${required} distinct reviewers must agree. Mixed decisions stay contested.`}
-          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="inline-flex items-center gap-1.5 text-xs font-mono text-felid-muted-ink mr-1 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeMine}
+              onChange={(e) => setIncludeMine(e.target.checked)}
+              className="accent-felid-cobalt"
+            />
+            <span>include mine</span>
+          </label>
+          <button
+            type="button"
+            aria-label="Previous"
+            className={ICON_BTN}
+            onClick={() => setIndex((i) => Math.max(0, i - 1))}
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            aria-label="Next"
+            className={ICON_BTN}
+            onClick={() => setIndex((i) => Math.min(items.length - 1, i + 1))}
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+          <div className="inline-flex items-center gap-1.5">
+            <button
+              type="button"
+              aria-label="Zoom out"
+              className={ICON_BTN}
+              onClick={() => setScale((s) => Math.max(0.5, s - 0.25))}
+            >
+              <ZoomOut className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              aria-label="Zoom in"
+              className={ICON_BTN}
+              onClick={() => setScale((s) => Math.min(4, s + 0.25))}
+            >
+              <ZoomIn className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setScale(1)}
+              disabled={scale === 1}
+              title={scale === 1 ? 'Original fit' : 'Reset zoom to 100%'}
+              className={`text-xs font-mono w-12 text-right tabular-nums transition-colors ${
+                scale === 1
+                  ? 'text-felid-muted-ink cursor-default'
+                  : 'text-felid-cobalt-ink hover:underline cursor-pointer'
+              }`}
+            >
+              {Math.round(scale * 100)}%
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* High-efficiency Split Layout: Image Viewport Left + Immediate Decisions & Metadata Right */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+        {/* Image Visibility Viewport */}
+        <div
+          className="xl:col-span-7 overflow-auto bg-felid-elevated/85 border border-felid-border-strong rounded-sm shadow-plate p-3 h-[440px] lg:h-[620px] flex"
+          data-testid="image-preview"
+        >
+          {imageSrc ? (
+            <img
+              src={imageSrc}
+              alt={current.title || 'candidate'}
+              style={{
+                width: scale === 1 ? 'auto' : `${scale * 100}%`,
+                maxWidth: scale === 1 ? '100%' : 'none',
+                maxHeight: scale === 1 ? '100%' : 'none',
+              }}
+              className="m-auto object-contain transition-[width] duration-150"
+            />
+          ) : (
+            <div className="m-auto text-center space-y-2">
+              <ImageOff className="w-8 h-8 mx-auto text-felid-muted-ink" />
+              <p className="text-xs font-mono text-felid-muted-ink">
+                {imageError || 'Loading protected image…'}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Immediate Decision Controls + Structured Specimen Metadata */}
+        <div className="xl:col-span-5 xl:sticky xl:top-20 space-y-4">
+          {/* Action Deck (always visible at top of right column) */}
+          <div className={`${CARD} space-y-3`}>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={() => submit('approved')}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-felid-cobalt hover:bg-felid-cobalt-hover text-felid-on-cobalt font-mono font-medium text-xs rounded-sm border border-felid-cobalt transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-felid-cobalt focus-visible:ring-offset-2 focus-visible:ring-offset-felid-bg disabled:opacity-50"
+              >
+                <Check className="w-4 h-4" /> Approve (A)
+              </button>
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={() => submit('rejected')}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-felid-pomegranate hover:bg-felid-pomegranate-hover text-felid-on-pomegranate font-mono font-medium text-xs rounded-sm border border-felid-pomegranate transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-felid-pomegranate focus-visible:ring-offset-2 focus-visible:ring-offset-felid-bg disabled:opacity-50"
+              >
+                <X className="w-4 h-4" /> Reject (R)
+              </button>
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={() => submit('ambiguous')}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-felid-highlight hover:opacity-90 text-felid-on-highlight font-mono font-medium text-xs rounded-sm border border-felid-highlight transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-felid-highlight focus-visible:ring-offset-2 focus-visible:ring-offset-felid-bg disabled:opacity-50"
+              >
+                <HelpCircle className="w-4 h-4" /> Ambiguous (U)
+              </button>
+            </div>
+
+            <label className="block text-xs font-mono text-felid-muted-ink">
+              Reason (required for reject / ambiguous)
+              <textarea
+                data-testid="decision-reason"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                rows={2}
+                className="journal-input mt-1.5 bg-felid-bg/50 font-sans text-sm"
+                placeholder="Note crop, species mismatch, illustration, watermark..."
+              />
+            </label>
+
+            {message && (
+              <p className="text-xs font-mono text-felid-cobalt-ink" role="status">
+                {message}
+              </p>
+            )}
+            <p className="text-[11px] font-mono text-felid-muted-ink">
+              {required === 1
+                ? 'One reviewer decides. A conflicting second decision makes the row contested.'
+                : `${required} distinct reviewers must agree. Mixed decisions stay contested.`}
+            </p>
+          </div>
+
+          {/* Structured Specimen Metadata Card */}
+          <dl className={`text-xs space-y-3 ${CARD}`}>
+            <div className="pb-2.5 border-b border-felid-border flex items-start justify-between gap-2">
+              <div>
+                <dt className={`${LABEL} text-felid-muted-ink`}>Claimed breed (unverified)</dt>
+                <dd className="font-display font-semibold text-base capitalize text-felid-ink mt-0.5">
+                  {current.breed_id.replace(/-/g, ' ')}
+                </dd>
+              </div>
+              <span
+                className={`px-2 py-0.5 border rounded-sm font-mono text-[10px] font-medium ${
+                  current.training_eligible
+                    ? 'bg-felid-cobalt/15 text-felid-cobalt-ink border-felid-cobalt/35'
+                    : 'bg-felid-elevated text-felid-muted-ink border-felid-border'
+                }`}
+              >
+                {current.training_eligible ? 'training-eligible' : 'not training-eligible'}
+              </span>
+            </div>
+
+            <div>
+              <dt className={`${LABEL} text-felid-muted-ink`}>Asset type classification</dt>
+              <dd className="mt-1 space-y-1">
+                <select
+                  data-testid="asset-type"
+                  value={assetType}
+                  onChange={(e) => setAssetType(e.target.value)}
+                  className="journal-select w-full py-1.5 px-2.5 text-xs font-mono"
+                  aria-label="Asset type"
+                >
+                  <option value="unknown">unknown</option>
+                  <option value="animal_photograph">animal_photograph</option>
+                  <option value="historical_photograph">historical_photograph</option>
+                  <option value="scientific_illustration">scientific_illustration</option>
+                  <option value="book_illustration">book_illustration</option>
+                  <option value="painting_or_artwork">painting_or_artwork</option>
+                  <option value="sculpture_or_artefact">sculpture_or_artefact</option>
+                  <option value="diagram_or_infographic">diagram_or_infographic</option>
+                  <option value="ai_generated">ai_generated</option>
+                </select>
+                {current.exclusion_reason && (
+                  <span className="block text-felid-pomegranate-ink font-mono text-[11px]">
+                    {current.exclusion_reason}
+                  </span>
+                )}
+                {current.status === 'verified' && assetType === 'unknown' && (
+                  <span className="block text-[11px] font-mono text-felid-highlight-ink">
+                    Verified label, but not training-eligible — classify the asset as animal_photograph or historical_photograph.
+                  </span>
+                )}
+              </dd>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div>
+                <dt className={`${LABEL} text-felid-muted-ink`}>Source</dt>
+                <dd className="text-felid-ink font-sans mt-0.5 break-words">
+                  {current.title} · {current.source}
+                </dd>
+              </div>
+              <div>
+                <dt className={`${LABEL} text-felid-muted-ink`}>Author / licence</dt>
+                <dd className="text-felid-ink/90 font-sans mt-0.5 break-words">
+                  {current.author} · {current.license}
+                </dd>
+              </div>
+              <div>
+                <dt className={`${LABEL} text-felid-muted-ink`}>Resolution / size</dt>
+                <dd className="font-mono text-felid-ink mt-0.5">
+                  {current.width}×{current.height} · {current.bytes} B
+                </dd>
+              </div>
+              <div>
+                <dt className={`${LABEL} text-felid-muted-ink`}>Reviewing as</dt>
+                <dd className="font-mono text-felid-ink mt-0.5">{reviewer}</dd>
+              </div>
+            </div>
+
+            {current.special_check && (
+              <div className="journal-inset p-2.5">
+                <dt className={`${LABEL} text-felid-muted-ink`}>Special check</dt>
+                <dd className="text-felid-cobalt-ink font-mono mt-0.5">{current.special_check}</dd>
+              </div>
+            )}
+
+            <div>
+              <dt className={`${LABEL} text-felid-muted-ink`}>SHA-256</dt>
+              <dd className="font-mono text-[11px] text-felid-muted-ink break-all mt-0.5">
+                {current.sha256}
+              </dd>
+            </div>
+          </dl>
         </div>
       </div>
     </section>
@@ -522,52 +903,125 @@ export const DatasetReviewPage: React.FC = () => {
       setError('');
     } catch (err: any) {
       const msg = err?.message || 'Login failed.';
-      setError(err?.status === 503
-        ? 'Backend has no REVIEWER_SESSION_SECRET configured. Set it in the backend process environment (not .env — Felineye never loads .env) plus REVIEWER_NAMES, restart the backend, then sign in again.'
-        : msg);
+      setError(
+        err?.status === 503
+          ? 'Backend has no REVIEWER_SESSION_SECRET configured. Set it in backend/.env or the backend process environment plus REVIEWER_NAMES, restart the backend, then sign in again.'
+          : msg,
+      );
     }
   };
 
   const refreshStats = async () => {
-    try { setStats(await api.getDatasetStats(session)); } catch { /* dashboard reload on next visit */ }
+    try {
+      setStats(await api.getDatasetStats(session));
+    } catch {
+      /* dashboard reload on next visit */
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-felid-accent">BREED-V1 · HUMAN REVIEW</p>
-        <h1 className="font-display font-black text-3xl uppercase text-felid-ivory">Dataset Review</h1>
-        <p className="text-xs font-mono text-felid-muted mt-1">
-          {(stats?.required_reviewers ?? 1) === 1
+    <div className="py-2 space-y-6">
+      <PageHeader
+        kicker="BREED-V1 · Human Review"
+        kickerIcon={<ClipboardCheck className="w-3.5 h-3.5" />}
+        title={
+          <>
+            Dataset <span className="italic text-felid-cobalt-ink">Review</span>
+          </>
+        }
+        subtitle={
+          (stats?.required_reviewers ?? 1) === 1
             ? 'One reviewer decides. Nothing auto-approves.'
-            : `${stats?.required_reviewers} reviewers must agree. Nothing auto-approves.`}
-        </p>
-      </div>
+            : `${stats?.required_reviewers} reviewers must agree. Nothing auto-approves.`
+        }
+      />
+
       {!session ? (
-        <div className="flex flex-wrap gap-3 items-end bg-[#141218] border-2 border-black shadow-brutal p-4 max-w-lg">
-          <label className="block text-xs font-mono text-felid-muted flex-1 min-w-[180px]">Reviewer handle
-            <input data-testid="reviewer-input" value={reviewer} onChange={(e) => setReviewer(e.target.value)} className="mt-1 block w-full bg-[#0c0a0e] border-2 border-black p-2 text-felid-ivory focus:outline-none focus:border-felid-accent" />
-          </label>
-          <button type="button" onClick={login} className="px-4 py-2 bg-felid-accent hover:bg-felid-accent-hover text-black font-mono font-bold text-xs border-2 border-black shadow-brutal-sm brutal-press">Sign in</button>
-          {error && <p className="w-full text-xs font-mono text-felid-danger">{error}</p>}
-        </div>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            login();
+          }}
+          className="journal-plate p-5 space-y-3 max-w-lg"
+        >
+          <div className="flex flex-wrap gap-3 items-end">
+            <label className="block text-xs font-mono text-felid-muted-ink flex-1 min-w-[180px]">
+              Reviewer handle
+              <input
+                data-testid="reviewer-input"
+                value={reviewer}
+                onChange={(e) => setReviewer(e.target.value)}
+                className="journal-input mt-1.5 bg-felid-bg/50 font-mono text-sm"
+              />
+            </label>
+            <button
+              type="submit"
+              className="btn-primary py-2.5 px-4 text-xs font-mono"
+            >
+              Sign in
+            </button>
+          </div>
+          {error && <AlertBanner tone="error">{error}</AlertBanner>}
+        </form>
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex gap-2">
-              <button type="button" onClick={() => setTab('dashboard')} className={`px-3 py-2 font-mono font-bold text-xs border-2 border-black shadow-brutal-sm brutal-press ${tab === 'dashboard' ? 'bg-felid-accent text-black' : 'bg-[#1d1922] text-felid-ivory'}`}>Dashboard</button>
-              <button type="button" onClick={() => setTab('review')} className={`px-3 py-2 font-mono font-bold text-xs border-2 border-black shadow-brutal-sm brutal-press ${tab === 'review' ? 'bg-felid-accent text-black' : 'bg-[#1d1922] text-felid-ivory'}`}>Review workspace</button>
+              <button
+                type="button"
+                onClick={() => setTab('dashboard')}
+                className={`px-3.5 py-2 font-mono font-medium text-xs rounded-sm border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-felid-cobalt ${
+                  tab === 'dashboard'
+                    ? 'bg-felid-cobalt text-felid-on-cobalt border-felid-cobalt'
+                    : 'bg-felid-surface text-felid-ink border-felid-border-strong hover:bg-felid-hover'
+                }`}
+              >
+                Dashboard
+              </button>
+              <button
+                type="button"
+                onClick={() => setTab('review')}
+                className={`px-3.5 py-2 font-mono font-medium text-xs rounded-sm border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-felid-cobalt ${
+                  tab === 'review'
+                    ? 'bg-felid-cobalt text-felid-on-cobalt border-felid-cobalt'
+                    : 'bg-felid-surface text-felid-ink border-felid-border-strong hover:bg-felid-hover'
+                }`}
+              >
+                Review workspace
+              </button>
             </div>
-            <label className="text-xs font-mono text-felid-muted">Breed
-              <select data-testid="workspace-breed" value={breed} onChange={(e) => setBreed(e.target.value)} className={SELECT_CLS}>
+            <label className="text-xs font-mono text-felid-muted-ink">
+              Breed
+              <select
+                data-testid="workspace-breed"
+                value={breed}
+                onChange={(e) => setBreed(e.target.value)}
+                className={SELECT_CLS}
+              >
                 <option value="">All pilot breeds</option>
-                {stats && Object.keys(stats.per_breed).map((b) => <option key={b} value={b}>{b.replace(/-/g, ' ')}</option>)}
-              </select></label>
-            <span className="text-[10px] font-mono text-felid-muted">signed in as <b className="text-felid-ivory">{reviewer}</b></span>
+                {stats &&
+                  Object.keys(stats.per_breed).map((b) => (
+                    <option key={b} value={b}>
+                      {b.replace(/-/g, ' ')}
+                    </option>
+                  ))}
+              </select>
+            </label>
+            <span className="text-xs font-mono text-felid-muted-ink">
+              signed in as <b className="text-felid-ink font-medium">{reviewer}</b>
+            </span>
           </div>
-          {tab === 'dashboard'
-            ? <DatasetDashboard stats={stats} session={session} onStats={setStats} />
-            : <DatasetReviewWorkspace session={session} reviewer={reviewer} breed={breed} required={stats?.required_reviewers ?? 1} onDecided={refreshStats} />}
+          {tab === 'dashboard' ? (
+            <DatasetDashboard stats={stats} session={session} onStats={setStats} />
+          ) : (
+            <DatasetReviewWorkspace
+              session={session}
+              reviewer={reviewer}
+              breed={breed}
+              required={stats?.required_reviewers ?? 1}
+              onDecided={refreshStats}
+            />
+          )}
         </>
       )}
     </div>
