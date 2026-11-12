@@ -1,6 +1,6 @@
 import React from 'react';
-import { Monitor, Moon, Sun } from 'lucide-react';
-import { ThemePreference, useThemeStore } from '../../store/useThemeStore';
+import { Moon, Sun } from 'lucide-react';
+import { ResolvedTheme, useThemeStore } from '../../store/useThemeStore';
 
 interface Props {
   compact?: boolean;
@@ -8,30 +8,26 @@ interface Props {
 }
 
 const OPTIONS: Array<{
-  value: ThemePreference;
+  value: ResolvedTheme;
   label: string;
   Icon: React.FC<{ className?: string }>;
 }> = [
   { value: 'light', label: 'Light', Icon: Sun },
-  { value: 'system', label: 'System', Icon: Monitor },
   { value: 'dark', label: 'Dark', Icon: Moon },
 ];
 
 export const ThemeToggle: React.FC<Props> = ({ compact = false, className = '' }) => {
-  const { preference, resolvedTheme, setPreference } = useThemeStore();
+  const { resolvedTheme, setPreference } = useThemeStore();
 
   return (
     <div
       role="group"
-      aria-label={`Color theme (active: ${preference}, resolved: ${resolvedTheme})`}
+      aria-label={`Color theme (active: ${resolvedTheme})`}
       className={`inline-flex items-center p-0.5 bg-felid-elevated/80 border border-felid-border rounded-sm ${className}`}
     >
       {OPTIONS.map(({ value, label, Icon }) => {
-        const active = preference === value;
-        const title =
-          value === 'system'
-            ? `System preference (currently ${resolvedTheme})`
-            : `${label} theme`;
+        const active = resolvedTheme === value;
+        const title = `${label} theme`;
         return (
           <button
             key={value}

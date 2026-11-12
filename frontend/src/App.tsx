@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { ActivePage } from './types';
 import { Navbar } from './components/layout/Navbar';
-import { Footer } from './components/layout/Footer';
 import { HomePage } from './pages/HomePage';
 import { IdentifyPage } from './pages/IdentifyPage';
 import { SpeciesAtlasPage } from './pages/SpeciesAtlasPage';
 import { SpeciesDetailPage } from './pages/SpeciesDetailPage';
 import { CollectionPage } from './pages/CollectionPage';
 import { ObservationsPage } from './pages/ObservationsPage';
-import { MethodologyPage } from './pages/MethodologyPage';
 import { DatasetReviewPage } from './pages/DatasetReviewPage';
 import { useThemeStore } from './store/useThemeStore';
 
@@ -64,7 +62,7 @@ export function App() {
       <Navbar activePage={activePage} setActivePage={handleNavigate} />
 
       {/* Main View Container */}
-      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="relative z-10 flex-1 max-w-[1680px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-5">
         {activePage === 'home' && (
           <HomePage
             setActivePage={handleNavigate}
@@ -107,12 +105,7 @@ export function App() {
         {activePage === 'observations' && <ObservationsPage />}
 
         {activePage === 'dataset-review' && <DatasetReviewPage />}
-
-        {activePage === 'methodology' && <MethodologyPage />}
       </main>
-
-      {/* Footer */}
-      <Footer setActivePage={handleNavigate} />
     </div>
   );
 }

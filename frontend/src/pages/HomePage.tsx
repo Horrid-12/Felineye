@@ -43,56 +43,56 @@ export const HomePage: React.FC<Props> = ({
   }, []);
 
   return (
-    <div className="space-y-8 py-2">
+    <div className="space-y-5 py-1">
       {/* Editorial Naturalist Monograph Hero */}
       <section className="journal-plate overflow-hidden relative">
         <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
           {/* Left Editorial Folio */}
-          <div className="lg:col-span-7 p-6 sm:p-8 lg:p-10 space-y-5 flex flex-col justify-center relative">
-            <div className="inline-flex items-center gap-2 self-start px-3 py-1 bg-felid-elevated/80 border border-felid-cobalt/25 rounded-sm text-[11px] font-mono font-medium text-felid-cobalt-ink uppercase tracking-wider">
-              <PawPrint className="w-3.5 h-3.5" />
+          <div className="lg:col-span-7 p-5 sm:p-6 lg:p-7 space-y-4 flex flex-col justify-center relative">
+            <div className="inline-flex items-center gap-2 self-start px-2.5 py-0.5 bg-felid-elevated/80 border border-felid-cobalt/25 rounded-sm text-[10px] font-mono font-medium text-felid-cobalt-ink uppercase tracking-wider">
+              <PawPrint className="w-3 h-3" />
               <span>AI Field Guide · IUCN SSC CatSG 2017 Taxonomy</span>
             </div>
 
-            <h1 className="font-display font-semibold text-3xl sm:text-4xl lg:text-[2.85rem] text-felid-ink tracking-tight leading-[1.08]">
+            <h1 className="font-display font-semibold text-2xl sm:text-3xl lg:text-[2.15rem] text-felid-ink tracking-tight leading-[1.12]">
               Discover the World of{' '}
               <span className="italic text-felid-pomegranate-ink">Felidae</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-felid-muted-ink max-w-xl leading-relaxed font-sans">
+            <p className="text-xs sm:text-sm text-felid-muted-ink max-w-2xl leading-relaxed font-sans">
               From domestic companions curled on your windowsill to solitary snow leopards of alpine ridges. Upload a photograph and let a local vision model rank candidate species — with honest abstention when the evidence is weak.
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-1">
+            <div className="flex flex-wrap items-center gap-2.5 pt-0.5">
               <button
                 type="button"
                 onClick={() => setActivePage('identify')}
-                className="btn-primary text-xs sm:text-sm"
+                className="btn-primary text-xs py-2 px-3.5"
               >
-                <PawPrint className="w-4 h-4" />
+                <PawPrint className="w-3.5 h-3.5" />
                 <span>Scan a Cat Photo</span>
               </button>
               <button
                 type="button"
                 onClick={() => setActivePage('species')}
-                className="btn-secondary text-xs sm:text-sm"
+                className="btn-secondary text-xs py-2 px-3.5"
               >
-                <Cat className="w-4 h-4 text-felid-cobalt-ink" />
+                <Cat className="w-3.5 h-3.5 text-felid-cobalt-ink" />
                 <span>Browse Cat Atlas</span>
               </button>
               <button
                 type="button"
                 onClick={onOpenDomestic}
-                className="btn-secondary text-xs sm:text-sm"
+                className="btn-secondary text-xs py-2 px-3.5"
               >
-                <Cat className="w-4 h-4 text-felid-pomegranate-ink" />
+                <Cat className="w-3.5 h-3.5 text-felid-pomegranate-ink" />
                 <span>Domestic Cats</span>
               </button>
             </div>
           </div>
 
           {/* Right Framed Specimen Plate */}
-          <div className="lg:col-span-5 relative min-h-[240px] lg:min-h-[320px] bg-felid-elevated border-t lg:border-t-0 lg:border-l border-felid-border overflow-hidden">
+          <div className="lg:col-span-5 relative min-h-[210px] lg:min-h-[265px] bg-felid-elevated border-t lg:border-t-0 lg:border-l border-felid-border overflow-hidden">
             <img
               src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1400&q=80"
               alt="Graceful Feline Companion"
@@ -150,12 +150,12 @@ export const HomePage: React.FC<Props> = ({
       <BotanicalRule />
 
       {/* Featured Feline of the Day & Expedition Telemetry */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Featured Species Card (2 Columns) */}
-        <div className="lg:col-span-2 journal-plate p-6 sm:p-7 flex flex-col justify-between">
+        <div className="lg:col-span-2 journal-plate p-5 sm:p-6 flex flex-col justify-between">
           {featured ? (
-            <div className="space-y-5">
-              <div className="flex flex-wrap items-center justify-between gap-2 pb-3.5 border-b border-felid-border">
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-felid-border">
                 <span className="inline-flex items-center gap-2 text-xs font-mono font-medium text-felid-cobalt-ink uppercase tracking-wider">
                   <Cat className="w-4 h-4" />
                   <span>Featured Specimen of the Day</span>
@@ -163,8 +163,8 @@ export const HomePage: React.FC<Props> = ({
                 <ConservationBadge status={featured.conservation_status} showTitle />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                <div className="h-64 overflow-hidden border border-felid-border-strong rounded-sm bg-felid-elevated relative group">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
+                <div className="h-56 overflow-hidden border border-felid-border-strong rounded-sm bg-felid-elevated relative group">
                   <img
                     src={featured.image_url}
                     alt={featured.common_name}
@@ -175,25 +175,25 @@ export const HomePage: React.FC<Props> = ({
                   </div>
                 </div>
 
-                <div className="space-y-3.5">
+                <div className="space-y-3">
                   <div>
-                    <h2 className="font-display font-semibold text-2xl sm:text-3xl text-felid-ink leading-tight">
+                    <h2 className="font-display font-semibold text-xl sm:text-2xl text-felid-ink leading-tight">
                       {featured.common_name}
                     </h2>
-                    <p className="text-sm italic text-felid-muted-ink font-serif mt-0.5">
+                    <p className="text-xs italic text-felid-muted-ink font-serif mt-0.5">
                       {featured.scientific_name}
                     </p>
                   </div>
 
-                  <p className="text-sm text-felid-muted-ink leading-relaxed line-clamp-4 font-sans">
+                  <p className="text-xs sm:text-sm text-felid-muted-ink leading-relaxed line-clamp-4 font-sans">
                     {featured.description}
                   </p>
 
-                  <div className="pt-1">
+                  <div className="pt-0.5">
                     <button
                       type="button"
                       onClick={() => onSelectSpecies(featured.id)}
-                      className="btn-secondary text-xs"
+                      className="btn-secondary text-xs py-2 px-3.5"
                     >
                       <span>Explore Cat Profile</span>
                       <ArrowRight className="w-3.5 h-3.5 text-felid-cobalt-ink" />
@@ -208,9 +208,9 @@ export const HomePage: React.FC<Props> = ({
         </div>
 
         {/* Expedition Telemetry Widget */}
-        <div className="journal-plate p-6 flex flex-col justify-between space-y-6">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-felid-highlight-ink text-xs font-mono font-medium uppercase tracking-wider pb-3.5 border-b border-felid-border">
+        <div className="journal-plate p-5 flex flex-col justify-between space-y-5">
+          <div className="space-y-3.5">
+            <div className="flex items-center gap-2 text-felid-highlight-ink text-xs font-mono font-medium uppercase tracking-wider pb-3 border-b border-felid-border">
               <Compass className="w-4 h-4" />
               <span>Field Journal Telemetry</span>
             </div>
@@ -219,10 +219,10 @@ export const HomePage: React.FC<Props> = ({
               <span className="text-[10px] text-felid-muted-ink font-mono uppercase tracking-wider block">
                 Naturalist Rank
               </span>
-              <h3 className="font-display font-semibold text-2xl text-felid-ink mt-0.5">
+              <h3 className="font-display font-semibold text-lg sm:text-xl text-felid-ink mt-0.5">
                 {currentRank.title}
               </h3>
-              <p className="text-xs sm:text-sm text-felid-muted-ink mt-1.5 leading-relaxed font-sans">
+              <p className="text-xs text-felid-muted-ink mt-1 leading-relaxed font-sans">
                 {currentRank.description}
               </p>
             </div>

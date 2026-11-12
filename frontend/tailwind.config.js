@@ -66,10 +66,10 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Manrope', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
-        display: ['Fraunces', 'Georgia', 'Cambria', 'Times New Roman', 'serif'],
-        serif: ['Fraunces', 'Georgia', 'Cambria', 'Times New Roman', 'serif'],
-        mono: ['DM Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        display: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        serif: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        mono: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
       },
       boxShadow: {
         plate: 'var(--felid-shadow-plate)',

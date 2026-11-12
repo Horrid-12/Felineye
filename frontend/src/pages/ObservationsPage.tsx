@@ -34,7 +34,7 @@ export const ObservationsPage: React.FC = () => {
   }, [limit]);
 
   return (
-    <div className="py-2 space-y-6">
+    <div className="py-1 space-y-5">
       <PageHeader
         kicker="Community Sightings · iNaturalist API"
         kickerIcon={<PawPrint className="w-3.5 h-3.5" />}
@@ -89,7 +89,7 @@ export const ObservationsPage: React.FC = () => {
           description="Verify your network connection to the iNaturalist gateway or refresh to retry."
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {observations.map((obs) => (
             <ObservationCard key={obs.id} observation={obs} />
           ))}

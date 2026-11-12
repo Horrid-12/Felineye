@@ -28,7 +28,7 @@ export const SpeciesFilters: React.FC<Props> = ({ filters, onChange, onReset }) 
   };
 
   return (
-    <div className="journal-plate p-5 space-y-4 mb-6">
+    <div className="journal-plate p-4 space-y-3.5 mb-5">
       {/* Quick category and lineage pills */}
       <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-felid-border">
         <span className="text-[11px] font-mono font-medium text-felid-muted-ink uppercase tracking-wider mr-1">

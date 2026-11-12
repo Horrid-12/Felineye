@@ -196,15 +196,13 @@ describe('App multi-route navigation and theme persistence', () => {
     fireEvent.click(screen.getByText('Dataset Review'));
     expect(screen.getByTestId('reviewer-input')).toBeDefined();
 
-    // Navigate to Methodology
-    await act(async () => {
-      fireEvent.click(screen.getByText('Methodology'));
-    });
-    expect(await screen.findByText(/Similarity Scores, Not Calibrated Probabilities/i)).toBeDefined();
+    // Methodology page is removed from navigation
+    expect(screen.queryByText('Methodology')).toBeNull();
 
-    // Navigate to Field Journal (Collection) via Footer CTA
+    // Navigate to Field Journal (Collection) via Navbar rank capsule (footer is removed)
+    expect(document.querySelector('footer')).toBeNull();
     await act(async () => {
-      fireEvent.click(screen.getByText(/Field Journal & Badges/i));
+      fireEvent.click(screen.getByTitle(/species discovered/i));
     });
     expect(await screen.findByText(/Felidae Field Roster/i)).toBeDefined();
     expect(document.documentElement.classList.contains('dark')).toBe(true);

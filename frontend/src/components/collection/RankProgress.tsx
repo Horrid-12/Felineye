@@ -76,7 +76,7 @@ export const RankProgress: React.FC<Props> = ({
               </span>
               <span className="text-xs text-felid-muted-ink font-mono">{totalXp} Total XP</span>
             </div>
-            <h2 className="font-display font-semibold text-2xl text-felid-ink mt-1">
+            <h2 className="font-display font-semibold text-xl text-felid-ink mt-1">
               {currentRank.title}
             </h2>
             <p className="text-xs sm:text-sm text-felid-muted-ink font-sans mt-0.5">

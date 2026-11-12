@@ -42,7 +42,7 @@ const SpeciesView: React.FC<{
   const discovered = isDiscovered(species.id);
 
   return (
-    <div className="max-w-5xl mx-auto py-2 space-y-8 animate-fadeIn">
+    <div className="py-1 space-y-5 animate-fadeIn">
       <div>
         <button
           type="button"
@@ -100,10 +100,10 @@ const SpeciesView: React.FC<{
               </span>
             </div>
 
-            <h1 className="font-display font-semibold text-3xl sm:text-5xl text-felid-photo-ink tracking-tight">
+            <h1 className="font-display font-semibold text-2xl sm:text-3xl text-felid-photo-ink tracking-tight">
               {species.common_name}
             </h1>
-            <p className="text-base sm:text-lg italic text-felid-photo-ink/85 font-serif">
+            <p className="text-sm sm:text-base italic text-felid-photo-ink/85 font-serif">
               {species.scientific_name}
             </p>
           </div>
@@ -137,21 +137,21 @@ const SpeciesView: React.FC<{
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <section className="journal-plate p-6 space-y-3">
-            <h2 className="font-display font-semibold text-xl text-felid-ink flex items-center gap-2">
-              <Cat className="w-5 h-5 text-felid-cobalt-ink" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="lg:col-span-2 space-y-5">
+          <section className="journal-plate p-5 space-y-2.5">
+            <h2 className="font-display font-semibold text-lg text-felid-ink flex items-center gap-2">
+              <Cat className="w-4 h-4 text-felid-cobalt-ink" />
               <span>Physical Characteristics &amp; Description</span>
             </h2>
-            <p className="text-sm sm:text-base text-felid-ink/90 leading-relaxed font-sans">
+            <p className="text-xs sm:text-sm text-felid-ink/90 leading-relaxed font-sans">
               {species.description}
             </p>
           </section>
 
-          <section className="journal-plate p-6 space-y-4">
-            <h2 className="font-display font-semibold text-xl text-felid-ink flex items-center gap-2">
-              <PawPrint className="w-5 h-5 text-felid-cobalt-ink" />
+          <section className="journal-plate p-5 space-y-3">
+            <h2 className="font-display font-semibold text-lg text-felid-ink flex items-center gap-2">
+              <PawPrint className="w-4 h-4 text-felid-cobalt-ink" />
               <span>Diagnostic Visual Identifiers</span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -318,7 +318,7 @@ const BreedView: React.FC<{
   onBack: () => void;
   onSelectSpecies: (slug: string) => void;
 }> = ({ breed, backLabel, onBack, onSelectSpecies }) => (
-  <div className="max-w-4xl mx-auto py-2 space-y-8 animate-fadeIn">
+  <div className="py-1 space-y-5 animate-fadeIn">
     <div>
       <button
         type="button"
@@ -355,10 +355,10 @@ const BreedView: React.FC<{
               {breed.registry}
             </span>
           </div>
-          <h1 className="font-display font-semibold text-3xl sm:text-5xl text-felid-photo-ink tracking-tight">
+          <h1 className="font-display font-semibold text-2xl sm:text-3xl text-felid-photo-ink tracking-tight">
             {breed.common_name}
           </h1>
-          <p className="text-base sm:text-lg italic text-felid-photo-ink/85 font-serif">
+          <p className="text-sm sm:text-base italic text-felid-photo-ink/85 font-serif">
             {breed.scientific_name}
           </p>
         </div>
@@ -473,7 +473,7 @@ const HybridView: React.FC<{
   onBack: () => void;
   onSelectSpecies: (slug: string) => void;
 }> = ({ hybrid, backLabel, onBack, onSelectSpecies }) => (
-  <div className="max-w-3xl mx-auto py-2 space-y-8 animate-fadeIn">
+  <div className="max-w-5xl mx-auto py-1 space-y-5 animate-fadeIn">
     <div>
       <button
         type="button"

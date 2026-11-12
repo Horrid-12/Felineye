@@ -289,7 +289,7 @@ export const IdentifyPage: React.FC<Props> = ({ setActivePage, onSelectSpecies }
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-2 space-y-8">
+    <div className="max-w-6xl mx-auto py-1 space-y-5">
       <PageHeader
         centered
         kicker="Local Vision Model · Abstention-Aware Pipeline"

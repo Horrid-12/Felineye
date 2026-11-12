@@ -66,7 +66,7 @@ export const BreedEstimatePanel: React.FC<Props> = ({
 
           <div className="flex-1 min-w-0 space-y-2">
             <div>
-              <h4 className="font-display font-semibold text-xl text-felid-ink leading-tight">
+              <h4 className="font-display font-semibold text-lg text-felid-ink leading-tight">
                 {breed.common_name}
               </h4>
               <p className="text-xs italic text-felid-muted-ink font-serif mt-0.5">

@@ -3,7 +3,6 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import React from 'react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { Navbar } from '../components/layout/Navbar';
-import { MethodologyPage } from '../pages/MethodologyPage';
 import { ObservationsPage } from '../pages/ObservationsPage';
 import { CollectionPage } from '../pages/CollectionPage';
 import { SpeciesCard } from '../components/species/SpeciesCard';
@@ -55,14 +54,14 @@ describe('Theme switching & redesigned views', () => {
     document.documentElement.removeAttribute('data-theme');
   });
 
-  it('ThemeToggle switches between Light, System, and Dark and persists to localStorage', () => {
+  it('ThemeToggle switches between Light and Dark without a System button and persists to localStorage', () => {
     render(<ThemeToggle />);
 
     const lightBtn = screen.getByTestId('theme-option-light');
-    const systemBtn = screen.getByTestId('theme-option-system');
     const darkBtn = screen.getByTestId('theme-option-dark');
 
-    expect(systemBtn.getAttribute('aria-pressed')).toBe('true');
+    expect(screen.queryByTestId('theme-option-system')).toBeNull();
+    expect(lightBtn.getAttribute('aria-pressed')).toBe('true');
 
     fireEvent.click(darkBtn);
     expect(darkBtn.getAttribute('aria-pressed')).toBe('true');
@@ -77,12 +76,11 @@ describe('Theme switching & redesigned views', () => {
     expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('light');
   });
 
-  it('Navbar preserves navigation routes and surfaces theme toggle in desktop & mobile drawer', () => {
+  it('Navbar preserves navigation routes (without Methodology) and surfaces theme toggle in desktop & mobile drawer', () => {
     const setActivePage = vi.fn();
     render(<Navbar activePage="species" setActivePage={setActivePage} />);
 
-    fireEvent.click(screen.getByText('Methodology'));
-    expect(setActivePage).toHaveBeenCalledWith('methodology');
+    expect(screen.queryByText('Methodology')).toBeNull();
 
     fireEvent.click(screen.getByText('Dataset Review'));
     expect(setActivePage).toHaveBeenCalledWith('dataset-review');
@@ -94,49 +92,6 @@ describe('Theme switching & redesigned views', () => {
     fireEvent.click(screen.getByLabelText('Toggle Navigation'));
     expect(screen.getByText('Appearance')).toBeDefined();
     expect(screen.getAllByTestId('theme-option-dark').length).toBeGreaterThanOrEqual(2);
-  });
-
-  it('MethodologyPage renders scientific sections and interactive validation chart', async () => {
-    vi.spyOn(api, 'getCatalogMeta').mockResolvedValue({
-      authority: 'IUCN/SSC Cat Specialist Group',
-      reference: 'Kitchener et al. 2017',
-      year: 2017,
-      url: 'https://www.catsg.org',
-      taxonomy_note: '41 species',
-      breed_note: '22 breeds',
-      hybrid_note: '4 hybrids',
-      updated: '2026-10-25',
-      wild_species_count: 40,
-      domestic_species_count: 1,
-      species_count: 41,
-      breed_count: 22,
-      hybrid_count: 4,
-      lineage_count: 8,
-      breed_registry: { name: 'CFA', url: 'https://cfa.org' },
-    });
-
-    await act(async () => {
-      render(<MethodologyPage />);
-    });
-
-    expect(screen.getByText(/Local, Replaceable Inference Pipeline/i)).toBeDefined();
-    expect(screen.getByText(/Figure 2 · Breed Confidence Threshold/i)).toBeDefined();
-
-    // Default shipped 0.80 readout
-    expect(screen.getByText(/Floor 0\.80 \(Shipped default\)/)).toBeDefined();
-
-    // Select 0.90 threshold point on the SVG chart
-    const point90 = screen.getByRole('button', { name: /Threshold 0\.90/i });
-    fireEvent.click(point90);
-    expect(screen.getByText(/Precision 100\.0%/)).toBeDefined();
-    expect(screen.getByText(/Coverage 20\.9%/)).toBeDefined();
-
-    // Keyboard navigation from 0.90 -> 0.95 via ArrowRight and back via ArrowLeft
-    fireEvent.keyDown(point90, { key: 'ArrowRight' });
-    expect(screen.getByText(/Floor 0\.95/)).toBeDefined();
-    expect(screen.getByText(/Coverage 12\.8%/)).toBeDefined();
-    fireEvent.keyDown(point90, { key: 'ArrowLeft' });
-    expect(screen.getByText(/Floor 0\.90/)).toBeDefined();
   });
 
   it('SimilarCompareModal closes when Escape is pressed', async () => {

@@ -132,16 +132,28 @@
 }
 
 @layer base {
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
   html {
+    font-size: 14px;
     background-color: rgb(var(--felid-bg-rgb));
     color: rgb(var(--felid-ink-rgb));
-    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
   body {
     background-color: rgb(var(--felid-bg-rgb));
     color: rgb(var(--felid-ink-rgb));
-    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 
@@ -149,15 +161,14 @@
   h2,
   h3,
   .font-display {
-    font-family: 'Fraunces', Georgia, serif;
-    font-variation-settings: 'SOFT' 35, 'WONK' 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
   code,
   kbd,
   pre,
   .font-mono {
-    font-family: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-variant-numeric: tabular-nums;
   }
 
@@ -166,23 +177,6 @@
     background-color: rgb(var(--felid-surface-rgb));
     color: rgb(var(--felid-ink-rgb));
   }
-}
-
-/* Archival scrollbars matching active theme */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: rgb(var(--felid-bg-rgb));
-}
-::-webkit-scrollbar-thumb {
-  background: rgb(var(--felid-border-strong-rgb) / 0.55);
-  border-radius: 9999px;
-  border: 2px solid rgb(var(--felid-bg-rgb));
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--felid-cobalt-rgb) / 0.75);
 }
 
 /* Subtle Cobalt & Pomegranate archival wash backdrop */

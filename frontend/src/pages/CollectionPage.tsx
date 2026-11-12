@@ -95,7 +95,7 @@ export const CollectionPage: React.FC<Props> = ({ setActivePage, onSelectSpecies
   };
 
   return (
-    <div className="py-2 space-y-8">
+    <div className="py-1 space-y-6">
       <PageHeader
         kicker="Private Local Log · Browser Storage"
         kickerIcon={<PawPrint className="w-3.5 h-3.5" />}

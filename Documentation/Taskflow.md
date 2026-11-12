@@ -4,7 +4,7 @@
 >
 > **Status:** Alpha v0.1.0. Real BioCLIP + ImageNet identification is integrated with conservative abstention, and discovery rewards are server-authoritative and idempotent. Domestic cats also receive an optional closest visual breed match from a separate ViT classifier; it never changes the species result or XP, and its thresholds were set from real-photo validation. Weights are gitignored and reproduced with `backend/scripts/setup_identification_models.py`.
 >
-> **Last verified:** 2026-11-12 - 134 backend tests and 61 frontend tests passing, frontend build passing. Cobalt & Pomegranate Anatolian Natural-History Journal visual identity migration implemented across all routes and shared components (`Fraunces` / `Manrope` / `DM Mono` typography, CSS-variable-backed `felid-*` light `#F2E7D5`/`#FBF7F0`/`#302A30`/`#344E8C`/`#B74750`/`#C49A52` & dark `#241B29`/`#352A3B`/`#403447`/`#C58C91`/`#526DA8`/`#C49A52` tokens with WCAG AA text and graphical `*-line` contrast calibration and zero green/teal accents, Light/System/Dark theme toggle persisted via `felineye_theme_preference_v1` with pre-paint FOUC guard, structured field-note Observations, Cobalt & Pomegranate Dataset Review split inspector, and theme-aware keyboard-accessible Methodology SVG data visualizations). Round-2 collection-gap report, per-run collector semantics and dedupe guards verified, alongside domestic cat gate cooperation, Felis catus promotion, IdentifyPage integration tests, breed test-time augmentation, sanitized 500 responses, per-key observation cache TTL, coordinate safety regression tests, and Footer reinstatement. See `Documentation/Breed-Validation.md` for the real-photo coverage report and `Documentation/Breed-Dataset-Review.md` for the round-2 gap report.
+> **Last verified:** 2026-11-12 - 134 backend tests and 61 frontend tests passing, frontend build passing. Cobalt & Pomegranate Anatolian Natural-History Journal visual identity migration implemented across all routes and shared components (`Inter` unified typography across display/sans/mono with reduced compact sizing, hidden scrollbars, wider `max-w-[1680px]` layout cards, CSS-variable-backed `felid-*` light `#F2E7D5`/`#FBF7F0`/`#302A30`/`#344E8C`/`#B74750`/`#C49A52` & dark `#241B29`/`#352A3B`/`#403447`/`#C58C91`/`#526DA8`/`#C49A52` tokens with WCAG AA text and graphical `*-line` contrast calibration and zero green/teal accents, Light/Dark theme toggle persisted via `felineye_theme_preference_v1` with pre-paint FOUC guard, footer and Methodology route removed, structured field-note Observations, and Cobalt & Pomegranate Dataset Review split inspector). Round-2 collection-gap report, per-run collector semantics and dedupe guards verified, alongside domestic cat gate cooperation, Felis catus promotion, IdentifyPage integration tests, breed test-time augmentation, sanitized 500 responses, per-key observation cache TTL, coordinate safety regression tests. See `Documentation/Breed-Validation.md` for the real-photo coverage report and `Documentation/Breed-Dataset-Review.md` for the round-2 gap report.
 
 ## How to Use This File
 
@@ -41,13 +41,13 @@
 - [X] Add `.env.example` and ignore local secrets and model weights.
 - [X] Add root launchers: `start.py`, `start.ps1`, `start.bat`.
 - [X] Add `GET /api/health` with provider and catalog status.
-- [X] Define the Cobalt & Pomegranate Anatolian Natural-History Journal `felid-*` semantic design tokens (light `#F2E7D5`/`#FBF7F0` & dark `#241B29`/`#352A3B`/`#403447` with Royal Cobalt, Pomegranate, Burnished Gold, and Dusty Rose accents, zero green/teal), typography (`Fraunces`, `Manrope`, `DM Mono`), and Light/System/Dark theme toggle (`felineye_theme_preference_v1`).
+- [X] Define the Cobalt & Pomegranate Anatolian Natural-History Journal `felid-*` semantic design tokens (light `#F2E7D5`/`#FBF7F0` & dark `#241B29`/`#352A3B`/`#403447` with Royal Cobalt, Pomegranate, Burnished Gold, and Dusty Rose accents, zero green/teal), unified `Inter` typography, and Light/Dark theme toggle (`felineye_theme_preference_v1`).
 - [X] Build reusable cards, badges, modal, loading, empty, and error patterns.
 - [X] Add basic focus styles, aria labels, and semantic layout landmarks.
-- [X] Implement responsive navbar, mobile menu, and footer.
+- [X] Implement responsive navbar and mobile menu (footer removed per layout simplification).
 - [X] Remove navbar duplication: entries that mirrored another control were dropped — `Paw Scanner` and the `SCAN` shortcut (both duplicated the home hero "Scan a Cat Photo" CTA), `Expedition Log` (duplicated the rank capsule, which already opens the collection page), and `Cat Haven` (duplicated the `FELINEYE` brand button, which returns home).
 - [X] Implement state-driven page switching (`ActivePage` in `App.tsx`).
-- [X] Scaffold Home, Identify, Atlas, Detail, Collection, Observations, and Methodology pages.
+- [X] Scaffold Home, Identify, Atlas, Detail, Collection, Observations, and Dataset Review pages (Methodology route removed).
 
 **Exit criteria:** Frontend and backend start locally; pages render; design tokens and shared patterns are reusable.
 

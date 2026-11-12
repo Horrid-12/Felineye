@@ -22,43 +22,43 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 }) => {
   if (centered) {
     return (
-      <header className="text-center space-y-3 pb-6 border-b border-felid-border">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-felid-surface border border-felid-cobalt/25 rounded-sm text-[11px] font-mono font-medium tracking-wider text-felid-cobalt-ink uppercase">
+      <header className="text-center space-y-2.5 pb-4 border-b border-felid-border">
+        <div className="inline-flex items-center gap-2 px-2.5 py-0.5 bg-felid-surface border border-felid-cobalt/25 rounded-sm text-[10px] font-mono font-medium tracking-wider text-felid-cobalt-ink uppercase">
           {kickerIcon}
           <span>{kicker}</span>
         </div>
-        <h1 className="font-display font-semibold text-3xl sm:text-5xl text-felid-ink tracking-tight leading-[1.08]">
+        <h1 className="font-display font-semibold text-2xl sm:text-3xl text-felid-ink tracking-tight leading-tight">
           {title}
         </h1>
         {subtitle && (
-          <p className="text-sm sm:text-base text-felid-muted-ink max-w-2xl mx-auto font-sans leading-relaxed">
+          <p className="text-xs sm:text-sm text-felid-muted-ink max-w-3xl mx-auto font-sans leading-relaxed">
             {subtitle}
           </p>
         )}
         {meta && (
-          <div className="text-xs font-mono text-felid-muted-ink">{meta}</div>
+          <div className="text-[11px] font-mono text-felid-muted-ink">{meta}</div>
         )}
       </header>
     );
   }
 
   return (
-    <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-felid-border">
-      <div className="space-y-2 max-w-2xl">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-felid-surface border border-felid-cobalt/25 rounded-sm text-[11px] font-mono font-medium tracking-wider text-felid-cobalt-ink uppercase">
+    <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-felid-border">
+      <div className="space-y-1.5 max-w-3xl">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-felid-surface border border-felid-cobalt/25 rounded-sm text-[10px] font-mono font-medium tracking-wider text-felid-cobalt-ink uppercase">
           {kickerIcon}
           <span>{kicker}</span>
         </div>
-        <h1 className="font-display font-semibold text-3xl sm:text-4xl lg:text-5xl text-felid-ink tracking-tight leading-[1.08]">
+        <h1 className="font-display font-semibold text-2xl sm:text-3xl text-felid-ink tracking-tight leading-tight">
           {title}
         </h1>
         {subtitle && (
-          <p className="text-sm text-felid-muted-ink font-sans leading-relaxed">
+          <p className="text-xs sm:text-sm text-felid-muted-ink font-sans leading-relaxed">
             {subtitle}
           </p>
         )}
         {meta && (
-          <div className="text-xs font-mono text-felid-muted-ink pt-0.5">
+          <div className="text-[11px] font-mono text-felid-muted-ink pt-0.5">
             {meta}
           </div>
         )}

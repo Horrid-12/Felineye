@@ -414,5 +414,4 @@ export type ActivePage =
   | 'species-detail'
   | 'collection'
   | 'observations'
-  | 'methodology'
   | 'dataset-review';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, MapPin, Info, Menu, X, ClipboardCheck } from 'lucide-react';
+import { BookOpen, MapPin, Menu, X, ClipboardCheck } from 'lucide-react';
 import { ActivePage } from '../../types';
 import { useCollectionStore } from '../../store/useCollectionStore';
 import { FelineyeEmblem } from '../ui/JournalOrnament';
@@ -18,7 +18,6 @@ export const Navbar: React.FC<Props> = ({ activePage, setActivePage }) => {
     { id: 'species', label: 'Species Atlas', icon: <BookOpen className="w-3.5 h-3.5" /> },
     { id: 'dataset-review', label: 'Dataset Review', icon: <ClipboardCheck className="w-3.5 h-3.5" /> },
     { id: 'observations', label: 'Observations', icon: <MapPin className="w-3.5 h-3.5" /> },
-    { id: 'methodology', label: 'Methodology', icon: <Info className="w-3.5 h-3.5" /> },
   ];
 
   const handleNavClick = (page: ActivePage) => {
@@ -32,8 +31,8 @@ export const Navbar: React.FC<Props> = ({ activePage, setActivePage }) => {
       {/* Subtle 2px Cobalt, Burnished Gold & Pomegranate folio binding rule */}
       <div className="h-[2px] w-full bg-gradient-to-r from-felid-cobalt via-felid-highlight/80 to-felid-pomegranate" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-3 h-16">
+      <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-3 h-14">
           {/* Editorial Brand Wordmark */}
           <button
             type="button"

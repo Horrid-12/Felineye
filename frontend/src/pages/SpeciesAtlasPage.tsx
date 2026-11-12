@@ -94,7 +94,7 @@ export const SpeciesAtlasPage: React.FC<Props> = ({
   const showDomesticSection = filters.category === 'domestic_species';
 
   return (
-    <div className="py-2 space-y-6">
+    <div className="py-1 space-y-5">
       <PageHeader
         kicker="Taxonomy Archive · IUCN SSC Cat Specialist Group 2017"
         kickerIcon={<Cat className="w-3.5 h-3.5" />}
@@ -173,7 +173,7 @@ export const SpeciesAtlasPage: React.FC<Props> = ({
           }
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {speciesList.map((species) => (
             <SpeciesCard
               key={species.id}

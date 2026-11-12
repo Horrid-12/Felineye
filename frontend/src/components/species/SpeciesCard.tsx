@@ -76,9 +76,9 @@ export const SpeciesCard: React.FC<Props> = ({ species, onClick }) => {
       </div>
 
       {/* Card Content */}
-      <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+      <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2.5">
         <div>
-          <h3 className="font-display font-semibold text-lg text-felid-ink group-hover:text-felid-cobalt-ink transition-colors leading-snug">
+          <h3 className="font-display font-semibold text-base text-felid-ink group-hover:text-felid-cobalt-ink transition-colors leading-snug">
             {species.common_name}
           </h3>
           <p className="text-xs italic text-felid-muted-ink font-serif mt-0.5">
