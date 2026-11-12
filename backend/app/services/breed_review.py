@@ -152,6 +152,42 @@ def training_export_rows(rows: List[Dict[str, Any]], reviews: List[Dict[str, Any
     return out
 
 
+DEFAULT_QUALITY_REVIEWER = "quality-gate"
+
+
+def reject_flagged_candidates(dataset_root: Path, reviewer: str = DEFAULT_QUALITY_REVIEWER,
+                              apply: bool = True) -> Dict[str, Any]:
+    """Reject *pending* candidates carrying collector quality flags.
+
+    This records a normal rejection in ``reviews.jsonl`` (never a deletion, a
+    split change or a promotion) so un-reviewable collection output — B&W scans,
+    motorcycle search hits, mislabelled foreign breeds — leaves the review
+    queue honestly. Verified, rejected and ambiguous rows are never touched.
+    A reversal is a normal second-reviewer decision.
+    """
+    reviewer = (reviewer or "").strip()
+    if not reviewer:
+        raise ValueError("reviewer must be non-empty")
+    manifest_path = dataset_root / "manifest.jsonl"
+    if not manifest_path.exists():
+        return {"reviewer": reviewer, "matched": 0, "applied": False, "ids": []}
+    rows = [json.loads(l) for l in manifest_path.read_text(encoding="utf-8").splitlines() if l.strip()]
+    reviews = load_reviews(dataset_root / "reviews.jsonl")
+    targets = [r for r in rows
+               if (r.get("quality_flags") or []) and image_status(reviews, r["id"]) == "pending"]
+    applied = bool(apply and targets)
+    if applied:
+        for r in targets:
+            append_review(dataset_root / "reviews.jsonl", r["id"], r["breed_id"], reviewer,
+                          "rejected",
+                          "collection quality gate: " + ", ".join(r["quality_flags"]))
+        sync_manifest(dataset_root)
+    return {"reviewer": reviewer, "matched": len(targets), "applied": applied,
+            "ids": [r["id"] for r in targets],
+            "reasons": {r["id"]: list(r["quality_flags"]) for r in targets}}
+
+
+
 ASSET_TYPE_LOG = "asset_types.jsonl"
 
 

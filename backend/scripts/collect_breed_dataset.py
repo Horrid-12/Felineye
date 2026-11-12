@@ -32,6 +32,9 @@ from backend.app.services.breed_dataset import (  # noqa: E402
     CATEGORY_BY_BREED, CommonsClient, collect_breed, flag_manifest_quality,
     legacy_test_hashes, load_manifest, progress_report,
 )
+from backend.app.services.breed_review import (  # noqa: E402
+    DEFAULT_QUALITY_REVIEWER, reject_flagged_candidates,
+)
 from backend.app.services.collection_gap import (  # noqa: E402
     PRIORITY_BREEDS, collection_gap, target_per_breed,
 )
@@ -59,6 +62,10 @@ def main() -> int:
                     help="write collection_gap.json and exit (no network)")
     ap.add_argument("--audit-quality", action="store_true",
                     help="flag already-collected rows (colour/relevance) and exit (no network)")
+    ap.add_argument("--reject-flagged", action="store_true",
+                    help="reject pending rows carrying quality flags and exit (no network)")
+    ap.add_argument("--reviewer", default=DEFAULT_QUALITY_REVIEWER,
+                    help=f"reviewer name used by --reject-flagged (default {DEFAULT_QUALITY_REVIEWER})")
     ap.add_argument("--dry-run", action="store_true",
                     help="with --audit-quality: report flags without rewriting the manifest")
     ap.add_argument("--min-interval", type=float, default=2.0)
@@ -89,6 +96,12 @@ def main() -> int:
         print(f"scanned={report['scanned']} flagged={report['flagged']} "
               f"applied={report['applied']} by_flag={report['by_flag']}")
         print(f"report: {DATASET_ROOT / 'quality_audit.json'}")
+        return 0
+
+    if args.reject_flagged:
+        result = reject_flagged_candidates(DATASET_ROOT, args.reviewer, apply=not args.dry_run)
+        print(f"reviewer={result['reviewer']} matched={result['matched']} "
+              f"applied={result['applied']}")
         return 0
 
     if args.offline_report:

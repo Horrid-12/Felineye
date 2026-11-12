@@ -86,6 +86,30 @@ backend\.venv\Scripts\python.exe backend\scripts\collect_breed_dataset.py --bree
 
 `--per-breed` is **new candidates this run**, not the breed total. Re-collection is blocked by exact SHA-256, the frozen legacy test hashes, existing Commons titles, and dHash-64 near-duplicates (hamming ≤5) against the whole manifest. New rows stay `split=candidates`, `label_confidence=unverified`, `review_status=pending`, `training_eligible=false`; nothing is promoted or trained.
 
+### Batch-1 quality audit (2026-11-12)
+
+The first batch (50 new candidates: 25 Siamese, 25 Manx) predates the
+colour/relevance gates and was unusable: 23 Siamese rows were B&W or sepia
+scans, and 13 Manx rows were motorcycles, Cymric/Owyhee Bob mislabels or
+portraits.
+
+`--audit-quality` adds derived `quality_flags` to the manifest without deleting
+anything or inventing a review (`greyscale`, `toned_monochrome`,
+`irrelevant_subject`, `foreign_breed`, `unreadable`). The dashboard shows them
+as an amber chip on each candidate. `--reject-flagged` then records a normal
+rejected verdict under the `quality-gate` reviewer:
+
+```powershell
+backend\.venv\Scripts\python.exe backend\scripts\collect_breed_dataset.py --audit-quality
+backend\.venv\Scripts\python.exe backend\scripts\collect_breed_dataset.py --reject-flagged --reviewer quality-gate
+```
+
+Batch 1 result: **36 of 50 rejected** (23 Siamese, 13 Manx), 14 kept pending
+(12 Manx, 2 Siamese). All 175 image files and manifest rows remain, and the
+flags stay visible after rejection. A `verified` row is never demoted by a flag,
+and reversing a gate rejection needs a second reviewer like any decision. See
+`Documentation/Breed-Dataset-Collection.md` for the gate thresholds.
+
 ## Backend
 
 `POST /api/dataset-review/candidates/{id}/review` accepts `asset_type` and persists it on the manifest row (synced immediately).

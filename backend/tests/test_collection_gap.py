@@ -10,10 +10,13 @@ from PIL import Image, ImageDraw
 from backend.app.services import breed_dataset
 from backend.app.services.breed_dataset import (
     collect_breed, colour_profile, dhash64, flag_manifest_quality, hamming,
-    list_category_files, load_manifest, monochrome_reason, title_is_irrelevant,
-    title_mentions_breed,
+    list_category_files, load_manifest, monochrome_reason, title_has_cat_context,
+    title_is_irrelevant, title_mentions_breed,
 )
-from backend.app.services.breed_review import append_review, sync_manifest
+from backend.app.services.breed_review import (
+    append_review, image_status, load_reviews, reject_flagged_candidates,
+    sync_manifest,
+)
 from backend.app.services.collection_gap import (
     DEFAULT_TARGET_PER_BREED, PRIORITY_BREEDS, collection_gap,
 )
@@ -293,6 +296,10 @@ def test_title_relevance_rules():
     assert not title_mentions_breed("File:MV Manxman arriving.jpg", "manx", "Manx cats")
     assert title_mentions_breed("File:Norwegian Forest Cat 01.jpg",
                                 "norwegian-forest-cat", "Norwegian Forest cats")
+    assert title_has_cat_context("File:Manx cat portrait.jpg")
+    assert not title_has_cat_context("File:1966 Manx (9324109800).jpg")
+    assert not title_has_cat_context("File:Siamese fighting fish.jpg")
+    assert not title_has_cat_context("File:Four Manx Plays.jpg")
 
 
 def test_collector_rejects_monochrome_and_toned_images(tmp_path, monkeypatch):
@@ -327,6 +334,7 @@ def test_collector_rejects_irrelevant_search_hits(tmp_path, monkeypatch):
         _file("File:2026 Norton Manx R.jpg", "ok"),
         _file("File:Cymric Fond Blanc.jpg", "ok"),
         _file("File:Bill Watterson at Kenyon.jpg", "ok"),
+        _file("File:1966 Manx (9324109800).jpg", "ok"),
         _file("File:A Manx cat in a garden.jpg", "ok"),
     ]
     for f in files:
@@ -337,7 +345,7 @@ def test_collector_rejects_irrelevant_search_hits(tmp_path, monkeypatch):
                            tmp_path, set(), set(), [])
 
     assert counts["written"] == 1
-    assert counts["rejected_irrelevant"] == 4
+    assert counts["rejected_irrelevant"] == 5
     rows = load_manifest(tmp_path / "manifest.jsonl")
     assert [r["title"] for r in rows] == ["File:A Manx cat in a garden.jpg"]
     assert rows[0]["retrieval"] == "search"
@@ -377,6 +385,7 @@ def test_list_category_files_filters_search_but_trusts_categories():
         search={**_page("File:2019 Senior Manx Grand Prix.jpg"),
                 **_page("File:Cymric Fond Blanc.jpg"),
                 **_page("File:Bill Watterson at Kenyon.jpg"),
+                **_page("File:1966 Manx (9324109800).jpg"),
                 **_page("File:Manx cat portrait.jpg")},
     )
     rows = list_category_files(client, "Manx cats", 20, "manx")
@@ -423,3 +432,48 @@ def test_quality_audit_dry_run_does_not_rewrite_manifest(tmp_path):
     after = (tmp_path / "manifest.jsonl").read_text(encoding="utf-8")
     assert report["applied"] is False
     assert after == before
+
+
+def test_reject_flagged_only_touches_pending_flagged_rows(tmp_path):
+    pending_flagged, pending_clean, verified_flagged = _row(1), _row(2), _row(3)
+    _write(tmp_path, [pending_flagged, pending_clean, verified_flagged],
+           reviews=[(verified_flagged["id"], "approved", "", "animal_photograph")])
+    manifest = tmp_path / "manifest.jsonl"
+    rows = load_manifest(manifest)
+    rows[0]["quality_flags"] = ["greyscale"]
+    rows[2]["quality_flags"] = ["irrelevant_subject"]
+    manifest.write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+
+    result = reject_flagged_candidates(tmp_path, "quality-gate")
+
+    assert result["matched"] == 1
+    assert result["applied"] is True
+    assert result["ids"] == [pending_flagged["id"]]
+
+    after = load_manifest(manifest)
+    assert len(after) == 3                                    # nothing deleted
+    assert after[0]["review_status"] == "rejected"
+    assert after[1]["review_status"] == "pending"
+    assert after[2]["review_status"] == "verified"            # never demoted
+    reviews = load_reviews(tmp_path / "reviews.jsonl")
+    rejection = [r for r in reviews if r["image_id"] == pending_flagged["id"]]
+    assert len(rejection) == 1
+    assert rejection[0]["reviewer"] == "quality-gate"
+    assert rejection[0]["decision"] == "rejected"
+    assert "greyscale" in rejection[0]["reason"]
+    assert image_status(reviews, pending_flagged["id"]) == "rejected"
+
+
+def test_reject_flagged_dry_run_writes_no_review(tmp_path):
+    row = _row(1)
+    _write(tmp_path, [row])
+    manifest = tmp_path / "manifest.jsonl"
+    rows = load_manifest(manifest)
+    rows[0]["quality_flags"] = ["greyscale"]
+    manifest.write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+
+    result = reject_flagged_candidates(tmp_path, "quality-gate", apply=False)
+
+    assert result["matched"] == 1 and result["applied"] is False
+    assert load_reviews(tmp_path / "reviews.jsonl") == []
+    assert load_manifest(manifest)[0]["review_status"] == "pending"

@@ -39,6 +39,7 @@ def dataset_root(tmp_path, monkeypatch):
                 "audit_reason": None}
 
     rows = [write_row(1), write_row(2)]
+    rows[0]["quality_flags"] = ["greyscale"]
     # second breed row reuses file dir but distinct id
     rows.append({"id": hashlib.sha256(b"img3").hexdigest(), "breed_id": "manx",
                  "split": "candidates", "file": f"images/candidates/siamese/{rows[1]['id']}.jpg",
@@ -84,6 +85,10 @@ def test_stats_filter_pagination(dataset_root):
     assert stats["total"] == 3 and stats["total_verified"] == 0
     all_items = client.get("/api/dataset-review/candidates", headers=_h()).json()
     assert all_items["total"] == 3
+    # Derived collection-quality flags reach the UI so flagged rows can be
+    # rejected without opening them.
+    assert all_items["items"][0]["quality_flags"] == ["greyscale"]
+    assert all_items["items"][1]["quality_flags"] == []
     siam = client.get("/api/dataset-review/candidates?breed=siamese", headers=_h()).json()
     assert siam["total"] == 2
     page2 = client.get("/api/dataset-review/candidates?page=2&page_size=2", headers=_h()).json()

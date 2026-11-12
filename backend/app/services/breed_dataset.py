@@ -115,8 +115,16 @@ IRRELEVANT_TITLE_PATTERN = re.compile(
     r"steam packet|ferry|steamship|ship|yacht|hovercraft|railway|locomotive|"
     r"tram|bus|aircraft|aeroplane|airplane|"
     r"football|rugby|cricket|cyclist|bicycle|athlete|marathon|stadium|"
-    r"gravestone|headstone|memorial|war memorial"
+    r"gravestone|headstone|memorial|war memorial|"
+    r"sheep|loaghtan|horse|cattle|livestock"
     r")s?\b", re.I)
+# "Manx" also means the Isle of Man / a dune buggy, and "Siamese" also means
+# people, cats, languages and fighting fish. Search hits (the only untrusted
+# retrieval path) must therefore carry a cat-context word as well.
+CAT_CONTEXT_PATTERN = re.compile(
+    r"\b(?:cat|cats|kitten|kittens|feline|felines|kitty|kitties|puss|pussy|"
+    r"cattery|catteries|meow|breed|katze|katzen|kater|gatt[oa]|gatte|chats?|"
+    r"gatos?|katt|katten|kissa|kucing)\b", re.I)
 # Breeds that are routinely mis-filed under a target breed (Cymric is the
 # long-haired Manx variant but a distinct CFA breed; bobtails are not Manx).
 FOREIGN_BREED_TOKENS = (
@@ -213,6 +221,11 @@ def title_mentions_breed(title: str, breed_id: str, category: str = "") -> bool:
 def title_is_irrelevant(title: str) -> bool:
     """Titles about vehicles, races, sports or memorials are never a cat photo."""
     return bool(IRRELEVANT_TITLE_PATTERN.search(title or ""))
+
+
+def title_has_cat_context(title: str) -> bool:
+    """True when the title names a cat (guards "Manx dune buggy"/"fighting fish")."""
+    return bool(CAT_CONTEXT_PATTERN.search(title or ""))
 
 
 def title_has_foreign_breed(title: str, breed_id: str, category: str = "") -> bool:
@@ -393,7 +406,9 @@ def list_category_files(client: CommonsClient, category: str, limit: int,
                 continue
             if title_is_irrelevant(title) or title_has_foreign_breed(title, breed_id, category):
                 continue
-            if retrieval == "search" and not title_mentions_breed(title, breed_id, category):
+            if retrieval == "search" and not (
+                    title_mentions_breed(title, breed_id, category)
+                    and title_has_cat_context(title)):
                 continue
             meta = info.get("extmetadata", {})
             rows.append({"title": title, "url": info.get("thumburl") or info.get("url"),
@@ -550,7 +565,9 @@ def collect_breed(
         if title_is_irrelevant(f["title"]) or title_has_foreign_breed(f["title"], breed_id, category):
             counts["rejected_irrelevant"] += 1
             continue
-        if f.get("retrieval") == "search" and not title_mentions_breed(f["title"], breed_id, category):
+        if f.get("retrieval") == "search" and not (
+                title_mentions_breed(f["title"], breed_id, category)
+                and title_has_cat_context(f["title"])):
             counts["rejected_irrelevant"] += 1
             continue
         ok, reason = license_decision(f["author"], f["license"])
